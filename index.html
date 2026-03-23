@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>City Detect — New Labeling UI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#f5f5f5;padding:16px}
+.app{display:grid;grid-template-columns:160px 1fr;border:0.5px solid #ccc;border-radius:12px;overflow:hidden;background:#fff;max-width:740px;margin:0 auto}
+.sidebar{background:#f5f5f5;border-right:0.5px solid #ccc}
+.nav-item{padding:11px 16px;font-size:13px;color:#555;cursor:pointer;border-bottom:0.5px solid #e0e0e0}
+.nav-item:hover:not(.active){background:#fff}
+.nav-item.active{background:#2e7d32;color:#fff;font-weight:500}
+.main{padding:18px 22px;min-height:460px}
+.sec{margin-bottom:20px}
+.sec-title{font-size:17px;font-weight:500;margin-bottom:10px;color:#111}
+.row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:4px;font-size:13px;cursor:pointer;user-select:none}
+.row:nth-child(even){background:#f9f9f9}
+.row:hover{background:#e8f5e9}
+.row label{display:flex;align-items:center;gap:8px;flex:1;cursor:pointer;color:#111}
+.row input{accent-color:#2e7d32;width:15px;height:15px;cursor:pointer;flex-shrink:0}
+.code{font-family:monospace;font-size:11px;text-decoration:underline;color:#888}
+.hint{font-size:11px;color:#aaa;font-style:italic;padding:2px 10px 5px 33px;display:none}
+.statusbar{padding:9px 16px;font-size:12px;color:#666;border-top:0.5px solid #ddd;background:#f5f5f5}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar" id="nav"></div>
+  <div style="display:flex;flex-direction:column">
+    <div class="main" id="main"></div>
+    <div class="statusbar" id="status">No attributes selected</div>
+  </div>
+</div>
+<script>
+const B = {
+  General:{
+    "Lot type":[
+      {l:"Abandoned",c:"LTA"},{l:"Construction",c:"LTCON"},{l:"Multifamily",c:"LTM"},
+      {l:"Not residential",c:"LTNR"},{l:"Vacant",c:"LTV"}
+    ],
+    "Bad picture":[
+      {l:"Bad angle",c:"BPA"},{l:"Blocked",c:"BPB"},{l:"Cloudy",c:"BPC"},{l:"Wrong parcel",c:"BPWP"}
+    ]
+  },
+  Ground:{
+    "Lawn":[
+      {l:"Lawn Branches",c:"LABR",h:"was: Branches"},
+      {l:"Lawn Dead Patch",c:"LADP",h:"was: Dead patch"},
+      {l:"Litter / Debris",c:"LITTER",h:"was: Debris + Litter (merged)"},
+      {l:"Leaves",c:"LEAVES",h:"was: Leaves"},
+      {l:"Overgrown Lawn",c:"LAO",h:"was: Overgrown weeds"},
+      {l:"Lawn Vehicle",c:"LAV",h:"was: Vehicle"}
+    ]
+  },
+  Pavement:{
+    "Sidewalk":[
+      {l:"Cracked Sidewalk",c:"SIC",h:"was: Cracked"},
+      {l:"Litter / Debris",c:"LITTER_SW",h:"was: Debris + Litter (merged)"},
+      {l:"Leaves",c:"SILE",h:"was: Leaves"},
+      {l:"Overgrown Pavement",c:"SIO",h:"was: Overgrown"}
+    ],
+    "Driveway":[
+      {l:"Cracked Driveway",c:"DRC",h:"was: Cracked"},
+      {l:"Litter / Debris",c:"LITTER_DW",h:"was: Debris + Litter (merged)"},
+      {l:"Leaves",c:"DRLE",h:"was: Leaves"},
+      {l:"Overgrown Pavement",c:"DRO",h:"was: Overgrown"}
+    ]
+  },
+  Structures:{
+    "Retaining wall":[
+      {l:"Retaining Wall Damage",c:"RES",h:"was: Structural"},
+      {l:"Yard Structure Overgrown",c:"REO",h:"was: Overgrown"}
+    ],
+    "Fence":[
+      {l:"Fence Damage",c:"FES",h:"was: Structural"},
+      {l:"Fence Paint",c:"FEP",h:"was: Paint rust"},
+      {l:"Yard Structure Overgrown",c:"FEO",h:"was: Overgrown"}
+    ],
+    "Garage":[
+      {l:"Garage Damage",c:"GAS",h:"was: Structural"},
+      {l:"Structure Paint",c:"GAP",h:"was: Paint rust"},
+      {l:"Overgrown Structures",c:"GAO",h:"was: Overgrown"}
+    ]
+  },
+  Porch:{
+    "Porch":[
+      {l:"Porch Debris",c:"POD",h:"was: Debris"},
+      {l:"Porch Damage",c:"POST",h:"was: Structural + Paint rust (merged)"},
+      {l:"Overgrown Structures",c:"POO",h:"was: Overgrown"}
+    ],
+    "Awning":[{l:"Awning Damage",c:"AWS",h:"was: Structural + Paint rust (merged)"}],
+    "Column":[{l:"Column Damage",c:"COLS",h:"was: Structural + Paint rust (merged)"}]
+  },
+  Stairs:{
+    "Stairs":[
+      {l:"Stair Damage",c:"STS",h:"was: Structural + Paint rust (merged)"},
+      {l:"Overgrown Pavement",c:"STO",h:"was: Overgrown"},
+      {l:"Leaves",c:"STLE",h:"was: Leaves"}
+    ],
+    "Railing":[
+      {l:"Stair Damage",c:"RAS",h:"was: Structural"},
+      {l:"Overgrown Structures",c:"RAO",h:"was: Overgrown"}
+    ]
+  },
+  Walls:{
+    "Wall":[
+      {l:"Wall Structural Damage",c:"WAS",h:"was: Structural"},
+      {l:"Overgrown Structures",c:"WAO",h:"was: Overgrown"},
+      {l:"Structure Paint",c:"WAP",h:"was: Paint rust"}
+    ],
+    "Foundation":[
+      {l:"Foundation Damage",c:"FOS",h:"was: Structural"},
+      {l:"Structure Paint",c:"FOP",h:"was: Paint rust"}
+    ],
+    "Vent":[{l:"Structure Paint",c:"VEP",h:"was: Paint rust"}]
+  },
+  Fenestration:{
+    "Door":[
+      {l:"Broken Door",c:"DOB",h:"was: Broken"},
+      {l:"Door Plywood",c:"DOPL",h:"was: Plywood"},
+      {l:"Structure Paint",c:"DOPA",h:"was: Paint rust"}
+    ],
+    "Shutter":[{l:"Structure Paint",c:"SHP",h:"was: Paint rust"}],
+    "Window":[
+      {l:"Broken Window",c:"WIB",h:"was: Broken"},
+      {l:"Window Plywood",c:"WIPL",h:"was: Plywood"},
+      {l:"Structure Paint",c:"WIPA",h:"was: Paint rust"}
+    ]
+  },
+  Roof:{
+    "Roof":[
+      {l:"Roof Leaves",c:"ROL",h:"was: Leaves"},
+      {l:"Roof Damage",c:"ROS",h:"was: Structural + Debris + Mold (merged)"},
+      {l:"Roof Tarp",c:"ROT",h:"was: Tarp"},
+      {l:"Overgrown Structures",c:"ROO",h:"was: Overgrown"}
+    ],
+    "Chimney":[
+      {l:"Chimney Damage",c:"CHS",h:"was: Structural + Paint + Mold (merged)"},
+      {l:"Structure Paint",c:"CHP",h:"was: Paint"}
+    ],
+    "Soffit":[
+      {l:"Roof Damage",c:"SOS",h:"was: Structural"},
+      {l:"Structure Paint",c:"SOP",h:"was: Paint rust"}
+    ],
+    "Fascia":[
+      {l:"Fascia Damage",c:"FAS",h:"was: Structural + Paint + Mold (merged)"},
+      {l:"Structure Paint",c:"FAP",h:"was: Paint"}
+    ],
+    "Gutter":[
+      {l:"Roof Damage",c:"GUS",h:"was: Structural"},
+      {l:"Overgrown Structures",c:"GUO",h:"was: Overgrown"}
+    ]
+  }
+};
+
+let curBlock="General";
+const checked=new Set();
+
+function buildNav(){
+  document.getElementById('nav').innerHTML=Object.keys(B).map(k=>
+    `<div class="nav-item${k===curBlock?' active':''}" onclick="setBlock('${k}')">${k}</div>`
+  ).join('');
+}
+
+function buildMain(){
+  const secs=B[curBlock];
+  document.getElementById('main').innerHTML=Object.entries(secs).map(([sec,items])=>
+    `<div class="sec"><div class="sec-title">${sec}</div>`+
+    items.map((item,i)=>{
+      const id=`cb_${sec.replace(/\s/g,'_')}_${i}`;
+      const key=curBlock+'|'+sec+'|'+item.l;
+      const chk=checked.has(key)?'checked':'';
+      return `<div class="row" onclick="toggle('${key}','${id}')">
+        <label for="${id}"><input type="checkbox" id="${id}" ${chk} onclick="event.stopPropagation();toggle('${key}','${id}')">${item.l}</label>
+        <span class="code">${item.c}</span>
+      </div>`+(item.h?`<div class="hint" id="hint_${id}" style="${chk?'display:block':''}">${item.h}</div>`:'');
+    }).join('')+`</div>`
+  ).join('');
+  updateStatus();
+}
+
+function toggle(key,id){
+  const cb=document.getElementById(id);
+  if(checked.has(key)){checked.delete(key);if(cb)cb.checked=false;}
+  else{checked.add(key);if(cb)cb.checked=true;}
+  const hint=document.getElementById('hint_'+id);
+  if(hint)hint.style.display=checked.has(key)?'block':'none';
+  updateStatus();
+}
+
+function updateStatus(){
+  const n=checked.size;
+  document.getElementById('status').innerHTML=n===0
+    ?'No attributes selected'
+    :`<span style="color:#2e7d32;font-weight:500">${n} attribute${n>1?'s':''} selected</span>: ${[...checked].map(k=>k.split('|')[2]).join(', ')}`;
+}
+
+function setBlock(b){curBlock=b;buildNav();buildMain();}
+buildNav();
+buildMain();
+</script>
+</body>
+</html>
