@@ -1,3 +1,565 @@
+
+Labeling Flow
+/
+1774271762336_image.png
+1774271796432_image.png
+1774271809662_image.png
+1774271823261_image.png
+1774271836927_image.png
+1774271845941_image.png
+1774271854250_image.png
+1774271863913_image.png
+1774271878217_image.png
+Objects and attributes. єто біло раньше , а стало так , создай новую структуру, оптимально приближенную к первой, и напиши где что ушло и создай таблицу, было стало
+
+09:19
+
+Check frontend design skill
+Check frontend design skill
+Сейчас проанализирую все скриншоты и создам полную структуру с таблицей изменений.
+
+Вот полная структура City Detect Labeling извлечённая из всех 9 скриншотов, плюс таблица "Было → Стало":
+
+Теперь у меня есть всё необходимое. Создам интерактивный виджет с полной структурой и таблицей сравнения.
+
+
+
+Ось повний аналіз. Коротко про головне:
+
+Коди атрибутів — жодного не змінено. Всі 93 коди (lta, ltcon, LABR, SIC, REM, WAM, dob, RODE тощо) залишились ідентичними. Структура розділів та підрозділів теж не змінилась.
+
+Що реально змінилось — лише кольори заголовків:
+
+Structures, Walls, Fenestration — заголовки підсекцій стали помаранчевими (було зелені)
+Porch, Stairs — заголовки стали синіми (було зелені)
+Roof — заголовки стали чорними (було зелені)
+General, Ground, Pavement — залишились зеленими, без змін
+Тобто система перейшла від єдиного зеленого кольору для всіх заголовків до колірного кодування по категоріях — кожна група отримала свій колір для швидкої орієнтації.
+
+поняла, а если стало так ( сделай на нагл таблицу) Lawn BranchesFence PaintLeavesRoof LeavesPorch DebrisCracked DrivewayFence DamageStair DamageLitter/DebrisOvergrown StructuresOvergrown PavementStructure PaintRetaining Wall DamageYard Structure OvergrownCracked SidewalkPorch DamageAwning DamageChimney DamageColumn DamageLawn Dead PatchOvergrown LawnLawn VehicleGarage DamageBroken WindowWindow PlywoodDoor PlywoodRoof DamageRoof TarpWall Structural DamageBroken DoorFascia DamageFoundation Damage
+
+09:23
+V
+
+Connecting to visualize...
+Ось таблиця маппінгу нових назв на стару структуру. Кілька важливих спостережень:
+
+Головна логіка змін — укрупнення. Стара система мала ~93 атрибути з точними кодами, нова система має ~33 назви, де кожна нова назва часто об'єднує кілька старих атрибутів.
+
+Найбільші об'єднання:
+
+Litter / Debris замінює Debris + Litter + Leaves з Lawn (3 в 1)
+Roof Damage замінює Structural + Debris + Mold з Roof (3 в 1)
+Overgrown Structures замінює Overgrown з Fence + Retainingwall + Garage
+Що залишилось 1-до-1: Roof Tarp, Lawn Dead Patch, Lawn Vehicle, Cracked Sidewalk, Window Plywood, Door Plywood, Broken Window, Broken Door — ці атрибути не змінились по суті.
+
+Якщо хочеш, можу також побудувати зворотню таблицю — які старі атрибути не потрапили в нову систему (зниклі).
+
+мне нужна полная таблица со старыми аттрибутами, 1-й столбец блоки, потом тарые объекты , к ним в 3-м столбце старые аттрибуты, а дальше новые объекты и новые аттрибуты, это нельзя сильно менять, надо понять просто чего не будет
+
+09:27
+V
+
+Connecting to visualize...
+Таблиця з фільтрами по статусу. Ось що зникає найбільше:
+
+Повністю зникають цілі об'єкти:
+
+Mailbox — обидва атрибути (Mold, Numbers) не увійшли в нову систему
+Shutter — всі три атрибути видалено
+Railing — всі три атрибути видалено
+Vent — всі три атрибути видалено
+Soffit — всі три атрибути видалено
+Gutter — обидва атрибути видалено
+Найбільші втрати по атрибутах:
+
+Mold зникає майже скрізь (Wall, Foundation, Vent, Door, Window, Shutter, Garage, Retainingwall, Mailbox, Soffit)
+Driveway Vehicle (drv) — зникає
+Lawn Grass height (lag) — зникає
+Porch Screen (POSC) — зникає
+Door / Window Missing (domi, wimi) — зникають
+Stairs: залишаються тільки Structural + Paint rust, решта (Leaves, Mold, Overgrown) — зникають
+сделай на наглийском языке
+
+09:31
+V
+
+Connecting to visualize...
+Same table, now fully in English with filters. Quick summary of what's being lost:
+
+Entire objects disappearing: Mailbox (both attributes), Shutter (all 3), Railing (all 3), Vent (all 3), Soffit (all 3), Gutter (both).
+
+Attributes gone across the board: Mold is removed from almost every object — Wall, Foundation, Vent, Door, Window, Shutter, Garage, Retaining wall, Mailbox, Soffit, Stairs. Missing disappears for Door and Window. Grass height, Driveway Vehicle, Porch Screen, Roof Overgrown — all gone.
+
+Hit "Removed only" to see just the 33 attributes that won't exist in the new system.
+
+объясни на английском для чего это может быть надо
+
+09:42
+This is a property inspection labeling system — used to tag visual defects on residential properties from street-level photos (likely Google Street View or similar imagery).
+
+Here's what the system does and why the mapping matters:
+
+What it is A labeler opens a photo of a house, picks checkboxes to mark what problems they see — cracked sidewalk, broken window, overgrown lawn, roof damage — and each checkbox saves a short code to a database. The codes like LABR, FES, wib are what actually get stored and used downstream.
+
+Who uses it Typically municipal governments, property analytics companies, or real estate data firms. They run thousands of photos through human labelers (or train AI models on the labeled data) to automatically detect code violations, assess property condition, or track neighborhood blight over time.
+
+Why the new simplified system The old system had 93 granular attributes — distinguishing between Mold, Paint rust, Structural damage separately for every single object. The new system collapses these into ~33 broader labels like Fence Damage or Roof Damage.
+
+This usually happens for one of these reasons:
+
+Training an AI model — fine-grained labels are hard to learn from photos. A model can't reliably distinguish "mold" from "paint rust" on a fence from street level, but it can learn "fence damage." Fewer, cleaner classes = better model accuracy.
+Labeler reliability — human labelers disagree a lot on subtle distinctions like mold vs structural. Merging them reduces inter-labeler variance and makes the dataset more consistent.
+Cost — fewer decisions per image = faster labeling = cheaper at scale.
+What actually matters downstream — a city inspector doesn't need to know if it's specifically mold or paint rust on a shutter; they just need to know the shutter is in bad shape and send someone to look.
+What's being lost and why it matters The 33 removed attributes — especially Mold everywhere, all of Shutter, Railing, Vent, Soffit, Gutter — means those specific defect types will no longer be tracked individually. If anyone downstream was querying "how many properties have vent mold" or "railing structural damage," that data simply stops being collected. Worth flagging to whoever owns the downstream analytics before the switch is made.
+
+нет для чего мы составляли таблицу сравнения, цели
+
+09:43
+Хороший вопрос. Вот для чего обычно делают такие таблицы сравнения:
+
+1. Миграция данных Если в базе уже есть тысячи размеченных фото со старыми кодами (FES, WAM, STLE), нужно понять как конвертировать старые записи в новые. Таблица — это буквально инструкция для скрипта миграции: старый код → новый атрибут.
+
+2. Переобучение модели Если AI-модель обучена на старых 93 классах, а теперь нужно перейти на 33 — таблица показывает как перемапить старые обучающие данные на новые классы без перелейблинга всего датасета вручную.
+
+3. Инструктаж разметчиков Людям, которые делают разметку, нужно объяснить: "то что раньше называлось Mold + Paint rust + Structural на Fence — теперь всё это просто Fence Damage." Таблица — это их шпаргалка.
+
+4. Аудит потерь Понять что именно исчезает из системы и принять осознанное решение — согласны ли стейкхолдеры с тем, что Mailbox, Shutter, Railing, Soffit, Gutter, Vent больше не отслеживаются отдельно. Без такой таблицы это незаметно.
+
+5. QA / валидация После перехода можно проверить: все ли старые атрибуты нашли своё место в новой системе, ничего ли не потерялось случайно (не по решению, а по ошибке).
+
+Если скажешь какая из этих целей ваша — могу помочь сделать следующий шаг более прицельно.
+
+нет просто на англ напиши что-то типа цели сравнительной таблицы, в наглядности понимания что есть что полностью ушло а что осталось и в каком виде
+
+09:46
+Here's a clean one-liner you could use as a title or description:
+
+"Attribute mapping: old system vs new system — to identify what was kept, renamed, merged, or removed entirely."
+
+Or a slightly fuller version:
+
+"The purpose of this comparison table is to provide a clear, full-picture view of every attribute from the old labeling system and show exactly what happened to it in the new one — whether it was kept as-is, renamed, merged into a broader category, or dropped completely."
+
+Or even shorter as a section header:
+
+"Old vs new attribute structure — visibility into what changed, what merged, and what no longer exists."
+
+Pick whichever fits the context — doc header, email, Jira ticket, or presentation slide.
+
+создай таблицу на англ и внеси туда только то что осталось и дай описание к ней
+
+09:48
+V
+
+Connecting to visualize...
+Description you can attach to this table:
+
+"This table lists all attributes from the old labeling system that are carried forward into the new one — either kept as-is, renamed with a clearer label, or merged into a broader category. Out of 93 original attributes, 53 survive in some form. Attributes marked kept require no changes. Attributes marked renamed exist under a new label but represent the same defect. Attributes marked merged have been consolidated with similar ones under a single umbrella term — meaning the distinction between them is no longer tracked separately. The 33 attributes not present in this table have been removed from the system entirely."
+
+давай сначала на англ.  сейчас есть ObjectAttributechimneystructuralcolumnstructuralporchstructuralrailingstructuralroofstructuralsoffitstructuralstairsstructuralwallstructuraldoormissingfasciastructuralfoundationstructuralgaragestructuralgutterstructuralwindowbrokenretainingwallstructuralwindowplywooddoorplywoodfencestructuralrooftarpshutterstructuralventstructuralwindowmissingporchdebrisawningstructuraldrivewaydebrislawnvehicledoorbrokenlawnovergrown_weedsdrivewayovergrownlawndebrislawnlitterlawngrass_heightdrivewaylitterfenceovergrownporchscreenretainingwallovergrownsidewalklittersidewalkovergrownstairsovergrowngutterovergrownlawnbranchesporchpaint_rustsidewalkdebriswallovergrownawningpaint_rustgaragepaint_rustroofdebrisshutterpaint_rustfasciapaintgarageovergrownporchovergrownroofovergrownsidewalkcrackedcolumnpaint_rustfencepaint_rustrailingovergrownsoffitpaint_rustdoorpaint_rustfoundationpaint_rustrailingpaint_ruststairspaint_rustventpaint_rustwallpaint_rustwindowpaint_ruststairsleaveschimneypaintdrivewaycrackeddrivewayleavessidewalkleaveslawnleaveslawndead_patchroofleaves и хотим чтобі стало Proposed Attributes
+Priority
+Lawn Branches1lawnbranchesFence Paint1windowbrokenwindowmissingLeaves1sidewalkcrackedRoof Leaves1fencestructuralPorch Debris1stairsstructuralrailingstructuralCracked Driveway1fencepaint_rustFence Damage2lawn
+dead_patch
+Stair Damage2lawnvehicleLitter/Debris2drivewayleaveslawnleavessidewalkleavesstairsleavesOvergrown Structures2drivewaydebrislawndebrislawnlitterdrivewaylittersidewalkdebrissidewalklitterOvergrown Pavement2wallovergrownroofovergrownrailingovergrowngarageovergrownporchovergrowngutterovergrownStructure Paint2lawn
+overgrown_weeds
+lawn
+grass_height
+Retaining Wall Damage2drivewayovergrownstairsovergrownsidewalkovergrownYard Structure Overgrown2windowplywoodCracked Sidewalk3doorplywoodPorch Damage3roofstructuralAwning Damage3roofleavesChimney Damage3rooftarpColumn Damage3awningpaint_rustfasciapaintporchpaint_rustwallpaint_rustfoundationpaint_rustgaragepaint_rustcolumnpaint_rustwindowpaint_rustrailingpaint_rustdoorpaint_rustchimneypaintventpaint_rustshutterpaint_rustsoffitpaint_rustLawn Dead Patch4wallstructuralOvergrown Lawn4doormissingdoorbrokenLawn Vehicle4retainingwallstructuralGarage Damage4retainingwallovergrownfenceovergrownBroken Window5porchdebrisWindow Plywood5garagestructuralDoor Plywood5porchstructuralporchscreenRoof Damage5fasciastructuralsoffitstructuralgutterstructuralRoof Tarp5foundationstructuralWall Structural Damage5awningstructuralBroken Door5chimneystructuralFascia Damage5columnstructuralFoundation Damage5
+
+Show more
+12:07
+Let me parse this carefully — you have a current system (Object + Attribute pairs) and a proposed new system (new attribute names with priorities, each mapped to old Object+Attribute pairs).
+
+V
+
+Connecting to visualize...
+The table maps every old object + attribute pair to the proposed new system. A few things worth flagging:
+
+lawn / overgrown_weeds and lawn / grass_height — in your proposed data both are listed under "Structure Paint" (priority 2), which looks like it might be a data entry error. Those two feel like they should go to "Overgrown Lawn" instead.
+
+porch / screen appears twice in your source data — once mapped to "Porch Damage" and once as removed. I kept both rows so you can decide.
+
+door / missing maps to "Broken Door" in the proposed system, which is a semantic shift — missing and broken are different conditions. Worth double-checking if that's intentional.
+
+Use the priority filters to focus on what gets built first — Priority 1 is just 4 attributes, very tight scope.
+
+add status kept removed renamed merged renamed
+
+12:11
+
+
+Status column added. You can now filter by both priority and status independently — for example "Priority 1 + Renamed" or "all Removed" to quickly see what's dropping out. Counters at the top update live with each filter combination.
+
+не меняй структуру блоков первым идет general , и удали столбец приоритет
+
+12:14
+
+
+Done — blocks now follow the original order (General → Ground → Pavement → Structures → Porch → Stairs → Walls → Fenestration → Roof), priority column removed, status filter stays.
+
+
+Block Old object Old attribute Code New object New attribute General Lot type Abandoned LTA Lot type Abandoned Lot type Construction LTCON Lot type Construction Lot type Multifamily LTM Lot type Multifamily Lot type Not residential LTNR Lot type Not residential Lot type Vacant LTV Lo
+
+pasted
+
+вот таблица которая у меня получилась, а как теперь это объядинить для аннотаторов для удобства
+
+16:50
+Хороший вопрос. Уточни пару моментов чтобы сделать правильно:
+
+Выбери варианты — сделаю под конкретную задачу.
+
+Q: What will annotators actually do with this?
+A: сгруппируй по смыслу и по удобству аннотаторов
+
+Q: What format works best for them?
+A: Grouped by new attribute (what they'll actually click)
+
+16:52
+
+
+Вот формат для аннотаторов. Логика такая:
+
+Каждая карточка = одна новая кнопка/чекбокс которую они кликают. Внутри карточки — все старые коды которые в неё входят, чтобы аннотатор с опытом мог быстро сориентироваться.
+
+Красные карточки "Removed" — сразу видно что эти коды больше не используются, не надо искать их в новом интерфейсе.
+
+Фильтр по блокам — если аннотатор работает только с крышами или только с газонами, может быстро переключиться. Поиск по коду (LABR, SIC) или по названию.
+
+Самая важная карточка — Structure Paint — она объединила 15 старых кодов из разных блоков, это потенциальная точка путаницы, стоит отдельно объяснить в инструкции.
+
+1774300013260_image.png
+17:06
+Вот как выглядит старый интерфейс для Roof. Теперь понятно — аннотатор видит объект (Roof, Chimney, Soffit...) и чекает атрибуты. Сделаю новый интерфейс в том же стиле, но уже с новыми атрибутами.
+
+
+
+Похоже виджет обрезался. Пересоберу полностью.
+
+
+
+Вот новый интерфейс в том же стиле что на скриншоте. Что сделано:
+
+Та же структура — левый сайдбар с блоками, справа объекты и чекбоксы с кодами
+Новые названия атрибутов вместо старых
+При клике на чекбокс появляется подсказка серым курсивом — что это было в старой системе (was: Structural + Paint rust (merged))
+Внизу счётчик — сколько атрибутов выбрано и каких
+Полностью кликабельно, можно проверить как это будет ощущаться аннотатором
+Save this visual from earlier as an artifact: "new_labeling_ui_full"
+
+17:23
+
+Ran a command, read a file
+Ran a command, read a file
+Saved as a standalone HTML file — fully self-contained, works in any browser without any dependencies. All blocks, checkboxes, codes, and hints are included.
+
+New labeling ui full
+Code · HTML 
+а как мне этот вид добавить в конфлюенсе?
+
+17:25
+Есть несколько способов, зависит от того что тебе нужно:
+
+Если нужна интерактивность — есть два реальных варианта:
+
+Вариант 1 — HTML macro (самый простой) Если в вашем Confluence есть макрос HTML или HTML Include:
+
+Открой страницу → Edit
+Вставь макрос: /HTML или через Insert → Other macros → HTML
+Вставь весь код из файла внутрь макроса
+Save
+Проблема: по умолчанию HTML macro отключён в большинстве Confluence Cloud инсталляций из соображений безопасности. Нужны права администратора чтобы включить.
+
+Вариант 2 — iframe через Embed
+
+Загрузи HTML файл на любой хостинг (GitHub Pages, Netlify — бесплатно, 2 минуты)
+В Confluence: Insert → Other macros → iframe
+Вставь URL
+Вариант 3 — если интерактивность не нужна Сделаю скриншот-таблицу или экспортирую в нормальную Confluence-совместимую таблицу (plain HTML без JS), которая вставится через стандартный редактор без макросов.
+
+Какой вариант подходит? Если скажешь есть ли у вас доступ к HTML macro или Confluence Cloud/Server — подскажу точнее.
+
+Q: Что важнее в Confluence?
+A: Интерактивность (кликабельные чекбоксы, фильтры)
+
+17:26
+Тогда самый надёжный путь — Confluence HTML macro.
+
+Вот пошагово:
+
+Шаг 1 — проверь есть ли макрос В редакторе страницы набери /html — если появится "HTML macro" в списке, он включён. Если нет — нужен админ.
+
+Шаг 2 — если макрос есть
+
+Edit страницы → /html → выбери макрос
+Открой скачанный файл new_labeling_ui_full.html в любом текстовом редакторе
+Скопируй всё содержимое между <body> и </body> (без самих тегов)
+Вставь в поле макроса → Save
+Шаг 3 — если макрос отключён Попроси Confluence admin включить: Space Settings → Integrations → HTML macro → Enable. Или глобально: Admin → Security → HTML macro.
+
+Альтернатива без макроса — Forge/Connect app
+
+Если Confluence Cloud — можно использовать бесплатный app "Html Code" или "Advanced Iframe" из Atlassian Marketplace. Они добавляют HTML макрос без вмешательства системного администратора.
+
+Хочешь — подключу твой Atlassian и посмотрю что доступно прямо сейчас?
+
+Connectors that could help
+
+I didn't find a matching connector, but you can browse all connectors.
+Если хочешь — скажи есть ли у тебя доступ к HTML macro или нет, и я либо подготовлю код точно под вставку, либо найду обходной путь под твою ситуацию.
+
+1774301232408_image.png
+что выбрать?
+
+17:27
+Видно что HTML macro нативно не установлен — нужен один из этих аппов. Рекомендую:
+
+"HTML Macro for Confluence" (нижний левый) — "Add HTML and JavaScript to your Confluence Cloud pages". Это именно то что нужно — поддерживает JS, а у нас чекбоксы работают на JavaScript.
+
+Как установить и вставить:
+
+Нажми на него → "Вставить" или перейди в Marketplace → установи (нужны права админа или попроси админа)
+После установки в редакторе страницы набери /html — теперь появится макрос
+Открой файл new_labeling_ui_full.html в текстовом редакторе (Notepad, VS Code)
+Скопируй весь код целиком
+Вставь в поле макроса → Save
+Если нет прав на установку — покажи эти три варианта своему Confluence admin и попроси установить любой из них. Самый популярный из трёх по рейтингу — "HTML for Confluence" (22 отзыва, справа вверху), но он может блокировать JS. Поэтому для нашего случая с чекбоксами лучше именно "HTML Macro for Confluence" — он явно указывает поддержку JavaScript.
+
+Intro and legend requested, but your message looks like raw HTML/JS for a UI, not editing instructions tied to a selection in this page. Please paste the exact intro text you want and confirm whether to insert the legend directly below the table or above it. Also confirm if I should remove the second (duplicate) table entirely now. Once you confirm, I’ll make the precise edits.
+
+17:28
+Это сообщение не ко мне — похоже это ответ от Confluence или какого-то другого инструмента/AI внутри вашей системы, который ждёт твоих инструкций.
+
+Что именно ты хочешь сделать? Я помогу сформулировать правильный ответ или подготовить нужный контент.
+
+у меня ничего не установлено, а как мне установить чтобі видели все в компании и бесплатно? как вообще єто устанавливается?
+
+17:35
+Если нет прав админа — самостоятельно установить нельзя. Вот как это работает:
+
+Кто может установить Только Confluence Admin вашей компании. Обычно это IT-отдел или тот кто управляет Atlassian.
+
+Что ему написать
+
+"Нужно установить бесплатный app из Marketplace — HTML Macro for Confluence. Это позволит вставлять интерактивные HTML-страницы в Confluence. Ссылка: marketplace.atlassian.com → поиск "HTML Macro for Confluence"."
+
+Насчёт бесплатно Большинство HTML-макросов платные после trial. Но есть реально бесплатный путь:
+
+Самый простой бесплатный вариант — iframe через Confluence "Embed"
+
+Загрузи HTML файл на GitHub Pages (бесплатно, 5 минут)
+В Confluence вставь макрос "Iframe" — он встроен нативно, ничего устанавливать не надо
+Вставь ссылку на GitHub Pages — все в компании увидят интерактивный виджет
+Хочешь — покажу пошагово как выложить на GitHub Pages? Там буквально 3 шага и не нужен никакой админ.
+
+по шагам как загрузить в GitHub Pages
+
+17:38
+Шаг 1 — создай аккаунт на GitHub
+
+Зайди на github.com → Sign up → создай аккаунт (если уже есть — пропусти).
+
+Шаг 2 — создай новый репозиторий
+
+Нажми зелёную кнопку "New" (или знак + вверху справа → "New repository")
+Заполни:
+Repository name: labeling-ui (любое название без пробелов)
+Выбери Public (обязательно — иначе iframe не откроется)
+Поставь галочку "Add a README file"
+Нажми "Create repository"
+Шаг 3 — загрузи файл
+
+Внутри репозитория нажми "Add file" → "Upload files"
+Перетащи файл new_labeling_ui_full.html
+Важно: переименуй файл в index.html перед загрузкой (просто переименуй на компьютере)
+Нажми "Commit changes"
+Шаг 4 — включи GitHub Pages
+
+В репозитории зайди в Settings (вкладка вверху)
+Слева найди раздел "Pages"
+В "Branch" выбери main → папка / (root)
+Нажми Save
+Шаг 5 — получи ссылку
+
+Через 1-2 минуты на той же странице Pages появится:
+
+"Your site is live at https://ИМЯ_АККАУНТА.github.io/labeling-ui/"
+
+Скопируй эту ссылку.
+
+Шаг 6 — вставь в Confluence
+
+В редакторе Confluence набери /iframe
+В поле URL вставь ссылку с GitHub Pages
+Поставь высоту примерно 600px
+Save — все в компании увидят интерактивный виджет
+Если на каком-то шаге застрянешь — скинь скриншот, разберёмся.
+
+1774301995099_image.png
+17:39
+Отлично, всё заполнено правиль! Проверь:
+
+✅ Repository name: labeling-ui-1
+✅ Public
+✅ Add README — On
+Всё верно. Нажимай "Create repository" — и переходи к Шагу 3.
+
+Learn how to __add a Jekyll theme__ to your site.
+Custom domain
+Custom domain
+Custom domains allow you to serve your site from a domain other than helencitydetect.github.io. __Learn more about configuring custom domains__.
+
+Enforce HTTPS— Required for your site because you are using the default domain (helencitydetect.github.io)
+HTTPS provides a layer of encryption that prevents others from snooping on or tampering with traffic to your site. When HTTPS is enforced, your site will only be served over HTTPS. __Learn more about securing your GitHub Pages site with HTTPS__.
+Visibility
+GitHub Enterprise
+With a GitHub Enterprise account, you can restrict access to your GitHub Pages site by publishing it privately. You can use privately published sites to share your internal documentation or knowledge base with members of your enterprise. You can try GitHub Enterprise risk-free for 30 days. __Learn more about the visibility of your GitHub Pages site.__
+
+Show more
+17:43
+Отлично, ты уже на странице Pages! Прокрути страницу вверх — там должно быть написано:
+
+"Your site is live at https://helencitydetect.github.io/labeling-ui-1/"
+
+Но сначала нужно убедиться что файл загружен. Скажи — ты уже загрузила index.html в репозиторий (Шаг 3)?
+
+Если да — подожди 1-2 минуты и зайди по ссылке:
+
+https://helencitydetect.github.io/labeling-ui-1/
+
+Если страница открывается — копируй эту ссылку и вставляй в Confluence через /iframe.
+
+Если ещё не загружала файл — возвращайся в репозиторий: зайди на github.com/helencitydetect/labeling-ui-1 → "Add file" → "Upload files" → загрузи index.html.
+
+1774302272405_image.png
+17:44
+Вижу "GitHub Pages source saved" — Pages включён! Всё настроено правильно: main branch, / (root).
+
+Теперь нужно загрузить файл. Иди в репозиторий:
+
+Нажми вкладку "Code" (вверху слева)
+Нажми "Add file" → "Upload files"
+Загрузи файл new_labeling_ui_full.html — но переименуй его в index.html перед загрузкой
+Нажми "Commit changes"
+Потом подожди 1-2 минуты и открой:
+
+https://helencitydetect.github.io/labeling-ui-1/
+
+Если всё загрузилось — эту ссылку вставляй в Confluence через /iframe.
+
+1774302336327_image.png
+17:45
+index.html загружен — всё отлично! Зелёная галочка означает что файл принят.
+
+Подожди 1-2 минуты и открой в браузере:
+
+https://helencitydetect.github.io/labeling-ui-1/
+
+Если страница открылась с интерфейсом — ссылка готова, вставляй в Confluence.
+
+Напиши что видишь по ссылке — помогу с следующим шагом.
+
+но где я могу увиднть эту ссылку на странице
+
+17:46
+Зайди в Settings → Pages (как ты делала раньше) — прокрути вверх, там будет зелёный блок:
+
+"Your site is live at https://helencitydetect.github.io/labeling-ui-1/"
+
+Или просто открой эту ссылку прямо сейчас в браузере — она формируется автоматически по формуле:
+
+https://[имя аккаунта].github.io/[название репозитория]/
+В твоём случае это точно:
+
+https://helencitydetect.github.io/labeling-ui-1/
+
+Просто скопируй и вставь в адресную строку браузера — должен открыться твой интерфейс.
+
+1774302489991_image.png
+вот в таком виде получилось
+
+17:48
+Это и есть ссылка! Она уже живая. Теперь вставляй в Confluence:
+
+Открой нужную страницу в Confluence → Edit
+Набери /iframe
+В поле URL вставь: https://helencitydetect.github.io/labeling-ui-1/
+Высоту поставь 600
+Save
+Всё — коллеги увидят интерактивный виджет прямо на странице Confluence.
+
+
+excerpt_from_previous_claude_message.txt
+1 line
+
+txt
+
+не понимаю где и как это набрать?
+
+17:49
+В Confluence когда редактируешь страницу:
+
+1. Нажми Edit на странице
+
+2. Кликни в тело страницы (где пишется текст)
+
+3. Напечатай /iframe — появится выпадающее меню с макросами
+
+4. Выбери "Iframe" из списка
+
+5. В поле URL вставь ссылку: https://helencitydetect.github.io/labeling-ui-1/
+
+6. Высота — 600
+
+7. Нажми Insert → потом Save
+
+Если /iframe не появляется в списке — попробуй написать просто iframe без слеша, или поищи через Insert → Other macros → Iframe.
+
+Скинь скриншот что видишь в редакторе — помогу найти точно.
+
+1774302694405_image.png
+17:51
+Он уже работает в Confluence! Виджет вставился и отображается.
+
+Две маленькие проблемы видны на скриншоте:
+
+1. Текст обрезается — "Lawn Branches" → "Lawn Branche", коды не видны. Нужно расширить iframe.
+
+2. Правая часть страницы пустая — iframe слишком узкий.
+
+Нажми на виджет → появится панель внизу → найди настройки размера и поставь:
+
+Ширина: 100%
+Высота: 650
+Или если видишь иконку редактирования (карандаш) — нажми её и измени параметры там.
+
+Скинь скриншот панели настроек iframe — подскажу точно где менять ширину.
+
+ага супер, а можно будет немного исправить єтот виджет?
+
+17:55
+Да, конечно! Говори что хочешь исправить — список, по одному или всё сразу.
+
+
+Block Old object Old attribute Code New object New attribute New Code Status General Lot type Abandoned LTA Lot type Abandoned LTA kept Lot type Construction LTCON Lot type Construction LTCON kept Lot type Multifamily LTM Lot type Multifamily LTM kept Lot type Not residential LT
+
+pasted
+
+все сразу сначала html файл и как его исправить в git. а потмо еще хочу в другом виде и как єтот второй вид добавить в git
+
+18:23
+Понял — у тебя финальная таблица с новыми кодами. Сначала пересоберу HTML файл с правильными данными.
+
+
+Ran a command, read a file
+Ran a command, read a file
+
+Build updated index.html with correct new codes
+bash
+
+cat > /mnt/user-data/outputs/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,21 +568,21 @@
 <title>City Detect — New Labeling UI</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:sans-serif;background:#f5f5f5;padding:16px}
-.app{display:grid;grid-template-columns:160px 1fr;border:0.5px solid #ccc;border-radius:12px;overflow:hidden;background:#fff;max-width:740px;margin:0 auto}
+body{font-family:sans-serif;background:#f5f5f5;padding:12px;font-size:14px}
+.app{display:grid;grid-template-columns:150px 1fr;border:0.5px solid #ccc;border-radius:12px;overflow:hidden;background:#fff;max-width:100%}
 .sidebar{background:#f5f5f5;border-right:0.5px solid #ccc}
 .nav-item{padding:11px 16px;font-size:13px;color:#555;cursor:pointer;border-bottom:0.5px solid #e0e0e0}
 .nav-item:hover:not(.active){background:#fff}
 .nav-item.active{background:#2e7d32;color:#fff;font-weight:500}
-.main{padding:18px 22px;min-height:460px}
+.main{padding:16px 20px;min-height:460px;overflow-y:auto}
 .sec{margin-bottom:20px}
-.sec-title{font-size:17px;font-weight:500;margin-bottom:10px;color:#111}
+.sec-title{font-size:16px;font-weight:500;margin-bottom:10px;color:#111}
 .row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:4px;font-size:13px;cursor:pointer;user-select:none}
 .row:nth-child(even){background:#f9f9f9}
 .row:hover{background:#e8f5e9}
 .row label{display:flex;align-items:center;gap:8px;flex:1;cursor:pointer;color:#111}
 .row input{accent-color:#2e7d32;width:15px;height:15px;cursor:pointer;flex-shrink:0}
-.code{font-family:monospace;font-size:11px;text-decoration:underline;color:#888}
+.code{font-family:monospace;font-size:11px;text-decoration:underline;color:#888;white-space:nowrap}
 .hint{font-size:11px;color:#aaa;font-style:italic;padding:2px 10px 5px 33px;display:none}
 .statusbar{padding:9px 16px;font-size:12px;color:#666;border-top:0.5px solid #ddd;background:#f5f5f5}
 </style>
@@ -28,7 +590,7 @@ body{font-family:sans-serif;background:#f5f5f5;padding:16px}
 <body>
 <div class="app">
   <div class="sidebar" id="nav"></div>
-  <div style="display:flex;flex-direction:column">
+  <div style="display:flex;flex-direction:column;min-width:0">
     <div class="main" id="main"></div>
     <div class="statusbar" id="status">No attributes selected</div>
   </div>
@@ -37,120 +599,138 @@ body{font-family:sans-serif;background:#f5f5f5;padding:16px}
 const B = {
   General:{
     "Lot type":[
-      {l:"Abandoned",c:"LTA"},{l:"Construction",c:"LTCON"},{l:"Multifamily",c:"LTM"},
-      {l:"Not residential",c:"LTNR"},{l:"Vacant",c:"LTV"}
+      {l:"Abandoned",c:"LTA"},
+      {l:"Construction",c:"LTCON"},
+      {l:"Multifamily",c:"LTM"},
+      {l:"Not residential",c:"LTNR"},
+      {l:"Vacant",c:"LTV"}
     ],
     "Bad picture":[
-      {l:"Bad angle",c:"BPA"},{l:"Blocked",c:"BPB"},{l:"Cloudy",c:"BPC"},{l:"Wrong parcel",c:"BPWP"}
+      {l:"Bad angle",c:"BPA"},
+      {l:"Blocked",c:"BPB"},
+      {l:"Cloudy",c:"BPC"},
+      {l:"Wrong parcel",c:"BPWP"}
     ]
   },
   Ground:{
     "Lawn":[
-      {l:"Lawn Branches",c:"LABR",h:"was: Branches"},
-      {l:"Lawn Dead Patch",c:"LADP",h:"was: Dead patch"},
-      {l:"Litter / Debris",c:"LITTER",h:"was: Debris + Litter (merged)"},
-      {l:"Leaves",c:"LEAVES",h:"was: Leaves"},
-      {l:"Overgrown Lawn",c:"LAO",h:"was: Overgrown weeds"},
-      {l:"Lawn Vehicle",c:"LAV",h:"was: Vehicle"}
+      {l:"Lawn Branches",c:"LABR",h:"was: Branches (LABR)"},
+      {l:"Lawn Dead Patch",c:"LADP",h:"was: Dead patch (LADP)"},
+      {l:"Litter / Debris",c:"LALD",h:"was: Debris (LADE) + Litter (LALI) — merged"},
+      {l:"Leaves",c:"LALE",h:"was: Leaves (LALE)"},
+      {l:"Overgrown Lawn",c:"OLA",h:"was: Overgrown weeds (LAO)"},
+      {l:"Lawn Vehicle",c:"LAV",h:"was: Vehicle (LAV)"}
     ]
   },
   Pavement:{
     "Sidewalk":[
-      {l:"Cracked Sidewalk",c:"SIC",h:"was: Cracked"},
-      {l:"Litter / Debris",c:"LITTER_SW",h:"was: Debris + Litter (merged)"},
-      {l:"Leaves",c:"SILE",h:"was: Leaves"},
-      {l:"Overgrown Pavement",c:"SIO",h:"was: Overgrown"}
+      {l:"Cracked",c:"SIC",h:"was: Cracked (SIC)"},
+      {l:"Litter / Debris",c:"SILD",h:"was: Debris (SID) + Litter (SILI) — merged"},
+      {l:"Leaves",c:"SILE",h:"was: Leaves (SILE)"},
+      {l:"Overgrown Pavement",c:"SIOP",h:"was: Overgrown (SIO)"}
     ],
     "Driveway":[
-      {l:"Cracked Driveway",c:"DRC",h:"was: Cracked"},
-      {l:"Litter / Debris",c:"LITTER_DW",h:"was: Debris + Litter (merged)"},
-      {l:"Leaves",c:"DRLE",h:"was: Leaves"},
-      {l:"Overgrown Pavement",c:"DRO",h:"was: Overgrown"}
+      {l:"Cracked",c:"DRC",h:"was: Cracked (DRC)"},
+      {l:"Litter / Debris",c:"DRLD",h:"was: Debris (DRD) + Litter (DRLI) — merged"},
+      {l:"Leaves",c:"DRLE",h:"was: Leaves (DRLE)"},
+      {l:"Overgrown Pavement",c:"DROP",h:"was: Overgrown (DRO)"}
     ]
   },
   Structures:{
     "Retaining wall":[
-      {l:"Retaining Wall Damage",c:"RES",h:"was: Structural"},
-      {l:"Yard Structure Overgrown",c:"REO",h:"was: Overgrown"}
+      {l:"Retaining Wall Damage",c:"REDA",h:"was: Structural (RES)"},
+      {l:"Yard Structure Overgrown",c:"REYSO",h:"was: Overgrown (REO)"}
     ],
     "Fence":[
-      {l:"Fence Damage",c:"FES",h:"was: Structural"},
-      {l:"Fence Paint",c:"FEP",h:"was: Paint rust"},
-      {l:"Yard Structure Overgrown",c:"FEO",h:"was: Overgrown"}
+      {l:"Fence Damage",c:"FEDA",h:"was: Structural (FES)"},
+      {l:"Fence Paint",c:"FEP",h:"was: Paint rust (FEP)"},
+      {l:"Yard Structure Overgrown",c:"FEYSO",h:"was: Overgrown (FEO)"}
     ],
     "Garage":[
-      {l:"Garage Damage",c:"GAS",h:"was: Structural"},
-      {l:"Structure Paint",c:"GAP",h:"was: Paint rust"},
-      {l:"Overgrown Structures",c:"GAO",h:"was: Overgrown"}
+      {l:"Garage Damage",c:"GADA",h:"was: Structural (GAS)"},
+      {l:"Structure Paint",c:"GASP",h:"was: Paint rust (GAP)"},
+      {l:"Overgrown Structures",c:"GAOS",h:"was: Overgrown (GAO)"}
     ]
   },
   Porch:{
     "Porch":[
-      {l:"Porch Debris",c:"POD",h:"was: Debris"},
-      {l:"Porch Damage",c:"POST",h:"was: Structural + Paint rust (merged)"},
-      {l:"Overgrown Structures",c:"POO",h:"was: Overgrown"}
+      {l:"Porch Debris",c:"POD",h:"was: Debris (POD)"},
+      {l:"Porch Damage",c:"PODA",h:"was: Structural (POST) + Screen (POSC) — merged"},
+      {l:"Structure Paint",c:"POSP",h:"was: Paint rust (POPA)"},
+      {l:"Overgrown Structures",c:"POOS",h:"was: Overgrown (POO)"}
     ],
-    "Awning":[{l:"Awning Damage",c:"AWS",h:"was: Structural + Paint rust (merged)"}],
-    "Column":[{l:"Column Damage",c:"COLS",h:"was: Structural + Paint rust (merged)"}]
+    "Awning":[
+      {l:"Awning Damage",c:"AWDA",h:"was: Structural (AWS)"},
+      {l:"Structure Paint",c:"AWSP",h:"was: Paint rust (AWP)"}
+    ],
+    "Column":[
+      {l:"Column Damage",c:"COLDA",h:"was: Structural (COLS)"},
+      {l:"Structure Paint",c:"COLSP",h:"was: Paint rust (COLP)"}
+    ]
   },
   Stairs:{
     "Stairs":[
-      {l:"Stair Damage",c:"STS",h:"was: Structural + Paint rust (merged)"},
-      {l:"Overgrown Pavement",c:"STO",h:"was: Overgrown"},
-      {l:"Leaves",c:"STLE",h:"was: Leaves"}
+      {l:"Stair Damage",c:"STDA",h:"was: Structural (STS)"},
+      {l:"Leaves",c:"STLE",h:"was: Leaves (STLE)"},
+      {l:"Overgrown Pavement",c:"STOP",h:"was: Overgrown (STO)"}
     ],
     "Railing":[
-      {l:"Stair Damage",c:"RAS",h:"was: Structural"},
-      {l:"Overgrown Structures",c:"RAO",h:"was: Overgrown"}
+      {l:"Stair Damage",c:"RADA",h:"was: Structural (RAS)"},
+      {l:"Structure Paint",c:"RASP",h:"was: Paint rust (RAP)"},
+      {l:"Overgrown Structures",c:"RAOS",h:"was: Overgrown (RAO)"}
     ]
   },
   Walls:{
     "Wall":[
-      {l:"Wall Structural Damage",c:"WAS",h:"was: Structural"},
-      {l:"Overgrown Structures",c:"WAO",h:"was: Overgrown"},
-      {l:"Structure Paint",c:"WAP",h:"was: Paint rust"}
+      {l:"Wall Structural Damage",c:"WASDA",h:"was: Structural (WAS)"},
+      {l:"Structure Paint",c:"WASP",h:"was: Paint rust (WAP)"},
+      {l:"Overgrown Structures",c:"WAOS",h:"was: Overgrown (WAO)"}
     ],
     "Foundation":[
-      {l:"Foundation Damage",c:"FOS",h:"was: Structural"},
-      {l:"Structure Paint",c:"FOP",h:"was: Paint rust"}
+      {l:"Foundation Damage",c:"FODA",h:"was: Structural (FOS)"},
+      {l:"Structure Paint",c:"FOSP",h:"was: Paint rust (FOP)"}
     ],
-    "Vent":[{l:"Structure Paint",c:"VEP",h:"was: Paint rust"}]
+    "Vent":[
+      {l:"Structure Paint",c:"VESP",h:"was: Paint rust (VEP)"}
+    ]
   },
   Fenestration:{
     "Door":[
-      {l:"Broken Door",c:"DOB",h:"was: Broken"},
-      {l:"Door Plywood",c:"DOPL",h:"was: Plywood"},
-      {l:"Structure Paint",c:"DOPA",h:"was: Paint rust"}
+      {l:"Broken Door",c:"DOB",h:"was: Broken (DOB) + Missing (DOMI) — merged"},
+      {l:"Door Plywood",c:"DOPL",h:"was: Plywood (DOPL)"},
+      {l:"Structure Paint",c:"DOSP",h:"was: Paint rust (DOPA)"}
     ],
-    "Shutter":[{l:"Structure Paint",c:"SHP",h:"was: Paint rust"}],
+    "Shutter":[
+      {l:"Structure Paint",c:"SHSP",h:"was: Paint rust (SHP)"}
+    ],
     "Window":[
-      {l:"Broken Window",c:"WIB",h:"was: Broken"},
-      {l:"Window Plywood",c:"WIPL",h:"was: Plywood"},
-      {l:"Structure Paint",c:"WIPA",h:"was: Paint rust"}
+      {l:"Broken Window",c:"WIB",h:"was: Broken (WIB) + Missing (WIMI) — merged"},
+      {l:"Window Plywood",c:"WIPL",h:"was: Plywood (WIPL)"},
+      {l:"Structure Paint",c:"WISP",h:"was: Paint rust (WIPA)"}
     ]
   },
   Roof:{
     "Roof":[
-      {l:"Roof Leaves",c:"ROL",h:"was: Leaves"},
-      {l:"Roof Damage",c:"ROS",h:"was: Structural + Debris + Mold (merged)"},
-      {l:"Roof Tarp",c:"ROT",h:"was: Tarp"},
-      {l:"Overgrown Structures",c:"ROO",h:"was: Overgrown"}
+      {l:"Roof Leaves",c:"ROL",h:"was: Leaves (ROL)"},
+      {l:"Roof Damage",c:"RODA",h:"was: Structural (ROS)"},
+      {l:"Roof Tarp",c:"ROT",h:"was: Tarp (ROT)"},
+      {l:"Overgrown Structures",c:"ROOS",h:"was: Overgrown (ROO)"}
     ],
     "Chimney":[
-      {l:"Chimney Damage",c:"CHS",h:"was: Structural + Paint + Mold (merged)"},
-      {l:"Structure Paint",c:"CHP",h:"was: Paint"}
+      {l:"Chimney Damage",c:"CHDA",h:"was: Structural (CHS)"},
+      {l:"Structure Paint",c:"CHSP",h:"was: Paint (CHP)"}
     ],
     "Soffit":[
-      {l:"Roof Damage",c:"SOS",h:"was: Structural"},
-      {l:"Structure Paint",c:"SOP",h:"was: Paint rust"}
+      {l:"Fascia Damage",c:"SOFDA",h:"was: Structural (SOS)"},
+      {l:"Structure Paint",c:"SOSP",h:"was: Paint rust (SOP)"}
     ],
     "Fascia":[
-      {l:"Fascia Damage",c:"FAS",h:"was: Structural + Paint + Mold (merged)"},
-      {l:"Structure Paint",c:"FAP",h:"was: Paint"}
+      {l:"Fascia Damage",c:"FADA",h:"was: Structural (FAS)"},
+      {l:"Structure Paint",c:"FASP",h:"was: Paint (FAP)"}
     ],
     "Gutter":[
-      {l:"Roof Damage",c:"GUS",h:"was: Structural"},
-      {l:"Overgrown Structures",c:"GUO",h:"was: Overgrown"}
+      {l:"Fascia Damage",c:"GUFDA",h:"was: Structural (GUS)"},
+      {l:"Overgrown Structures",c:"GUOS",h:"was: Overgrown (GUO)"}
     ]
   }
 };
@@ -169,7 +749,7 @@ function buildMain(){
   document.getElementById('main').innerHTML=Object.entries(secs).map(([sec,items])=>
     `<div class="sec"><div class="sec-title">${sec}</div>`+
     items.map((item,i)=>{
-      const id=`cb_${sec.replace(/\s/g,'_')}_${i}`;
+      const id=`cb_${sec.replace(/\W/g,'_')}_${i}`;
       const key=curBlock+'|'+sec+'|'+item.l;
       const chk=checked.has(key)?'checked':'';
       return `<div class="row" onclick="toggle('${key}','${id}')">
@@ -197,6 +777,267 @@ function updateStatus(){
     :`<span style="color:#2e7d32;font-weight:500">${n} attribute${n>1?'s':''} selected</span>: ${[...checked].map(k=>k.split('|')[2]).join(', ')}`;
 }
 
+function setBlock(b){curBlock=b;buildNav();buildMain();}
+buildNav();
+buildMain();
+</script>
+</body>
+</html>
+HTMLEOF
+echo "done"
+Output
+
+done
+
+Presented file
+Done
+Файл готов с правильными кодами. Теперь как обновить в GitHub:
+
+Шаг 1 — зайди на github.com/helencitydetect/labeling-ui-1
+
+Шаг 2 — нажми на файл index.html в списке
+
+Шаг 3 — нажми иконку карандаша (Edit) справа вверху → затем найди кнопку с тремя точками ... → "Delete file" — нет, не удаляй. Лучше так:
+
+Шаг 3 (правильно) — вернись на главную репозитория → "Add file" → "Upload files" → загрузи новый index.html → GitHub спросит что делать с существующим файлом — он автоматически заменит старый → "Commit changes"
+
+Через 1-2 минуты ссылка https://helencitydetect.github.io/labeling-ui-1/ обновится.
+
+Скажи какой второй вид хочешь — таблица сравнения, карточки, что-то другое? Сделаю и его тоже.
+
+Index
+Code · HTML 
+
+
+Claude works directly with your codebase
+
+Let Claude edit files, run commands, and ship changes right inside your terminal or IDE.
+
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+Index · HTML
+Copy
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>City Detect — New Labeling UI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#f5f5f5;padding:12px;font-size:14px}
+.app{display:grid;grid-template-columns:150px 1fr;border:0.5px solid #ccc;border-radius:12px;overflow:hidden;background:#fff;max-width:100%}
+.sidebar{background:#f5f5f5;border-right:0.5px solid #ccc}
+.nav-item{padding:11px 16px;font-size:13px;color:#555;cursor:pointer;border-bottom:0.5px solid #e0e0e0}
+.nav-item:hover:not(.active){background:#fff}
+.nav-item.active{background:#2e7d32;color:#fff;font-weight:500}
+.main{padding:16px 20px;min-height:460px;overflow-y:auto}
+.sec{margin-bottom:20px}
+.sec-title{font-size:16px;font-weight:500;margin-bottom:10px;color:#111}
+.row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:4px;font-size:13px;cursor:pointer;user-select:none}
+.row:nth-child(even){background:#f9f9f9}
+.row:hover{background:#e8f5e9}
+.row label{display:flex;align-items:center;gap:8px;flex:1;cursor:pointer;color:#111}
+.row input{accent-color:#2e7d32;width:15px;height:15px;cursor:pointer;flex-shrink:0}
+.code{font-family:monospace;font-size:11px;text-decoration:underline;color:#888;white-space:nowrap}
+.hint{font-size:11px;color:#aaa;font-style:italic;padding:2px 10px 5px 33px;display:none}
+.statusbar{padding:9px 16px;font-size:12px;color:#666;border-top:0.5px solid #ddd;background:#f5f5f5}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar" id="nav"></div>
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <div class="main" id="main"></div>
+    <div class="statusbar" id="status">No attributes selected</div>
+  </div>
+</div>
+<script>
+const B = {
+  General:{
+    "Lot type":[
+      {l:"Abandoned",c:"LTA"},
+      {l:"Construction",c:"LTCON"},
+      {l:"Multifamily",c:"LTM"},
+      {l:"Not residential",c:"LTNR"},
+      {l:"Vacant",c:"LTV"}
+    ],
+    "Bad picture":[
+      {l:"Bad angle",c:"BPA"},
+      {l:"Blocked",c:"BPB"},
+      {l:"Cloudy",c:"BPC"},
+      {l:"Wrong parcel",c:"BPWP"}
+    ]
+  },
+  Ground:{
+    "Lawn":[
+      {l:"Lawn Branches",c:"LABR",h:"was: Branches (LABR)"},
+      {l:"Lawn Dead Patch",c:"LADP",h:"was: Dead patch (LADP)"},
+      {l:"Litter / Debris",c:"LALD",h:"was: Debris (LADE) + Litter (LALI) — merged"},
+      {l:"Leaves",c:"LALE",h:"was: Leaves (LALE)"},
+      {l:"Overgrown Lawn",c:"OLA",h:"was: Overgrown weeds (LAO)"},
+      {l:"Lawn Vehicle",c:"LAV",h:"was: Vehicle (LAV)"}
+    ]
+  },
+  Pavement:{
+    "Sidewalk":[
+      {l:"Cracked",c:"SIC",h:"was: Cracked (SIC)"},
+      {l:"Litter / Debris",c:"SILD",h:"was: Debris (SID) + Litter (SILI) — merged"},
+      {l:"Leaves",c:"SILE",h:"was: Leaves (SILE)"},
+      {l:"Overgrown Pavement",c:"SIOP",h:"was: Overgrown (SIO)"}
+    ],
+    "Driveway":[
+      {l:"Cracked",c:"DRC",h:"was: Cracked (DRC)"},
+      {l:"Litter / Debris",c:"DRLD",h:"was: Debris (DRD) + Litter (DRLI) — merged"},
+      {l:"Leaves",c:"DRLE",h:"was: Leaves (DRLE)"},
+      {l:"Overgrown Pavement",c:"DROP",h:"was: Overgrown (DRO)"}
+    ]
+  },
+  Structures:{
+    "Retaining wall":[
+      {l:"Retaining Wall Damage",c:"REDA",h:"was: Structural (RES)"},
+      {l:"Yard Structure Overgrown",c:"REYSO",h:"was: Overgrown (REO)"}
+    ],
+    "Fence":[
+      {l:"Fence Damage",c:"FEDA",h:"was: Structural (FES)"},
+      {l:"Fence Paint",c:"FEP",h:"was: Paint rust (FEP)"},
+      {l:"Yard Structure Overgrown",c:"FEYSO",h:"was: Overgrown (FEO)"}
+    ],
+    "Garage":[
+      {l:"Garage Damage",c:"GADA",h:"was: Structural (GAS)"},
+      {l:"Structure Paint",c:"GASP",h:"was: Paint rust (GAP)"},
+      {l:"Overgrown Structures",c:"GAOS",h:"was: Overgrown (GAO)"}
+    ]
+  },
+  Porch:{
+    "Porch":[
+      {l:"Porch Debris",c:"POD",h:"was: Debris (POD)"},
+      {l:"Porch Damage",c:"PODA",h:"was: Structural (POST) + Screen (POSC) — merged"},
+      {l:"Structure Paint",c:"POSP",h:"was: Paint rust (POPA)"},
+      {l:"Overgrown Structures",c:"POOS",h:"was: Overgrown (POO)"}
+    ],
+    "Awning":[
+      {l:"Awning Damage",c:"AWDA",h:"was: Structural (AWS)"},
+      {l:"Structure Paint",c:"AWSP",h:"was: Paint rust (AWP)"}
+    ],
+    "Column":[
+      {l:"Column Damage",c:"COLDA",h:"was: Structural (COLS)"},
+      {l:"Structure Paint",c:"COLSP",h:"was: Paint rust (COLP)"}
+    ]
+  },
+  Stairs:{
+    "Stairs":[
+      {l:"Stair Damage",c:"STDA",h:"was: Structural (STS)"},
+      {l:"Leaves",c:"STLE",h:"was: Leaves (STLE)"},
+      {l:"Overgrown Pavement",c:"STOP",h:"was: Overgrown (STO)"}
+    ],
+    "Railing":[
+      {l:"Stair Damage",c:"RADA",h:"was: Structural (RAS)"},
+      {l:"Structure Paint",c:"RASP",h:"was: Paint rust (RAP)"},
+      {l:"Overgrown Structures",c:"RAOS",h:"was: Overgrown (RAO)"}
+    ]
+  },
+  Walls:{
+    "Wall":[
+      {l:"Wall Structural Damage",c:"WASDA",h:"was: Structural (WAS)"},
+      {l:"Structure Paint",c:"WASP",h:"was: Paint rust (WAP)"},
+      {l:"Overgrown Structures",c:"WAOS",h:"was: Overgrown (WAO)"}
+    ],
+    "Foundation":[
+      {l:"Foundation Damage",c:"FODA",h:"was: Structural (FOS)"},
+      {l:"Structure Paint",c:"FOSP",h:"was: Paint rust (FOP)"}
+    ],
+    "Vent":[
+      {l:"Structure Paint",c:"VESP",h:"was: Paint rust (VEP)"}
+    ]
+  },
+  Fenestration:{
+    "Door":[
+      {l:"Broken Door",c:"DOB",h:"was: Broken (DOB) + Missing (DOMI) — merged"},
+      {l:"Door Plywood",c:"DOPL",h:"was: Plywood (DOPL)"},
+      {l:"Structure Paint",c:"DOSP",h:"was: Paint rust (DOPA)"}
+    ],
+    "Shutter":[
+      {l:"Structure Paint",c:"SHSP",h:"was: Paint rust (SHP)"}
+    ],
+    "Window":[
+      {l:"Broken Window",c:"WIB",h:"was: Broken (WIB) + Missing (WIMI) — merged"},
+      {l:"Window Plywood",c:"WIPL",h:"was: Plywood (WIPL)"},
+      {l:"Structure Paint",c:"WISP",h:"was: Paint rust (WIPA)"}
+    ]
+  },
+  Roof:{
+    "Roof":[
+      {l:"Roof Leaves",c:"ROL",h:"was: Leaves (ROL)"},
+      {l:"Roof Damage",c:"RODA",h:"was: Structural (ROS)"},
+      {l:"Roof Tarp",c:"ROT",h:"was: Tarp (ROT)"},
+      {l:"Overgrown Structures",c:"ROOS",h:"was: Overgrown (ROO)"}
+    ],
+    "Chimney":[
+      {l:"Chimney Damage",c:"CHDA",h:"was: Structural (CHS)"},
+      {l:"Structure Paint",c:"CHSP",h:"was: Paint (CHP)"}
+    ],
+    "Soffit":[
+      {l:"Fascia Damage",c:"SOFDA",h:"was: Structural (SOS)"},
+      {l:"Structure Paint",c:"SOSP",h:"was: Paint rust (SOP)"}
+    ],
+    "Fascia":[
+      {l:"Fascia Damage",c:"FADA",h:"was: Structural (FAS)"},
+      {l:"Structure Paint",c:"FASP",h:"was: Paint (FAP)"}
+    ],
+    "Gutter":[
+      {l:"Fascia Damage",c:"GUFDA",h:"was: Structural (GUS)"},
+      {l:"Overgrown Structures",c:"GUOS",h:"was: Overgrown (GUO)"}
+    ]
+  }
+};
+ 
+let curBlock="General";
+const checked=new Set();
+ 
+function buildNav(){
+  document.getElementById('nav').innerHTML=Object.keys(B).map(k=>
+    `<div class="nav-item${k===curBlock?' active':''}" onclick="setBlock('${k}')">${k}</div>`
+  ).join('');
+}
+ 
+function buildMain(){
+  const secs=B[curBlock];
+  document.getElementById('main').innerHTML=Object.entries(secs).map(([sec,items])=>
+    `<div class="sec"><div class="sec-title">${sec}</div>`+
+    items.map((item,i)=>{
+      const id=`cb_${sec.replace(/\W/g,'_')}_${i}`;
+      const key=curBlock+'|'+sec+'|'+item.l;
+      const chk=checked.has(key)?'checked':'';
+      return `<div class="row" onclick="toggle('${key}','${id}')">
+        <label for="${id}"><input type="checkbox" id="${id}" ${chk} onclick="event.stopPropagation();toggle('${key}','${id}')">${item.l}</label>
+        <span class="code">${item.c}</span>
+      </div>`+(item.h?`<div class="hint" id="hint_${id}" style="${chk?'display:block':''}">${item.h}</div>`:'');
+    }).join('')+`</div>`
+  ).join('');
+  updateStatus();
+}
+ 
+function toggle(key,id){
+  const cb=document.getElementById(id);
+  if(checked.has(key)){checked.delete(key);if(cb)cb.checked=false;}
+  else{checked.add(key);if(cb)cb.checked=true;}
+  const hint=document.getElementById('hint_'+id);
+  if(hint)hint.style.display=checked.has(key)?'block':'none';
+  updateStatus();
+}
+ 
+function updateStatus(){
+  const n=checked.size;
+  document.getElementById('status').innerHTML=n===0
+    ?'No attributes selected'
+    :`<span style="color:#2e7d32;font-weight:500">${n} attribute${n>1?'s':''} selected</span>: ${[...checked].map(k=>k.split('|')[2]).join(', ')}`;
+}
+ 
 function setBlock(b){curBlock=b;buildNav();buildMain();}
 buildNav();
 buildMain();
