@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attribute Overview — Level &amp; Defect Type</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#f5f5f5;padding:12px;font-size:12px}
+.wrap{background:#fff;border-radius:12px;border:0.5px solid #ccc;padding:16px}
+.tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1.5px solid #e0e0e0}
+.tab{padding:8px 20px;font-size:13px;cursor:pointer;border:none;background:none;font-family:sans-serif;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab.on{color:#111;font-weight:500;border-bottom:2px solid #111}
+.view{display:none}.view.on{display:block}
+
+/* MATRIX */
+table{border-collapse:collapse;width:100%}
+th,td{border:0.5px solid #ddd;padding:7px 10px;vertical-align:top}
+th{font-size:11px;font-weight:500;text-align:center;background:#f5f5f5;color:#555}
+th.lh{text-align:left;width:80px}
+td.lvl{font-weight:500;font-size:12px;text-align:center;vertical-align:middle;padding:12px 8px;cursor:pointer;white-space:nowrap;transition:filter .15s}
+td.lvl:hover{filter:brightness(0.93)}
+td.lvl.sel{outline:2.5px solid #333;outline-offset:-2px}
+.empty{color:#ccc;font-size:10px;text-align:center;vertical-align:middle}
+.tag{display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;margin:2px 2px;line-height:1.6;white-space:nowrap;cursor:default}
+.t-d{background:#FCEBEB;color:#791F1F;border:0.5px solid #F09595}
+.t-p{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+.t-o{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.t-l{background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB}
+.t-li{background:#FAEEDA;color:#633806;border:0.5px solid #EF9F27}
+.t-x{background:#F1EFE8;color:#444441;border:0.5px solid #B4B2A9}
+.mtip{font-size:10px;color:#aaa;margin-top:10px}
+
+/* GROUPING */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{border-radius:8px;border:0.5px solid #ddd;overflow:hidden}
+.card-head{padding:8px 12px;font-size:12px;font-weight:500}
+.card-body{padding:8px 12px}
+.sec{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#aaa;margin:8px 0 4px}
+.sec:first-child{margin-top:0}
+.note{font-size:9px;color:#aaa;margin-top:6px;line-height:1.5}
+
+/* HOUSE */
+.house-btns{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+button.pill{padding:6px 16px;border-radius:16px;border:1.5px solid #ccc;background:#fff;font-size:12px;cursor:pointer;font-family:sans-serif;transition:all .15s}
+button.pill:hover:not(.on){background:#f5f5f5}
+button.pill.on-all{background:#F1EFE8;border-color:#5F5E5A;color:#444441;font-weight:500}
+button.pill.on-gl{background:#EAF3DE;border-color:#3B6D11;color:#27500A;font-weight:500}
+button.pill.on-fa{background:#E6F1FB;border-color:#185FA5;color:#0C447C;font-weight:500}
+button.pill.on-ro{background:#FBEAF0;border-color:#993556;color:#72243E;font-weight:500}
+.zone{transition:opacity .25s}
+.zone.dim{opacity:.1}
+
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:10px;color:#555;border-top:0.5px solid #eee;padding-top:10px;margin-top:12px}
+.leg{display:flex;align-items:center;gap:4px}
+.lc{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="tabs">
+  <button class="tab on" onclick="switchTab('matrix')">Level &times; Type matrix</button>
+  <button class="tab" onclick="switchTab('group')">By defect type</button>
+  <button class="tab" onclick="switchTab('house')">House zones</button>
+</div>
+
+<!-- ═══ TAB 1: MATRIX ═══ -->
+<div class="view on" id="t-matrix">
+<table>
+<thead>
+<tr>
+  <th class="lh">Level</th>
+  <th style="background:#FCEBEB;color:#791F1F">Damage</th>
+  <th style="background:#EEEDFE;color:#3C3489">Paint</th>
+  <th style="background:#EAF3DE;color:#27500A">Overgrown</th>
+  <th style="background:#E6F1FB;color:#0C447C">Leaves</th>
+  <th style="background:#FAEEDA;color:#633806">Litter</th>
+  <th style="background:#F1EFE8;color:#444441">Other</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td class="lvl" id="m-gl" style="background:#EAF3DE;color:#27500A" onclick="hlMatrix('gl')">&#9660;<br>Ground</td>
+  <td><span class="tag t-d">Cracked Driveway</span><span class="tag t-d">Cracked Sidewalk</span><span class="tag t-d">Retaining Wall Damage</span><span class="tag t-d">Fence Damage</span><span class="tag t-d">Stair Damage</span></td>
+  <td><span class="tag t-p">Fence Paint</span></td>
+  <td><span class="tag t-o">Overgrown Lawn</span><span class="tag t-o">Overgrown Pavement</span><span class="tag t-o">Yard Structure Overgrown</span></td>
+  <td><span class="tag t-l">Leaves</span></td>
+  <td><span class="tag t-li">Litter / Debris</span></td>
+  <td><span class="tag t-x">Lawn Branches</span><span class="tag t-x">Lawn Dead Patch</span><span class="tag t-x">Lawn Vehicle</span></td>
+</tr>
+<tr>
+  <td class="lvl" id="m-fa" style="background:#E6F1FB;color:#0C447C" onclick="hlMatrix('fa')">&#9632;<br>Facade</td>
+  <td><span class="tag t-d">Wall Structural Damage</span><span class="tag t-d">Foundation Damage</span><span class="tag t-d">Porch Damage</span><span class="tag t-d">Awning Damage</span><span class="tag t-d">Column Damage</span><span class="tag t-d">Garage Damage</span><span class="tag t-d">Broken Window</span><span class="tag t-d">Window Plywood</span><span class="tag t-d">Broken Door</span><span class="tag t-d">Door Plywood</span></td>
+  <td><span class="tag t-p">Structure Paint</span></td>
+  <td><span class="tag t-o">Overgrown Structures</span></td>
+  <td class="empty">—</td>
+  <td><span class="tag t-li">Porch Debris</span></td>
+  <td class="empty">—</td>
+</tr>
+<tr>
+  <td class="lvl" id="m-ro" style="background:#FBEAF0;color:#72243E" onclick="hlMatrix('ro')">&#9650;<br>Roof</td>
+  <td><span class="tag t-d">Roof Damage</span><span class="tag t-d">Roof Tarp</span><span class="tag t-d">Chimney Damage</span><span class="tag t-d">Fascia Damage</span></td>
+  <td><span class="tag t-p">Structure Paint</span></td>
+  <td><span class="tag t-o">Overgrown Structures</span></td>
+  <td><span class="tag t-l">Roof Leaves</span></td>
+  <td class="empty">—</td>
+  <td class="empty">—</td>
+</tr>
+</tbody>
+</table>
+<p class="mtip">Click a level row to highlight. Click again to reset.</p>
+</div>
+
+<!-- ═══ TAB 2: GROUPING ═══ -->
+<div class="view" id="t-group">
+<div class="grid">
+<div class="card">
+  <div class="card-head" style="background:#FCEBEB;color:#791F1F;border-bottom:0.5px solid #F09595">Structural Damage (19)</div>
+  <div class="card-body">
+    <div class="sec">Grounds &amp; Pavement</div>
+    <span class="tag t-d">Cracked Sidewalk</span><span class="tag t-d">Cracked Driveway</span>
+    <div class="sec">Yard Structures</div>
+    <span class="tag t-d">Retaining Wall Damage</span><span class="tag t-d">Fence Damage</span><span class="tag t-d">Garage Damage</span><span class="tag t-d">Stair Damage</span>
+    <div class="sec">Main Structures</div>
+    <span class="tag t-d">Porch Damage</span><span class="tag t-d">Awning Damage</span><span class="tag t-d">Column Damage</span><span class="tag t-d">Wall Structural Damage</span><span class="tag t-d">Foundation Damage</span><span class="tag t-d">Broken Door</span><span class="tag t-d">Door Plywood</span><span class="tag t-d">Broken Window</span><span class="tag t-d">Window Plywood</span>
+    <div class="sec">Roof</div>
+    <span class="tag t-d">Roof Damage</span><span class="tag t-d">Roof Tarp</span><span class="tag t-d">Chimney Damage</span><span class="tag t-d">Fascia Damage</span>
+  </div>
+</div>
+<div class="card">
+  <div class="card-head" style="background:#EEEDFE;color:#3C3489;border-bottom:0.5px solid #AFA9EC">Paint / Rust (2)</div>
+  <div class="card-body">
+    <div class="sec">Yard Structures</div>
+    <span class="tag t-p">Fence Paint</span><span class="tag t-p">Structure Paint</span>
+    <p class="note">Structure Paint covers: garage, porch, awning, column, railing, wall, foundation, vent, door, shutter, window, chimney, soffit, fascia</p>
+  </div>
+</div>
+<div class="card">
+  <div class="card-head" style="background:#EAF3DE;color:#27500A;border-bottom:0.5px solid #97C459">Overgrown (5)</div>
+  <div class="card-body">
+    <div class="sec">Grounds &amp; Pavement</div>
+    <span class="tag t-o">Overgrown Lawn</span><span class="tag t-o">Overgrown Pavement</span>
+    <div class="sec">Yard Structures</div>
+    <span class="tag t-o">Yard Structure Overgrown</span><span class="tag t-o">Overgrown Structures</span>
+    <div class="sec">Roof</div>
+    <span class="tag t-o">Overgrown Structures</span>
+  </div>
+</div>
+<div class="card">
+  <div class="card-head" style="background:#E6F1FB;color:#0C447C;border-bottom:0.5px solid #85B7EB">Leaves (2)</div>
+  <div class="card-body">
+    <div class="sec">Grounds &amp; Pavement</div>
+    <span class="tag t-l">Leaves</span>
+    <div class="sec">Roof</div>
+    <span class="tag t-l">Roof Leaves</span>
+    <p class="note">Covers: lawn, sidewalk, driveway, stairs, roof</p>
+  </div>
+</div>
+<div class="card">
+  <div class="card-head" style="background:#FAEEDA;color:#633806;border-bottom:0.5px solid #EF9F27">Litter / Debris (2)</div>
+  <div class="card-body">
+    <div class="sec">Grounds &amp; Pavement</div>
+    <span class="tag t-li">Litter / Debris</span>
+    <div class="sec">Main Structures</div>
+    <span class="tag t-li">Porch Debris</span>
+    <p class="note">Covers: lawn, sidewalk, driveway, porch</p>
+  </div>
+</div>
+<div class="card">
+  <div class="card-head" style="background:#F1EFE8;color:#444441;border-bottom:0.5px solid #B4B2A9">Other — Lawn (3)</div>
+  <div class="card-body">
+    <div class="sec">Grounds &amp; Pavement only</div>
+    <span class="tag t-x">Lawn Branches</span><span class="tag t-x">Lawn Dead Patch</span><span class="tag t-x">Lawn Vehicle</span>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══ TAB 3: HOUSE ═══ -->
+<div class="view" id="t-house">
+<div class="house-btns">
+  <button class="pill on-all" id="h-all" onclick="showLevel('all')">All levels</button>
+  <button class="pill" id="h-gl" onclick="showLevel('gl')">&#9660; Ground level</button>
+  <button class="pill" id="h-fa" onclick="showLevel('fa')">&#9632; Facade</button>
+  <button class="pill" id="h-ro" onclick="showLevel('ro')">&#9650; Roof level</button>
+</div>
+<svg width="100%" viewBox="0 0 680 430">
+<g class="zone" id="h-z-gl">
+  <rect x="100" y="360" width="480" height="48" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1.5" rx="2"/>
+  <text x="340" y="378" text-anchor="middle" font-size="10" font-weight="500" fill="#27500A" font-family="sans-serif">Grounds &amp; Pavement</text>
+  <text x="340" y="392" text-anchor="middle" font-size="8" fill="#3B6D11" font-family="sans-serif">Cracked · Leaves · Litter · Overgrown · Branches · Dead Patch · Vehicle</text>
+  <rect x="18" y="210" width="12" height="150" rx="2" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1.5"/>
+  <rect x="30" y="226" width="38" height="8" rx="1" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1"/>
+  <rect x="30" y="244" width="38" height="8" rx="1" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1"/>
+  <rect x="68" y="210" width="12" height="150" rx="2" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1.5"/>
+  <text x="45" y="204" text-anchor="middle" font-size="8" font-weight="500" fill="#27500A" font-family="sans-serif">Fence</text>
+  <rect x="18" y="358" width="62" height="10" rx="2" fill="#C0DD97" stroke="#3B6D11" stroke-width="1"/>
+  <text x="49" y="366" text-anchor="middle" font-size="7" fill="#27500A" font-family="sans-serif">Ret. wall</text>
+  <rect x="600" y="210" width="12" height="150" rx="2" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1.5"/>
+  <rect x="554" y="226" width="46" height="8" rx="1" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1"/>
+  <rect x="554" y="244" width="46" height="8" rx="1" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1"/>
+  <rect x="612" y="210" width="12" height="150" rx="2" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1.5"/>
+  <text x="607" y="204" text-anchor="middle" font-size="8" font-weight="500" fill="#27500A" font-family="sans-serif">Fence</text>
+  <rect x="554" y="358" width="70" height="10" rx="2" fill="#C0DD97" stroke="#3B6D11" stroke-width="1"/>
+  <text x="589" y="366" text-anchor="middle" font-size="7" fill="#27500A" font-family="sans-serif">Ret. wall</text>
+  <rect x="276" y="344" width="92" height="10" rx="1" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1"/>
+  <rect x="281" y="354" width="82" height="8" rx="1" fill="#EAF3DE" stroke="#3B6D11" stroke-width="1"/>
+  <text x="322" y="374" text-anchor="middle" font-size="7" fill="#27500A" font-family="sans-serif">Stairs</text>
+</g>
+<g class="zone" id="h-z-fa">
+  <rect x="100" y="160" width="480" height="200" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.5"/>
+  <text x="116" y="177" font-size="10" font-weight="500" fill="#0C447C" font-family="sans-serif">Walls &amp; Foundation</text>
+  <text x="116" y="190" font-size="7.5" fill="#185FA5" font-family="sans-serif">Wall Structural Damage · Foundation Damage · Structure Paint · Overgrown Structures</text>
+  <rect x="108" y="236" width="120" height="124" rx="2" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.5"/>
+  <line x1="108" y1="262" x2="228" y2="262" stroke="#185FA5" stroke-width="0.5"/>
+  <line x1="108" y1="290" x2="228" y2="290" stroke="#185FA5" stroke-width="0.5"/>
+  <line x1="168" y1="236" x2="168" y2="360" stroke="#185FA5" stroke-width="0.5"/>
+  <text x="168" y="228" text-anchor="middle" font-size="9" font-weight="500" fill="#0C447C" font-family="sans-serif">Garage</text>
+  <rect x="256" y="224" width="168" height="16" rx="3" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.2"/>
+  <text x="340" y="234" text-anchor="middle" font-size="7.5" fill="#0C447C" font-family="sans-serif">Awning</text>
+  <rect x="282" y="278" width="58" height="82" rx="3" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.5"/>
+  <circle cx="333" cy="320" r="3.5" fill="#185FA5"/>
+  <text x="311" y="272" text-anchor="middle" font-size="8" fill="#0C447C" font-family="sans-serif">Door</text>
+  <rect x="262" y="322" width="98" height="18" rx="2" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+  <rect x="264" y="300" width="11" height="40" rx="2" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+  <rect x="348" y="300" width="11" height="40" rx="2" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+  <text x="320" y="314" text-anchor="middle" font-size="8" font-weight="500" fill="#0C447C" font-family="sans-serif">Porch</text>
+  <rect x="368" y="236" width="84" height="56" rx="3" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.5"/>
+  <line x1="410" y1="236" x2="410" y2="292" stroke="#185FA5" stroke-width="0.5"/>
+  <line x1="368" y1="264" x2="452" y2="264" stroke="#185FA5" stroke-width="0.5"/>
+  <text x="410" y="228" text-anchor="middle" font-size="7.5" fill="#0C447C" font-family="sans-serif">Window</text>
+  <rect x="256" y="178" width="104" height="58" rx="3" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.5"/>
+  <line x1="308" y1="178" x2="308" y2="236" stroke="#185FA5" stroke-width="0.5"/>
+  <line x1="256" y1="207" x2="360" y2="207" stroke="#185FA5" stroke-width="0.5"/>
+  <text x="308" y="171" text-anchor="middle" font-size="7.5" fill="#0C447C" font-family="sans-serif">Window</text>
+</g>
+<g class="zone" id="h-z-ro">
+  <polygon points="340,22 516,160 164,160" fill="#FBEAF0" stroke="#993556" stroke-width="1.5"/>
+  <text x="340" y="104" text-anchor="middle" font-size="11" font-weight="500" fill="#72243E" font-family="sans-serif">Roof</text>
+  <text x="340" y="119" text-anchor="middle" font-size="8" fill="#993556" font-family="sans-serif">Roof Damage · Tarp · Leaves · Chimney · Fascia · Structure Paint</text>
+  <rect x="348" y="42" width="36" height="72" fill="#FBEAF0" stroke="#993556" stroke-width="1"/>
+  <text x="366" y="80" text-anchor="middle" font-size="7.5" fill="#72243E" font-family="sans-serif">Chimney</text>
+</g>
+<text x="646" y="395" font-size="8" fill="#3B6D11" opacity="0.6" font-family="sans-serif">&#9660; Ground</text>
+<text x="646" y="256" font-size="8" fill="#185FA5" opacity="0.6" font-family="sans-serif">&#9632; Facade</text>
+<text x="646" y="52" font-size="8" fill="#993556" opacity="0.6" font-family="sans-serif">&#9650; Roof</text>
+</svg>
+<div class="legend">
+  <div class="leg"><div class="lc" style="background:#EAF3DE;border:1px solid #3B6D11"></div>Ground — lawn, pavement, fence, retaining wall, stairs</div>
+  <div class="leg"><div class="lc" style="background:#E6F1FB;border:1px solid #185FA5"></div>Facade — walls, windows, doors, porch, garage, awning, columns</div>
+  <div class="leg"><div class="lc" style="background:#FBEAF0;border:1px solid #993556"></div>Roof — roof surface, chimney, fascia, soffit, gutter</div>
+</div>
+</div>
+
+</div>
+<script>
+var curMatrix = null;
+var curLevel = 'all';
+
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on')});
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('on')});
+  document.getElementById('t-'+t).classList.add('on');
+  event.target.classList.add('on');
+}
+
+function hlMatrix(lvl) {
+  document.querySelectorAll('td.lvl').forEach(function(td){td.classList.remove('sel')});
+  if(curMatrix === lvl){curMatrix=null;return;}
+  curMatrix = lvl;
+  document.getElementById('m-'+lvl).classList.add('sel');
+}
+
+function showLevel(lvl) {
+  curLevel = lvl;
+  var cls = {all:'on-all',gl:'on-gl',fa:'on-fa',ro:'on-ro'};
+  var zmap = {gl:'h-z-gl',fa:'h-z-fa',ro:'h-z-ro'};
+  ['all','gl','fa','ro'].forEach(function(k){
+    document.getElementById('h-'+k).className = 'pill';
+  });
+  document.getElementById('h-'+lvl).className = 'pill '+cls[lvl];
+  document.querySelectorAll('#t-house .zone').forEach(function(z){
+    if(lvl==='all'){z.classList.remove('dim');return;}
+    if(z.id===zmap[lvl]){z.classList.remove('dim');}
+    else{z.classList.add('dim');}
+  });
+}
+</script>
+</body>
+</html>

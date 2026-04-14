@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Defect Zones by Type</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#f5f5f5;padding:12px;font-size:14px}
+.wrap{background:#fff;border-radius:12px;border:0.5px solid #ccc;padding:16px}
+h2{font-size:14px;font-weight:500;color:#333;margin-bottom:4px}
+.desc{font-size:11px;color:#aaa;margin-bottom:14px}
+.btns{display:flex;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+button{padding:8px 18px;border-radius:20px;border:1.5px solid #ccc;background:#fff;font-size:12px;cursor:pointer;font-family:sans-serif;transition:all .15s;font-weight:400}
+button:hover:not(.on){background:#f5f5f5}
+button.on-all{background:#F1EFE8;border-color:#5F5E5A;color:#444441;font-weight:500}
+button.on-d{background:#FCEBEB;border-color:#A32D2D;color:#791F1F;font-weight:500}
+button.on-p{background:#EEEDFE;border-color:#534AB7;color:#3C3489;font-weight:500}
+button.on-o{background:#EAF3DE;border-color:#3B6D11;color:#27500A;font-weight:500}
+button.on-l{background:#E6F1FB;border-color:#185FA5;color:#0C447C;font-weight:500}
+button.on-li{background:#FAEEDA;border-color:#854F0B;color:#633806;font-weight:500}
+button.on-x{background:#F1EFE8;border-color:#5F5E5A;color:#444441;font-weight:500}
+.zone{transition:opacity .25s}
+.zone.dim{opacity:.1}
+.attr-panel{margin-top:10px;min-height:40px;padding:10px 14px;background:#f9f9f9;border-radius:8px;border:0.5px solid #eee;font-size:11px;color:#555;line-height:1.8}
+.attr-panel .ptitle{font-weight:500;color:#333;margin-bottom:4px;font-size:12px}
+.tag{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;margin:2px 2px;line-height:1.6;white-space:nowrap}
+.t-d{background:#FCEBEB;color:#791F1F;border:0.5px solid #A32D2D}
+.t-p{background:#EEEDFE;color:#3C3489;border:0.5px solid #534AB7}
+.t-o{background:#EAF3DE;color:#27500A;border:0.5px solid #3B6D11}
+.t-l{background:#E6F1FB;color:#0C447C;border:0.5px solid #185FA5}
+.t-li{background:#FAEEDA;color:#633806;border:0.5px solid #854F0B}
+.t-x{background:#F1EFE8;color:#444441;border:0.5px solid #5F5E5A}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:#666;margin-top:10px;padding-top:10px;border-top:0.5px solid #eee}
+.leg{display:flex;align-items:center;gap:4px}
+.lc{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h2>Property Defect Zones by Type</h2>
+<p class="desc">Click a defect type to highlight zones where it applies.</p>
+
+<div class="btns">
+  <button id="b-all" class="on-all" onclick="show('all')">All zones</button>
+  <button id="b-d" onclick="show('d')">Structural damage</button>
+  <button id="b-p" onclick="show('p')">Paint / rust</button>
+  <button id="b-o" onclick="show('o')">Overgrown</button>
+  <button id="b-l" onclick="show('l')">Leaves</button>
+  <button id="b-li" onclick="show('li')">Litter / debris</button>
+  <button id="b-x" onclick="show('x')">Other</button>
+</div>
+
+<svg id="house" width="100%" viewBox="0 0 680 390">
+
+<!-- GROUNDS & PAVEMENT: #E6F1FB / #185FA5 / #0C447C -->
+<g class="zone" id="z-grounds" data-types="d,o,l,li,x">
+  <rect x="100" y="332" width="480" height="46" fill="#E6F1FB" stroke="#185FA5" stroke-width="1.5" rx="2"/>
+  <text x="340" y="350" text-anchor="middle" font-size="11" font-weight="500" fill="#0C447C" font-family="sans-serif">Grounds &amp; Pavement</text>
+  <text x="340" y="365" text-anchor="middle" font-size="9" fill="#185FA5" font-family="sans-serif">Cracked · Leaves · Litter · Overgrown Lawn · Overgrown Pavement · Branches · Dead Patch · Vehicle</text>
+</g>
+
+<!-- YARD STRUCTURES — FENCE LEFT: #FCEBEB / #A32D2D / #791F1F -->
+<g class="zone" id="z-fence-l" data-types="d,p,o">
+  <rect x="18" y="196" width="12" height="136" rx="2" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1.5"/>
+  <rect x="30" y="212" width="36" height="8" rx="1" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1"/>
+  <rect x="30" y="230" width="36" height="8" rx="1" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1"/>
+  <rect x="66" y="196" width="12" height="136" rx="2" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1.5"/>
+  <text x="43" y="188" text-anchor="middle" font-size="9" font-weight="500" fill="#791F1F" font-family="sans-serif">Fence</text>
+  <rect x="18" y="330" width="60" height="10" rx="2" fill="#F7C1C1" stroke="#A32D2D" stroke-width="1"/>
+  <text x="48" y="338" text-anchor="middle" font-size="7.5" fill="#791F1F" font-family="sans-serif">Ret. wall</text>
+</g>
+
+<!-- YARD STRUCTURES — FENCE RIGHT: #FCEBEB / #A32D2D / #791F1F -->
+<g class="zone" id="z-fence-r" data-types="d,p,o">
+  <rect x="600" y="196" width="12" height="136" rx="2" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1.5"/>
+  <rect x="554" y="212" width="46" height="8" rx="1" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1"/>
+  <rect x="554" y="230" width="46" height="8" rx="1" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1"/>
+  <rect x="612" y="196" width="12" height="136" rx="2" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1.5"/>
+  <text x="607" y="188" text-anchor="middle" font-size="9" font-weight="500" fill="#791F1F" font-family="sans-serif">Fence</text>
+  <rect x="554" y="330" width="70" height="10" rx="2" fill="#F7C1C1" stroke="#A32D2D" stroke-width="1"/>
+  <text x="589" y="338" text-anchor="middle" font-size="7.5" fill="#791F1F" font-family="sans-serif">Ret. wall</text>
+</g>
+
+<!-- YARD STRUCTURES — STAIRS: #FCEBEB / #A32D2D -->
+<g class="zone" id="z-stairs" data-types="d">
+  <rect x="276" y="318" width="92" height="10" rx="1" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1"/>
+  <rect x="281" y="328" width="82" height="8" rx="1" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1"/>
+  <text x="322" y="348" text-anchor="middle" font-size="8" fill="#791F1F" font-family="sans-serif">Stairs</text>
+</g>
+
+<!-- WALLS: #F1EFE8 / #5F5E5A / #444441 -->
+<g class="zone" id="z-walls" data-types="d,p,o">
+  <rect x="100" y="146" width="480" height="186" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.5"/>
+  <text x="116" y="164" font-size="10" font-weight="500" fill="#444441" font-family="sans-serif">Walls</text>
+  <text x="116" y="177" font-size="8" fill="#5F5E5A" font-family="sans-serif">Wall Structural Damage · Foundation Damage · Structure Paint · Overgrown Structures</text>
+</g>
+
+<!-- ROOF: #FBEAF0 / #993556 / #72243E -->
+<g class="zone" id="z-roof" data-types="d,p,o,l">
+  <polygon points="340,16 516,146 164,146" fill="#FBEAF0" stroke="#993556" stroke-width="1.5"/>
+  <text x="340" y="92" text-anchor="middle" font-size="12" font-weight="500" fill="#72243E" font-family="sans-serif">Roof</text>
+  <text x="340" y="108" text-anchor="middle" font-size="9" fill="#993556" font-family="sans-serif">Roof Damage · Roof Tarp · Roof Leaves · Chimney Damage · Fascia Damage · Structure Paint</text>
+</g>
+
+<!-- CHIMNEY: #FBEAF0 / #993556 -->
+<g class="zone" id="z-chimney" data-types="d,p">
+  <rect x="408" y="36" width="36" height="68" fill="#FBEAF0" stroke="#993556" stroke-width="1"/>
+  <text x="426" y="72" text-anchor="middle" font-size="8" fill="#72243E" font-family="sans-serif">Chimney</text>
+</g>
+
+<!-- MAIN STRUCTURES — GARAGE: #EEEDFE / #534AB7 / #3C3489 -->
+<g class="zone" id="z-garage" data-types="d,p,o">
+  <rect x="108" y="220" width="120" height="112" rx="2" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+  <line x1="108" y1="246" x2="228" y2="246" stroke="#534AB7" stroke-width="0.5"/>
+  <line x1="108" y1="274" x2="228" y2="274" stroke="#534AB7" stroke-width="0.5"/>
+  <line x1="168" y1="220" x2="168" y2="332" stroke="#534AB7" stroke-width="0.5"/>
+  <text x="168" y="212" text-anchor="middle" font-size="9" font-weight="500" fill="#3C3489" font-family="sans-serif">Garage</text>
+</g>
+
+<!-- MAIN STRUCTURES — AWNING: #EEEDFE / #534AB7 -->
+<g class="zone" id="z-awning" data-types="d,p">
+  <rect x="256" y="210" width="168" height="16" rx="3" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+  <text x="340" y="221" text-anchor="middle" font-size="8" fill="#3C3489" font-family="sans-serif">Awning</text>
+</g>
+
+<!-- MAIN STRUCTURES — DOOR: #EEEDFE / #534AB7 -->
+<g class="zone" id="z-door" data-types="d,p">
+  <rect x="282" y="260" width="56" height="72" rx="3" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+  <circle cx="331" cy="296" r="3.5" fill="#534AB7"/>
+  <text x="310" y="254" text-anchor="middle" font-size="8.5" fill="#3C3489" font-family="sans-serif">Door</text>
+</g>
+
+<!-- MAIN STRUCTURES — PORCH: #EEEDFE / #534AB7 -->
+<g class="zone" id="z-porch" data-types="d,p,o,li">
+  <rect x="262" y="302" width="96" height="18" rx="2" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+  <rect x="264" y="280" width="11" height="40" rx="2" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+  <rect x="346" y="280" width="11" height="40" rx="2" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+  <text x="318" y="294" text-anchor="middle" font-size="8.5" font-weight="500" fill="#3C3489" font-family="sans-serif">Porch</text>
+</g>
+
+<!-- MAIN STRUCTURES — WINDOW RIGHT: #EEEDFE / #534AB7 -->
+<g class="zone" id="z-win-r" data-types="d,p">
+  <rect x="368" y="220" width="84" height="56" rx="3" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+  <line x1="410" y1="220" x2="410" y2="276" stroke="#534AB7" stroke-width="0.5"/>
+  <line x1="368" y1="248" x2="452" y2="248" stroke="#534AB7" stroke-width="0.5"/>
+  <text x="410" y="212" text-anchor="middle" font-size="8" fill="#3C3489" font-family="sans-serif">Window</text>
+</g>
+
+<!-- MAIN STRUCTURES — WINDOW UPPER: #EEEDFE / #534AB7 -->
+<g class="zone" id="z-win-u" data-types="d,p">
+  <rect x="254" y="164" width="104" height="58" rx="3" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+  <line x1="306" y1="164" x2="306" y2="222" stroke="#534AB7" stroke-width="0.5"/>
+  <line x1="254" y1="193" x2="358" y2="193" stroke="#534AB7" stroke-width="0.5"/>
+  <text x="306" y="157" text-anchor="middle" font-size="8" fill="#3C3489" font-family="sans-serif">Window</text>
+</g>
+
+<text x="340" y="316" text-anchor="middle" font-size="8.5" font-weight="500" fill="#3C3489" font-family="sans-serif">Main Structures</text>
+
+</svg>
+
+<div class="attr-panel" id="attr-panel">
+  <div class="ptitle">All attributes — click a button above to filter by defect type</div>
+</div>
+
+<div class="legend">
+  <div class="leg"><div class="lc" style="background:#FBEAF0;border:1px solid #993556"></div>Roof</div>
+  <div class="leg"><div class="lc" style="background:#F1EFE8;border:1px solid #5F5E5A"></div>Walls</div>
+  <div class="leg"><div class="lc" style="background:#EEEDFE;border:1px solid #534AB7"></div>Main Structures</div>
+  <div class="leg"><div class="lc" style="background:#FCEBEB;border:1px solid #A32D2D"></div>Yard Structures</div>
+  <div class="leg"><div class="lc" style="background:#E6F1FB;border:1px solid #185FA5"></div>Grounds &amp; Pavement</div>
+</div>
+</div>
+
+<script>
+var panels = {
+  all:{title:'All zones',cls:'',attrs:[]},
+  d:{title:'Structural damage',cls:'t-d',attrs:['Cracked Driveway','Cracked Sidewalk','Retaining Wall Damage','Fence Damage','Garage Damage','Stair Damage','Porch Damage','Awning Damage','Column Damage','Wall Structural Damage','Foundation Damage','Broken Window','Window Plywood','Broken Door','Door Plywood','Roof Damage','Roof Tarp','Chimney Damage','Fascia Damage']},
+  p:{title:'Paint / rust',cls:'t-p',attrs:['Fence Paint','Structure Paint']},
+  o:{title:'Overgrown',cls:'t-o',attrs:['Overgrown Lawn','Overgrown Pavement','Yard Structure Overgrown','Overgrown Structures']},
+  l:{title:'Leaves',cls:'t-l',attrs:['Leaves','Roof Leaves']},
+  li:{title:'Litter / Debris',cls:'t-li',attrs:['Litter / Debris','Porch Debris']},
+  x:{title:'Other — Lawn',cls:'t-x',attrs:['Lawn Branches','Lawn Dead Patch','Lawn Vehicle']}
+};
+var btnCls={all:'on-all',d:'on-d',p:'on-p',o:'on-o',l:'on-l',li:'on-li',x:'on-x'};
+
+function show(type){
+  ['all','d','p','o','l','li','x'].forEach(function(k){document.getElementById('b-'+k).className='';});
+  document.getElementById('b-'+type).className=btnCls[type];
+  document.querySelectorAll('.zone').forEach(function(z){
+    if(type==='all'){z.classList.remove('dim');return;}
+    var types=(z.getAttribute('data-types')||'').split(',');
+    if(types.indexOf(type)!==-1){z.classList.remove('dim');}else{z.classList.add('dim');}
+  });
+  var p=panels[type];
+  var panel=document.getElementById('attr-panel');
+  if(type==='all'){panel.innerHTML='<div class="ptitle">All attributes — click a button above to filter</div>';return;}
+  var html='<div class="ptitle">'+p.title+' ('+p.attrs.length+')</div>';
+  p.attrs.forEach(function(a){html+='<span class="tag '+p.cls+'">'+a+'</span>';});
+  panel.innerHTML=html;
+}
+</script>
+</body>
+</html>

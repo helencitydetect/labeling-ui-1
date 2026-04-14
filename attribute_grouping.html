@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attribute Grouping by Defect Type</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#f5f5f5;padding:16px;font-size:12px}
+h1{font-size:15px;font-weight:500;color:#111;margin-bottom:4px}
+.sub{font-size:11px;color:#888;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.card{border-radius:8px;border:0.5px solid #ddd;overflow:hidden;background:#fff}
+.card-head{padding:8px 12px;font-size:12px;font-weight:500}
+.card-body{padding:8px 12px}
+.sec{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#aaa;margin:8px 0 4px}
+.sec:first-child{margin-top:0}
+.tag{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;margin:2px 2px;line-height:1.6;white-space:nowrap}
+.t-d{background:#FCEBEB;color:#791F1F;border:0.5px solid #F09595}
+.t-p{background:#EEEDFE;color:#3C3489;border:0.5px solid #AFA9EC}
+.t-o{background:#EAF3DE;color:#27500A;border:0.5px solid #97C459}
+.t-l{background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB}
+.t-li{background:#FAEEDA;color:#633806;border:0.5px solid #EF9F27}
+.t-x{background:#F1EFE8;color:#444441;border:0.5px solid #B4B2A9}
+.note{font-size:9px;color:#aaa;margin-top:6px;line-height:1.5}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:10px;color:#555;border-top:0.5px solid #eee;padding-top:10px}
+.leg{display:flex;align-items:center;gap:4px}
+.lc{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+</style>
+</head>
+<body>
+<h1>Attribute Grouping by Defect Type</h1>
+<p class="sub">Attributes grouped by defect type, with sub-sections showing which block they belong to.</p>
+<div class="grid">
+
+<div class="card">
+  <div class="card-head" style="background:#FCEBEB;color:#791F1F;border-bottom:0.5px solid #F09595">Structural Damage (19)</div>
+  <div class="card-body">
+    <div class="sec">Grounds &amp; Pavement</div>
+    <span class="tag t-d">Cracked Sidewalk</span>
+    <span class="tag t-d">Cracked Driveway</span>
+    <div class="sec">Yard Structures</div>
+    <span class="tag t-d">Retaining Wall Damage</span>
+    <span class="tag t-d">Fence Damage</span>
+    <span class="tag t-d">Garage Damage</span>
+    <span class="tag t-d">Stair Damage</span>
+    <div class="sec">Main Structures</div>
+    <span class="tag t-d">Porch Damage</span>
+    <span class="tag t-d">Awning Damage</span>
+    <span class="tag t-d">Column Damage</span>
+    <span class="tag t-d">Wall Structural Damage</span>
+    <span class="tag t-d">Foundation Damage</span>
+    <span class="tag t-d">Broken Door</span>
+    <span class="tag t-d">Door Plywood</span>
+    <span class="tag t-d">Broken Window</span>
+    <span class="tag t-d">Window Plywood</span>
+    <div class="sec">Roof</div>
+    <span class="tag t-d">Roof Damage</span>
+    <span class="tag t-d">Roof Tarp</span>
+    <span class="tag t-d">Chimney Damage</span>
+    <span class="tag t-d">Fascia Damage</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head" style="background:#EEEDFE;color:#3C3489;border-bottom:0.5px solid #AFA9EC">Paint / Rust (2)</div>
+  <div class="card-body">
+    <div class="sec">Yard Structures</div>
+    <span class="tag t-p">Fence Paint</span>
+    <span class="tag t-p">Structure Paint</span>
+    <p class="note">Structure Paint covers: garage, porch, awning, column, railing, wall, foundation, vent, door, shutter, window, chimney, soffit, fascia</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head" style="background:#EAF3DE;color:#27500A;border-bottom:0.5px solid #97C459">Overgrown (5)</div>
+  <div class="card-body">
+    <div class="sec">Grounds &amp; Pavement</div>
+    <span class="tag t-o">Overgrown Lawn</span>
+    <span class="tag t-o">Overgrown Pavement</span>
+    <div class="sec">Yard Structures</div>
+    <span class="tag t-o">Yard Structure Overgrown</span>
+    <span class="tag t-o">Overgrown Structures</span>
+    <div class="sec">Roof</div>
+    <span class="tag t-o">Overgrown Structures</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head" style="background:#E6F1FB;color:#0C447C;border-bottom:0.5px solid #85B7EB">Leaves (2)</div>
+  <div class="card-body">
+    <div class="sec">Grounds &amp; Pavement</div>
+    <span class="tag t-l">Leaves</span>
+    <div class="sec">Roof</div>
+    <span class="tag t-l">Roof Leaves</span>
+    <p class="note">Leaves covers: lawn, sidewalk, driveway, stairs, roof</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head" style="background:#FAEEDA;color:#633806;border-bottom:0.5px solid #EF9F27">Litter / Debris (2)</div>
+  <div class="card-body">
+    <div class="sec">Grounds &amp; Pavement</div>
+    <span class="tag t-li">Litter / Debris</span>
+    <div class="sec">Main Structures</div>
+    <span class="tag t-li">Porch Debris</span>
+    <p class="note">Covers: lawn, sidewalk, driveway, porch</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head" style="background:#F1EFE8;color:#444441;border-bottom:0.5px solid #B4B2A9">Other — Lawn (3)</div>
+  <div class="card-body">
+    <div class="sec">Grounds &amp; Pavement only</div>
+    <span class="tag t-x">Lawn Branches</span>
+    <span class="tag t-x">Lawn Dead Patch</span>
+    <span class="tag t-x">Lawn Vehicle</span>
+  </div>
+</div>
+
+</div>
+<div class="legend">
+  <div class="leg"><div class="lc" style="background:#FCEBEB;border:0.5px solid #F09595"></div>Structural damage</div>
+  <div class="leg"><div class="lc" style="background:#EEEDFE;border:0.5px solid #AFA9EC"></div>Paint / rust</div>
+  <div class="leg"><div class="lc" style="background:#EAF3DE;border:0.5px solid #97C459"></div>Overgrown</div>
+  <div class="leg"><div class="lc" style="background:#E6F1FB;border:0.5px solid #85B7EB"></div>Leaves</div>
+  <div class="leg"><div class="lc" style="background:#FAEEDA;border:0.5px solid #EF9F27"></div>Litter / Debris</div>
+  <div class="leg"><div class="lc" style="background:#F1EFE8;border:0.5px solid #B4B2A9"></div>Other</div>
+</div>
+</body>
+</html>
