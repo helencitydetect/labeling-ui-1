@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Annotation Quality Feedback — ruthd</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --ink:#1a1a1a;--ink-2:#4a4a4a;--ink-3:#888;
+    --border:#e0ddd8;--bg:#faf9f7;--bg-card:#fff;
+    --red:#c0392b;--red-light:#fdf0ee;
+    --amber:#b45309;--amber-light:#fef9ee;
+    --green:#166534;--green-light:#f0fdf4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.6;padding:40px 24px}
+  .page{max-width:760px;margin:0 auto;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+
+  .header{background:var(--ink);color:#fff;padding:28px 32px 24px}
+  .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+  .rtype{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:5px}
+  .header h1{font-size:20px;font-weight:600;color:#fff}
+  .header-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:6px 14px;text-align:right;flex-shrink:0}
+  .header-badge strong{display:block;font-size:16px;color:#fff;font-weight:500;margin-bottom:1px}
+  .header-badge span{font-size:10px;color:rgba(255,255,255,.55)}
+  .header-meta{display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.12);padding-top:12px;font-size:12px;color:rgba(255,255,255,.55)}
+  .header-meta b{color:rgba(255,255,255,.85);font-weight:500}
+
+  /* KPI — rates only */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border)}
+  .kpi{padding:16px 20px;border-right:1px solid var(--border)}
+  .kpi:last-child{border-right:none}
+  .kl{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+  .kv{font-size:26px;font-weight:600;line-height:1}
+  .ks{font-size:11px;color:var(--ink-3);margin-top:3px}
+  .kv.amber{color:var(--amber)} .kv.red{color:var(--red)} .kv.green{color:var(--green)}
+
+  /* vs-team bar */
+  .vs-bar-wrap{display:flex;align-items:center;gap:6px;margin-top:5px}
+  .vs-bar{position:relative;width:80px;height:6px;background:#eee;border-radius:3px}
+  .vs-bar-mid{position:absolute;left:50%;top:0;width:1px;height:6px;background:#bbb}
+  .vs-bar-fill{position:absolute;height:6px;border-radius:3px}
+  .vs-label{font-size:10px;color:var(--ink-3)}
+
+  .section{padding:24px 32px;border-bottom:1px solid var(--border)}
+  .section:last-child{border-bottom:none}
+  .snum{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+  .section h2{font-size:15px;font-weight:600;margin-bottom:14px}
+
+  .slist{list-style:none;margin-bottom:16px}
+  .slist li{padding:6px 0 6px 14px;border-left:2px solid var(--border);margin-bottom:4px;font-size:13px;color:var(--ink-2)}
+  .slist li b{color:var(--ink);font-weight:500}
+
+  .act-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+  .act{border-radius:6px;padding:12px 14px;border:1px solid}
+  .act.miss{background:var(--red-light);border-color:#fcc}
+  .act.ext{background:var(--amber-light);border-color:#fde68a}
+  .act-pct{font-size:26px;font-weight:600;line-height:1;margin-bottom:3px}
+  .miss .act-pct{color:var(--red)} .ext .act-pct{color:var(--amber)}
+  .act-lbl{font-size:11px;font-weight:500;color:var(--ink-2);line-height:1.3}
+  .act-sub{font-size:10px;color:var(--ink-3);margin-top:2px}
+
+  .takeaway{background:#f8f6f0;border-left:3px solid var(--amber);border-radius:0 6px 6px 0;padding:12px 16px;font-size:13px;line-height:1.65}
+  .takeaway b{font-weight:600}
+  code{font-family:monospace;background:rgba(0,0,0,.07);padding:1px 5px;border-radius:3px;font-size:12px}
+
+  /* Attribute table */
+  .atable{width:100%;border-collapse:collapse;font-size:12px}
+  .atable thead tr{border-bottom:1.5px solid var(--ink)}
+  .atable th{padding:7px 10px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);text-align:left}
+  .atable th.r{text-align:right}
+  .atable td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+  .atable tr:last-child td{border-bottom:none}
+  .aname{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--ink)}
+  .badge{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:500;white-space:nowrap}
+  .badge.miss{background:var(--red-light);color:var(--red)}
+  .badge.ext{background:var(--amber-light);color:var(--amber)}
+  .badge.mix{background:#f1f5f9;color:#475569}
+  /* double bar: pct_of_corr + pct_of_imgs */
+  .dbar-wrap{display:flex;flex-direction:column;gap:3px;min-width:110px}
+  .dbar-row{display:flex;align-items:center;gap:6px}
+  .dbar-outer{width:60px;height:5px;background:#eee;border-radius:3px;overflow:hidden;flex-shrink:0}
+  .dbar-fill{height:100%;border-radius:3px}
+  .dbar-pct{font-size:11px;font-weight:600;min-width:28px;text-align:right}
+  .dbar-lbl{font-size:9px;color:var(--ink-3);min-width:36px}
+  .nc{font-size:11px;color:var(--ink-3);max-width:180px;line-height:1.4}
+
+  /* Case cards */
+  .ccard{border:1px solid var(--border);border-radius:6px;margin-bottom:10px;overflow:hidden}
+  .ccard:last-child{margin-bottom:0}
+  .chdr{display:flex;align-items:center;gap:8px;padding:9px 14px;background:#fafafa;border-bottom:1px solid var(--border)}
+  .cimgid{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-3)}
+  .cbody{padding:12px 14px}
+  .crow{display:flex;gap:14px;margin-bottom:7px;font-size:12px}
+  .crow:last-child{margin-bottom:0}
+  .ck{color:var(--ink-3);min-width:90px;flex-shrink:0;font-size:11px}
+  .lblset{display:flex;flex-wrap:wrap;gap:4px}
+  .lbl{display:inline-block;padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;background:#f0ede8;color:var(--ink-2)}
+  .lbl.add{background:#dcfce7;color:#166534}
+  .lbl.rem{background:#fee2e2;color:#991b1b}
+  .cwhy{font-size:12px;color:var(--ink-2);font-style:italic;line-height:1.55}
+
+  .cmt{border:1px solid var(--border);border-radius:6px;padding:14px 16px;background:#fafafa;font-size:13px;color:var(--ink-2);line-height:1.7}
+  .cmt p+p{margin-top:8px}
+  .disc{font-size:11px;color:var(--ink-3);line-height:1.6;border:1px dashed var(--border);border-radius:6px;padding:12px 14px;background:#fafafa}
+
+
+  .group-block{margin-bottom:20px}
+  .group-block:last-child{margin-bottom:0}
+  .group-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .group-line{flex:1;height:1px;background:var(--border)}
+  .group-desc{font-size:12px;color:var(--ink-3);margin-bottom:10px;line-height:1.5}
+
+
+  .dbar-wrap{display:flex;flex-direction:column;gap:3px}
+  .dbar-row{display:flex;align-items:center;gap:5px}
+  .dbar-outer{width:52px;height:4px;background:#eee;border-radius:2px;overflow:hidden;flex-shrink:0}
+  .dbar-fill{height:100%;border-radius:2px}
+  .dbar-pct{font-size:11px;font-weight:600;min-width:26px;text-align:right}
+  .dbar-lbl{font-size:9px;color:var(--ink-3);min-width:52px}
+
+  @media print{body{padding:0;background:#fff}.page{border:none;border-radius:0}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="rtype">Weekly Annotation Quality Feedback</div>
+        <h1>Quality Report — ruthd</h1>
+      </div>
+      <div class="header-badge">
+        <strong>42%</strong>
+        <span>Exact Match Rate</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span><b>Annotator:</b> ruthd@source-hive.com</span>
+      <span><b>Period:</b> 2026-04-10 – 2026-04-22</span>
+      <span><b>Prepared by:</b> QA Reviewer</span>
+      <span><b>Type:</b> Feedback based on reviewed sample only</span>
+    </div>
+  </div>
+
+  <!-- KPI — all % -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kl">Exact match rate</div>
+      <div class="kv amber">42%</div>
+      <div class="vs-bar-wrap">
+        <div class="vs-bar">
+          <div class="vs-bar-mid"></div>
+          <div class="vs-bar-fill" style="left:50%;width:calc((42-46)/100*80px + 0px);background:var(--amber);right:calc((46-42)/100*80px)"></div>
+          <!-- annotator 42 vs team 46: annotator is left of center -->
+          <div class="vs-bar-fill" style="right:0;width:calc((46 - 42) / 100 * 80px);background:var(--amber);border-radius:3px 0 0 3px;left:auto"></div>
+        </div>
+        <span class="vs-label">team 46%</span>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kl">Images with missed labels</div>
+      <div class="kv red">46%</div>
+      <div class="ks">of reviewed images</div>
+    </div>
+    <div class="kpi">
+      <div class="kl">Images with extra labels</div>
+      <div class="kv amber">26%</div>
+      <div class="ks">of reviewed images</div>
+    </div>
+    <div class="kpi">
+      <div class="kl">Correction-free images</div>
+      <div class="kv green">42%</div>
+      <div class="ks">exact match</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section">
+    <div class="snum">Section 1</div>
+    <h2>Summary</h2>
+
+    <p style="color:var(--ink-2);margin-bottom:12px">Based on the images reviewed during this period, the most frequent corrections were related to:</p>
+    <ul class="slist">
+      <li><b>lawn-dead_patch_extreme</b> — the single most corrected attribute (13% of all corrections); inconsistent threshold — both missed and over-applied</li>
+      <li><b>lawn-leaves_extreme</b> — missed in 10% of all corrections; consistently not labeled when leaves are present on the lawn</li>
+      <li><b>lawn-debris_extreme</b> — missed in 7% of all corrections; frequently overlooked together with leaves on the same image</li>
+    </ul>
+
+    <p style="color:var(--ink-2);margin-bottom:12px">The most common reviewer actions were:</p>
+    <div class="act-grid">
+      <div class="act miss">
+        <div class="act-pct">46%</div>
+        <div class="act-lbl">Missed labels added by reviewer</div>
+        <div class="act-sub">share of reviewed images</div>
+      </div>
+      <div class="act ext">
+        <div class="act-pct">26%</div>
+        <div class="act-lbl">Incorrect labels removed by reviewer</div>
+        <div class="act-sub">share of reviewed images</div>
+      </div>
+    </div>
+
+    <div class="takeaway">
+      <b>Key takeaway:</b> The dominant pattern is <b>missing lawn condition attributes</b> — <code>lawn-leaves_extreme</code>, <code>lawn-dead_patch_extreme</code>, and <code>lawn-debris_extreme</code> together account for 30% of all corrections in the reviewed sample. A secondary pattern is <b>over-labeling of paint and rust conditions</b> on structural elements (wall, door, porch) where evidence did not meet the extreme threshold. Please do a dedicated lawn-zone pass before submitting each image, and apply <code>_extreme</code> structural labels only when damage is clearly visible and significant.
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section">
+    <div class="snum">Section 2</div>
+    <h2>Most Frequently Corrected Attributes</h2>
+    <p style="font-size:11px;color:var(--ink-3);margin-bottom:16px">
+      <b>% of corrections</b> = share of all corrections in sample &nbsp;·&nbsp;
+      <b>% of images</b> = share of reviewed images where this attribute was corrected
+    </p>
+
+    <div id="grouped-tables"></div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section">
+    <div class="snum">Section 3</div>
+    <h2>Example Reviewed Cases</h2>
+
+    <div class="ccard">
+      <div class="chdr">
+        <span class="badge miss">Missed labels</span>
+        <span class="cimgid">Image ID: 8603524 &nbsp;·&nbsp; LS: 11757499</span>
+      </div>
+      <div class="cbody">
+        <div class="crow">
+          <span class="ck">Annotator labeled</span>
+          <div class="lblset">
+            <span class="lbl">awning-paint_rust_extreme</span>
+            <span class="lbl">mailbox-numbers</span>
+            <span class="lbl">roof-tarp</span>
+            <span class="lbl">stairs-paint_rust_extreme</span>
+          </div>
+        </div>
+        <div class="crow">
+          <span class="ck">Admin added</span>
+          <div class="lblset">
+            <span class="lbl add">driveway-cracked_extreme</span>
+            <span class="lbl add">lawn-dead_patch_extreme</span>
+          </div>
+        </div>
+        <div class="crow">
+          <span class="ck">Why corrected</span>
+          <span class="cwhy">Multiple conditions were correctly labeled on the structure and mailbox, but two additional visible conditions — cracked driveway and dead lawn patch — were missed. On complex multi-condition images, check each zone (lawn, driveway, structure) independently before submitting.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ccard">
+      <div class="chdr">
+        <span class="badge ext">Over-labeled</span>
+        <span class="cimgid">Image ID: 9776498 &nbsp;·&nbsp; LS: 13160611</span>
+      </div>
+      <div class="cbody">
+        <div class="crow">
+          <span class="ck">Annotator labeled</span>
+          <div class="lblset">
+            <span class="lbl rem">driveway-overgrown_extreme</span>
+            <span class="lbl">lot_type-multifamily</span>
+          </div>
+        </div>
+        <div class="crow">
+          <span class="ck">Admin removed</span>
+          <div class="lblset">
+            <span class="lbl rem">driveway-overgrown_extreme</span>
+          </div>
+        </div>
+        <div class="crow">
+          <span class="ck">Why corrected</span>
+          <span class="cwhy">driveway-overgrown_extreme was removed — the level of vegetation growth on the driveway did not meet the extreme threshold. Apply overgrown-extreme labels only when vegetation is significant and clearly obstructing or covering the surface.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ccard">
+      <div class="chdr">
+        <span class="badge mix">Missed + Over-labeled</span>
+        <span class="cimgid">Image ID: 8630839 &nbsp;·&nbsp; LS: 11810365</span>
+      </div>
+      <div class="cbody">
+        <div class="crow">
+          <span class="ck">Annotator labeled</span>
+          <div class="lblset">
+            <span class="lbl rem">door-paint_rust_extreme</span>
+            <span class="lbl">foundation-paint_rust_extreme</span>
+            <span class="lbl">lot_type-abandoned</span>
+            <span class="lbl">roof-structural_extreme</span>
+          </div>
+        </div>
+        <div class="crow">
+          <span class="ck">Admin changes</span>
+          <div class="lblset">
+            <span class="lbl add">door-plywood</span>
+            <span class="lbl add">lawn-leaves_extreme</span>
+            <span class="lbl rem">door-paint_rust_extreme</span>
+          </div>
+        </div>
+        <div class="crow">
+          <span class="ck">Why corrected</span>
+          <span class="cwhy">The door was boarded with plywood — the correct label was door-plywood, not door-paint_rust_extreme. Additionally, the lawn showed heavy leaf coverage that was not labeled. This case illustrates both a wrong attribute choice on the door and a missed lawn condition in the same image.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section">
+    <div class="snum">Section 4</div>
+    <h2>Reviewer Comment</h2>
+    <div class="cmt">
+      <p>Your exact match rate of 42% is close to the team average, and your work is generally solid on structural property elements. However, the reviewed sample reveals a consistent pattern of <b>missing lawn condition attributes</b>. Leaves, debris, and dead patches appear to be under-inspected — particularly on images that already have multiple structural labels. These three lawn attributes together account for nearly a third of all corrections in the sample.</p>
+      <p>A secondary pattern is <b>over-labeling of paint and rust conditions on doors, walls, and porches</b>. Attributes ending in <code>_extreme</code> require clearly visible and significant damage. Minor discoloration or surface wear does not qualify, and applying these labels on borderline cases adds review burden without improving annotation quality.</p>
+      <p>One actionable suggestion: before submitting each image, do a brief final check specifically on the lawn zone — leaves, debris, dead patches, grass height — as a separate step. This single habit should reduce the majority of missed labels seen in this sample.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section">
+    <div class="snum">Section 5</div>
+    <h2>Disclaimer</h2>
+    <div class="disc">
+      This report is based on the reviewed sample only and is intended to highlight repeated quality patterns and coaching opportunities. It does not represent full production-wide performance and should not be used for performance evaluation outside of the QA process. All rates reflect the reviewed subset and may differ from overall production quality.
+    </div>
+  </div>
+
+</div>
+
+<script>
+const groups = [
+  {key:'miss',label:'Under-labeling — Missed',desc:"These attributes were present in the admin's output but not labeled by the annotator. The reviewer added them during correction.",color:'#c0392b',lightColor:'#e8a0a0',
+   attrs:[
+    {name:'lawn-leaves_extreme',pCorr:10,pImg:10,note:'Missed in all reviewed cases. Heavy leaf coverage consistently overlooked.'},
+    {name:'lawn-debris_extreme',pCorr:7,pImg:7,note:'Missed in all reviewed cases. Often co-occurs with lawn-leaves_extreme.'},
+    {name:'driveway-cracked_extreme',pCorr:3,pImg:3,note:'Visible cracking on driveway not labeled in all reviewed cases.'},
+  ]},
+  {key:'ext',label:'Over-labeling — Extra labels',desc:"These attributes were applied by the annotator but removed by the reviewer because visual evidence did not meet the labeling threshold.",color:'#b45309',lightColor:'#f5c06a',
+   attrs:[
+    {name:'wall-paint_rust_extreme',pCorr:5,pImg:4,note:'Removed in majority of cases. Apply only when damage is clearly significant across a large area.'},
+    {name:'door-paint_rust_extreme',pCorr:4,pImg:4,note:'Removed in most cases. Minor surface wear does not qualify as extreme damage.'},
+    {name:'porch-paint_rust_extreme',pCorr:3,pImg:3,note:'Removed in all reviewed cases. Same threshold issue as door and wall paint labels.'},
+  ]},
+  {key:'mix',label:'Mixed — Both missed and over-labeled',desc:"These attributes were corrected in both directions — sometimes missed, sometimes over-applied. This indicates an unclear or inconsistently applied threshold.",color:'#4a4a4a',lightColor:'#b4b2a9',
+   attrs:[
+    {name:'lawn-dead_patch_extreme',pCorr:13,pImg:12,note:'Highest correction rate overall. Missed in most cases; over-applied in a minority.'},
+    {name:'driveway-overgrown_extreme',pCorr:5,pImg:4,note:'Over-applied more than missed. Extreme overgrowth threshold unclear.'},
+    {name:'lot_type-abandoned',pCorr:5,pImg:4,note:'Both missed and over-applied. Abandonment label applied inconsistently.'},
+  ]}
+];
+const maxP=13;
+const badgeMap={miss:'missed',ext:'extra',mix:'mixed'};
+const badgeTextMap={miss:'Under-labeling — Missed',ext:'Over-labeling — Extra labels',mix:'Mixed'};
+function renderGroup(g){
+  const rows=g.attrs.map(a=>{
+    const wC=Math.round(a.pCorr/maxP*100),wI=Math.round(a.pImg/maxP*100);
+    return `<tr><td><div class="attr-name">${a.name}</div></td><td><div class="dbar-wrap"><div class="dbar-row"><div class="dbar-outer"><div class="dbar-fill" style="width:${wC}%;background:${g.color}"></div></div><span class="dbar-pct" style="color:${g.color}">${a.pCorr}%</span><span class="dbar-lbl">of corrections</span></div><div class="dbar-row"><div class="dbar-outer"><div class="dbar-fill" style="width:${wI}%;background:${g.lightColor}"></div></div><span class="dbar-pct" style="color:#888">${a.pImg}%</span><span class="dbar-lbl">of images</span></div></div></td><td class="notes-cell">${a.note}</td></tr>`;
+  }).join('');
+  const bClass=g.key==='miss'?'missed':g.key==='ext'?'extra':'mixed';
+  return `<div class="group-block"><div class="group-header"><span class="type-badge ${bClass}">${badgeTextMap[g.key]}</span><div class="group-line"></div></div><p class="group-desc">${g.desc}</p><table class="attr-table"><thead><tr><th>Attribute (code)</th><th>% of corrections &amp; % of images</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+document.getElementById('grouped-tables').innerHTML=groups.map(renderGroup).join('');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Reviewed Quality Summary — Team Lead Report</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --ink: #1a1a1a; --ink-2: #4a4a4a; --ink-3: #7a7a7a; --ink-4: #aaa;
+  --border: #e2dfd8; --bg: #f9f8f5; --white: #fff;
+  --red: #c0392b; --red-l: #fdf0ee; --red-b: #f5b8b2;
+  --amber: #b45309; --amber-l: #fef9ee; --amber-b: #fde68a;
+  --green: #166534; --green-l: #f0fdf4; --green-b: #bbf7d0;
+  --purple: #5b21b6; --purple-l: #f5f3ff; --purple-b: #ddd6fe;
+  --blue: #1e3a5f; --blue-l: #eff6ff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); font-size: 13px; line-height: 1.65; padding: 36px 20px; }
+.page { max-width: 900px; margin: 0 auto; }
+
+/* ── HEADER ── */
+.report-header { background: var(--ink); color: #fff; border-radius: 10px 10px 0 0; padding: 28px 36px 22px; }
+.rh-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+.report-type { font-size: 10px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 5px; }
+.report-header h1 { font-size: 20px; font-weight: 600; color: #fff; line-height: 1.2; }
+.rh-kpis { display: flex; gap: 12px; flex-shrink: 0; }
+.rh-kpi { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 7px; padding: 8px 14px; text-align: center; }
+.rh-kpi strong { display: block; font-size: 20px; font-weight: 600; color: #fff; line-height: 1; }
+.rh-kpi span { font-size: 10px; color: rgba(255,255,255,.5); display: block; margin-top: 3px; }
+.rh-meta { display: flex; gap: 24px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,.12); padding-top: 14px; font-size: 12px; color: rgba(255,255,255,.5); }
+.rh-meta b { color: rgba(255,255,255,.85); font-weight: 500; }
+
+/* ── SECTION WRAPPER ── */
+.card { background: var(--white); border: 1px solid var(--border); border-top: none; padding: 26px 36px; }
+.card:last-child { border-radius: 0 0 10px 10px; }
+.sec-num { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 4px; }
+.card h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; color: var(--ink); }
+.card-divider { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+/* ── SUMMARY BULLETS ── */
+.obs-list { list-style: none; margin-bottom: 16px; }
+.obs-list li { padding: 6px 0 6px 14px; border-left: 2px solid var(--border); margin-bottom: 4px; font-size: 13px; color: var(--ink-2); }
+.obs-list li b { color: var(--ink); font-weight: 500; }
+
+/* ── ACTION PILLS ── */
+.action-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.action-pill { display: flex; align-items: center; gap: 8px; border-radius: 7px; padding: 10px 14px; border: 1px solid; flex: 1; min-width: 160px; }
+.action-pill.miss { background: var(--red-l); border-color: var(--red-b); }
+.action-pill.ext  { background: var(--amber-l); border-color: var(--amber-b); }
+.action-pill.conf { background: var(--purple-l); border-color: var(--purple-b); }
+.ap-pct  { font-size: 22px; font-weight: 600; line-height: 1; flex-shrink: 0; }
+.miss .ap-pct { color: var(--red); }
+.ext  .ap-pct { color: var(--amber); }
+.conf .ap-pct { color: var(--purple); }
+.ap-lbl { font-size: 11px; font-weight: 500; color: var(--ink-2); line-height: 1.35; }
+.ap-sub { font-size: 10px; color: var(--ink-3); margin-top: 2px; }
+
+.obs-box { background: #f8f6f1; border-left: 3px solid var(--amber); border-radius: 0 7px 7px 0; padding: 12px 16px; font-size: 13px; line-height: 1.65; }
+.obs-box b { font-weight: 600; }
+code { font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,.07); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+
+/* ── ATTRIBUTE TABLE ── */
+.attr-note { font-size: 10px; color: var(--ink-3); margin-bottom: 12px; }
+.group-block { margin-bottom: 18px; }
+.group-block:last-child { margin-bottom: 0; }
+.group-header { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+.group-line { flex: 1; height: 1px; background: var(--border); }
+.badge { display: inline-block; padding: 2px 9px; border-radius: 100px; font-size: 10px; font-weight: 500; white-space: nowrap; }
+.badge.miss { background: var(--red-l); color: var(--red); }
+.badge.ext  { background: var(--amber-l); color: var(--amber); }
+.badge.mix  { background: #f1f5f9; color: #475569; }
+.badge.conf { background: var(--purple-l); color: var(--purple); }
+.badge.ok   { background: var(--green-l); color: var(--green); }
+.atable { width: 100%; border-collapse: collapse; font-size: 12px; }
+.atable thead tr { border-bottom: 1.5px solid var(--ink); }
+.atable th { padding: 7px 10px; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); text-align: left; }
+.atable td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.atable tbody tr:last-child td { border-bottom: none; }
+.aname { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; color: var(--ink); }
+.dbar-wrap { display: flex; align-items: center; gap: 7px; }
+.dbar-outer { width: 80px; height: 5px; background: #eee; border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+.dbar-fill { height: 100%; border-radius: 3px; }
+.dpct { font-size: 12px; font-weight: 600; min-width: 28px; }
+
+/* ── ANNOTATOR PATTERN TABLE ── */
+.ann-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.ann-table thead tr { border-bottom: 1.5px solid var(--ink); }
+.ann-table th { padding: 7px 10px; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); text-align: left; }
+.ann-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.ann-table tbody tr:last-child td { border-bottom: none; }
+.emr-val { font-size: 13px; font-weight: 600; }
+.emr-hi { color: var(--green); }
+.emr-mid { color: var(--amber); }
+.emr-lo { color: var(--red); }
+.top-attr { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-2); }
+.coaching { font-size: 11px; color: var(--ink-2); }
+
+/* ── DISTRIBUTION TABLE (sec 4) ── */
+.dist-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.dist-table thead tr { border-bottom: 1.5px solid var(--ink); }
+.dist-table th { padding: 7px 10px; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); text-align: left; }
+.dist-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.dist-table tbody tr:last-child td { border-bottom: none; }
+.seg-bar { display: flex; height: 10px; border-radius: 4px; overflow: hidden; width: 120px; }
+.seg-miss  { background: var(--red); }
+.seg-extra { background: var(--amber); }
+.seg-conf  { background: var(--purple); }
+.bar-legend { display: flex; gap: 12px; margin-top: 12px; font-size: 11px; color: var(--ink-2); }
+.bl-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 4px; vertical-align: middle; }
+
+/* ── CONFUSION PAIRS ── */
+.confusion-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.confusion-card { border: 1px solid var(--border); border-radius: 7px; padding: 10px 14px; background: var(--purple-l); border-color: var(--purple-b); }
+.confusion-pair { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; color: var(--purple); line-height: 1.5; }
+.confusion-pair .arrow { color: var(--ink-3); margin: 0 4px; }
+.confusion-freq { font-size: 10px; color: var(--ink-3); margin-top: 3px; }
+
+/* ── ATTENTION TABLE ── */
+.attn-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.attn-table thead tr { border-bottom: 1.5px solid var(--ink); }
+.attn-table th { padding: 7px 10px; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); text-align: left; }
+.attn-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.attn-table tbody tr:last-child td { border-bottom: none; }
+.attn-row-hi { background: #fff8f7; }
+.attn-row-mid { background: #fffdf5; }
+
+/* ── ACTIONS LIST ── */
+.action-list { list-style: none; }
+.action-list li { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; align-items: flex-start; }
+.action-list li:last-child { border-bottom: none; }
+.action-num { width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.action-txt { color: var(--ink-2); line-height: 1.5; }
+.action-txt b { color: var(--ink); font-weight: 500; }
+
+/* ── COMMENT & DISCLAIMER ── */
+.comment-box { border: 1px solid var(--border); border-radius: 7px; padding: 16px 18px; background: #fafaf8; font-size: 13px; color: var(--ink-2); line-height: 1.75; }
+.comment-box p + p { margin-top: 10px; }
+.disc { font-size: 11px; color: var(--ink-3); line-height: 1.6; border: 1px dashed var(--border); border-radius: 7px; padding: 12px 14px; }
+
+@media print { body { padding: 0; background: #fff; } .page {} }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ── HEADER ── -->
+<div class="report-header">
+  <div class="rh-top">
+    <div>
+      <div class="report-type">Weekly Reviewed Quality Summary</div>
+      <h1>Team Quality Report</h1>
+    </div>
+    <div class="rh-kpis">
+      <div class="rh-kpi"><strong>46%</strong><span>Team EMR</span></div>
+      <div class="rh-kpi"><strong>15</strong><span>Annotators</span></div>
+      <div class="rh-kpi"><strong>1 363</strong><span>Reviewed images</span></div>
+    </div>
+  </div>
+  <div class="rh-meta">
+    <span><b>Team Lead:</b> [Team Lead Name]</span>
+    <span><b>Period:</b> 2026-04-10 – 2026-04-22</span>
+    <span><b>Prepared by:</b> QA Reviewer</span>
+    <span><b>Type:</b> Quality insights based on reviewed sample only</span>
+  </div>
+</div>
+
+<!-- ── SEC 1: TEAM SUMMARY ── -->
+<div class="card">
+  <div class="sec-num">Section 1</div>
+  <h2>Team Summary</h2>
+
+  <p style="color:var(--ink-2);margin-bottom:12px">Based on the reviewed sample during this period, the team's most frequently corrected attributes were:</p>
+  <ul class="obs-list">
+    <li><b>bad_picture-bad_angle</b> — 6% of all team corrections; frequently both missed and over-applied; largest volume of any single attribute</li>
+    <li><b>lawn-dead_patch_extreme</b> — 6% of all corrections; inconsistently applied across the team with both missed and extra cases</li>
+    <li><b>lot_type-not_residential</b> — 5% of corrections; mostly missed; affects multiple annotators</li>
+    <li><b>bad_picture-wrong_parcel → bad_picture-bad_angle</b> — 4% of corrections; pure label confusion between two bad-picture attributes</li>
+  </ul>
+
+  <p style="color:var(--ink-2);margin-bottom:12px">The most common reviewer actions across the team were:</p>
+  <div class="action-strip">
+    <div class="action-pill miss">
+      <div class="ap-pct">73%</div>
+      <div><div class="ap-lbl">Missed labels added by reviewer</div><div class="ap-sub">of all team corrections</div></div>
+    </div>
+    <div class="action-pill ext">
+      <div class="ap-pct">19%</div>
+      <div><div class="ap-lbl">Incorrect labels removed by reviewer</div><div class="ap-sub">of all team corrections</div></div>
+    </div>
+    <div class="action-pill conf">
+      <div class="ap-pct">8%</div>
+      <div><div class="ap-lbl">Label confusion (wrong bad-picture attribute)</div><div class="ap-sub">of all team corrections</div></div>
+    </div>
+  </div>
+
+  <div class="obs-box">
+    <b>Main observation:</b> The reviewed sample reveals that <b>under-labeling is the dominant team-wide issue</b> — 73% of all corrections involved the reviewer adding a missing label. The most structurally significant confusion is the repeated mix-up between <code>bad_picture-bad_angle</code>, <code>bad_picture-wrong_parcel</code>, and <code>bad_picture-blocked</code>, affecting at least 6 annotators. Lawn condition attributes (<code>lawn-dead_patch_extreme</code>, <code>lawn-leaves_extreme</code>, <code>lawn-debris_extreme</code>, <code>lawn-grass_height</code>) are collectively the most missed attribute family. A targeted refresher on bad-picture label distinction and lawn zone inspection would likely address the majority of recurring corrections.
+  </div>
+</div>
+
+<!-- ── SEC 2: TEAM ATTRIBUTES ── -->
+<div class="card">
+  <div class="sec-num">Section 2</div>
+  <h2>Most Frequently Corrected Attributes Across Team</h2>
+  <p class="attr-note">% of corrections = corrections for attribute X / all team corrections in reviewed sample</p>
+
+  <div class="group-block">
+    <div class="group-header"><span class="badge miss">Under-labeling — Missed</span><div class="group-line"></div></div>
+    <table class="atable">
+      <thead><tr><th>Attribute (code)</th><th>% of corrections</th><th>Notes</th></tr></thead>
+      <tbody id="tb-miss"></tbody>
+    </table>
+  </div>
+
+  <div class="group-block">
+    <div class="group-header"><span class="badge conf">Label confusion — Wrong bad-picture attribute</span><div class="group-line"></div></div>
+    <table class="atable">
+      <thead><tr><th>Confusion pair</th><th>% of corrections</th><th>Notes</th></tr></thead>
+      <tbody id="tb-conf"></tbody>
+    </table>
+  </div>
+
+  <div class="group-block">
+    <div class="group-header"><span class="badge ext">Over-labeling — Extra labels</span><div class="group-line"></div></div>
+    <table class="atable">
+      <thead><tr><th>Attribute (code)</th><th>% of corrections</th><th>Notes</th></tr></thead>
+      <tbody id="tb-ext"></tbody>
+    </table>
+  </div>
+
+  <div class="group-block">
+    <div class="group-header"><span class="badge mix">Mixed — Both missed and over-labeled</span><div class="group-line"></div></div>
+    <table class="atable">
+      <thead><tr><th>Attribute (code)</th><th>% of corrections</th><th>Notes</th></tr></thead>
+      <tbody id="tb-mix"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── SEC 3: ANNOTATOR PATTERN SUMMARY ── -->
+<div class="card">
+  <div class="sec-num">Section 3</div>
+  <h2>Annotator-Level Quality Pattern Summary</h2>
+  <table class="ann-table" id="ann-pattern-table">
+    <thead>
+      <tr>
+        <th>Annotator</th>
+        <th>EMR</th>
+        <th>Most corrected attributes</th>
+        <th>Main correction type</th>
+        <th>Main coaching area</th>
+      </tr>
+    </thead>
+    <tbody id="ann-pattern-body"></tbody>
+  </table>
+</div>
+
+<!-- ── SEC 4: DISTRIBUTION BY ANNOTATOR ── -->
+<div class="card">
+  <div class="sec-num">Section 4</div>
+  <h2>Correction Type Distribution by Annotator</h2>
+  <table class="dist-table" id="dist-table">
+    <thead>
+      <tr>
+        <th>Annotator</th>
+        <th>Missed</th>
+        <th>Extra</th>
+        <th>Confusion</th>
+        <th>Distribution</th>
+        <th>Main profile</th>
+      </tr>
+    </thead>
+    <tbody id="dist-body"></tbody>
+  </table>
+  <div class="bar-legend">
+    <span><span class="bl-dot" style="background:var(--red)"></span>Missed labels</span>
+    <span><span class="bl-dot" style="background:var(--amber)"></span>Extra labels</span>
+    <span><span class="bl-dot" style="background:var(--purple)"></span>Label confusion</span>
+  </div>
+</div>
+
+<!-- ── SEC 5: CONFUSION PATTERNS ── -->
+<div class="card">
+  <div class="sec-num">Section 5</div>
+  <h2>Common Confusion Areas Across Team</h2>
+  <p style="color:var(--ink-2);margin-bottom:14px">The following repeated confusion patterns were observed across multiple annotators. All involve bad-picture attribute selection errors.</p>
+  <div class="confusion-grid" id="confusion-grid"></div>
+  <hr class="card-divider">
+  <p style="color:var(--ink-2);margin-bottom:10px">Additional systemic confusion patterns identified:</p>
+  <ul class="obs-list">
+    <li><b>Lawn condition attribute boundaries</b> — annotators frequently miss <code>lawn-dead_patch_extreme</code>, <code>lawn-leaves_extreme</code>, and <code>lawn-debris_extreme</code> on the same image, suggesting the lawn zone is under-inspected</li>
+    <li><b>Extreme threshold uncertainty</b> — paint/rust attributes ending in <code>_extreme</code> are inconsistently applied: both over- and under-called, indicating unclear severity thresholds</li>
+    <li><b>lot_type classification</b> — <code>lot_type-not_residential</code> and <code>lot_type-abandoned</code> are frequently missed or confused, suggesting annotators are uncertain when these apply</li>
+  </ul>
+</div>
+
+<!-- ── SEC 6: ATTENTION ── -->
+<div class="card">
+  <div class="sec-num">Section 6</div>
+  <h2>Annotators Requiring Extra Attention</h2>
+  <table class="attn-table" id="attn-table">
+    <thead>
+      <tr>
+        <th>Annotator</th>
+        <th>EMR</th>
+        <th>Main concern</th>
+        <th>Top corrected attribute</th>
+        <th>Suggested action</th>
+      </tr>
+    </thead>
+    <tbody id="attn-body"></tbody>
+  </table>
+</div>
+
+<!-- ── SEC 7: RECOMMENDED ACTIONS ── -->
+<div class="card">
+  <div class="sec-num">Section 7</div>
+  <h2>Recommended Team Actions</h2>
+  <ul class="action-list">
+    <li>
+      <div class="action-num">1</div>
+      <div class="action-txt"><b>Bad-picture label refresher</b> — Run a targeted session on the distinction between <code>bad_picture-bad_angle</code>, <code>bad_picture-wrong_parcel</code>, and <code>bad_picture-blocked</code>. This single confusion accounts for 8% of all team corrections and affects at least 6 annotators.</div>
+    </li>
+    <li>
+      <div class="action-num">2</div>
+      <div class="action-txt"><b>Lawn zone inspection protocol</b> — Introduce a checklist step requiring annotators to inspect the lawn zone separately before submitting. Lawn attributes collectively represent the most missed attribute family.</div>
+    </li>
+    <li>
+      <div class="action-num">3</div>
+      <div class="action-txt"><b>Extreme severity threshold clarification</b> — Provide updated labeling examples for all <code>_extreme</code> attributes, especially paint, rust, and overgrowth categories where both over- and under-labeling are observed.</div>
+    </li>
+    <li>
+      <div class="action-num">4</div>
+      <div class="action-txt"><b>Individual coaching for leonardm and maxwellt</b> — Both annotators show EMR below 35% with a dominant bad-picture confusion pattern. A 1:1 calibration session with real examples is recommended before the next production cycle.</div>
+    </li>
+    <li>
+      <div class="action-num">5</div>
+      <div class="action-txt"><b>lot_type attribute guidance</b> — Clarify when <code>lot_type-not_residential</code> and <code>lot_type-abandoned</code> should be applied. These appear in the top-3 corrections of at least 5 annotators.</div>
+    </li>
+  </ul>
+</div>
+
+<!-- ── SEC 8: REVIEWER COMMENT ── -->
+<div class="card">
+  <div class="sec-num">Section 8</div>
+  <h2>Reviewer Comment</h2>
+  <div class="comment-box">
+    <p>The reviewed sample for this period shows a clear and consistent team-wide pattern: <b>under-labeling is the primary quality issue</b>, accounting for 73% of all corrections. The team generally performs adequately on structural conditions that are explicitly visible, but consistently misses secondary conditions — particularly lawn zone attributes and less prominent structural issues — on images that already contain other labeled conditions.</p>
+    <p>A second recurring issue is the confusion between bad-picture attributes, affecting roughly a third of the team. This is a straightforward calibration problem that can likely be resolved with a short session and clear visual examples.</p>
+    <p>The two annotators with the lowest exact match rates (<b>leonardm at 28%</b> and <b>maxwellt at 31%</b>) share a dominant pattern of bad-picture label confusion and warrant individual attention before the next period. The rest of the team clusters around the 40–60% range, which is improvable through the team-level actions recommended above.</p>
+  </div>
+</div>
+
+<!-- ── SEC 9: DISCLAIMER ── -->
+<div class="card">
+  <div class="sec-num">Section 9</div>
+  <h2>Disclaimer</h2>
+  <div class="disc">
+    This report is based on the reviewed sample only (1,363 of 147,656 label sets produced during the period) and is intended to identify recurring quality patterns, coaching needs, and annotation risks across the team. It should not be interpreted as a full-measure production-wide quality score. Correction rates reflect the sampled subset and may differ from overall production quality.
+  </div>
+</div>
+
+</div><!-- .page -->
+
+<script>
+const TEAM_ATTRS = [{"attr":"bad_picture-bad_angle","group":"mix","pCorr":6,"types":{"missed":54,"extra":19}},{"attr":"lawn-dead_patch_extreme","group":"mix","pCorr":6,"types":{"missed":59,"extra":9}},{"attr":"lot_type-not_residential","group":"mix","pCorr":5,"types":{"missed":55,"extra":5}},{"attr":"lawn-debris_extreme","group":"mix","pCorr":4,"types":{"missed":50,"extra":4}},{"attr":"lawn-grass_height","group":"mix","pCorr":4,"types":{"extra":6,"missed":43}},{"attr":"bad_picture-wrong_parcel → bad_picture-bad_angle","group":"miss","pCorr":4,"types":{"label_confusion":49}},{"attr":"lawn-leaves_extreme","group":"miss","pCorr":4,"types":{"missed":48}},{"attr":"lawn-overgrown_weeds_extreme","group":"mix","pCorr":3,"types":{"missed":39,"extra":3}},{"attr":"bad_picture-wrong_parcel","group":"mix","pCorr":3,"types":{"missed":29,"extra":9}},{"attr":"wall-paint_rust_extreme","group":"mix","pCorr":3,"types":{"missed":19,"extra":15}},{"attr":"lot_type-abandoned","group":"mix","pCorr":2,"types":{"missed":22,"extra":7}},{"attr":"window-plywood","group":"mix","pCorr":2,"types":{"missed":14,"extra":13}}];
+const ANN_STATS = {"Irenen@source-hive.com":{"short":"Irenen","emr":57,"missed_pct":73,"extra_pct":22,"confusion_pct":4,"top3":["fence-overgrown_extreme","sidewalk-leaves_extreme","bad_picture-bad_angle"],"dominant":"missed"},"emmanuel@sourcehive.com":{"short":"emmanuel","emr":61,"missed_pct":76,"extra_pct":10,"confusion_pct":14,"top3":["bad_picture-bad_angle","bad_picture-wrong_parcel → bad_picture-bad_angle","lawn-debris_extreme"],"dominant":"missed"},"godwina@source-hive.com":{"short":"godwina","emr":41,"missed_pct":58,"extra_pct":28,"confusion_pct":14,"top3":["lot_type-not_residential","bad_picture-bad_angle","fence-paint_rust_extreme"],"dominant":"missed"},"irisa@source-hive.com":{"short":"irisa","emr":36,"missed_pct":92,"extra_pct":8,"confusion_pct":0,"top3":["lawn-grass_height","lawn-dead_patch_extreme","lot_type-not_residential"],"dominant":"missed"},"jeremiah@sourcehive.com":{"short":"jeremiah","emr":49,"missed_pct":81,"extra_pct":11,"confusion_pct":8,"top3":["lawn-overgrown_weeds_extreme","lot_type-abandoned","lawn-grass_height"],"dominant":"missed"},"jezemiah@sourcehive.com":{"short":"jezemiah","emr":47,"missed_pct":85,"extra_pct":15,"confusion_pct":0,"top3":["lot_type-not_residential","driveway-cracked_extreme","lawn-leaves_extreme"],"dominant":"missed"},"leonardm@source-hive.com":{"short":"leonardm","emr":28,"missed_pct":53,"extra_pct":19,"confusion_pct":28,"top3":["bad_picture-wrong_parcel → bad_picture-bad_angle","lawn-dead_patch_extreme","bad_picture-bad_angle"],"dominant":"missed"},"maxwellt@source-hive.com":{"short":"maxwellt","emr":31,"missed_pct":62,"extra_pct":16,"confusion_pct":22,"top3":["bad_picture-bad_angle → bad_picture-wrong_parcel","bad_picture-wrong_parcel","bad_picture-bad_angle"],"dominant":"missed"},"obed@sourcehive.com":{"short":"obed","emr":43,"missed_pct":67,"extra_pct":23,"confusion_pct":10,"top3":["bad_picture-wrong_parcel → bad_picture-bad_angle","lawn-leaves_extreme","bad_picture-bad_angle"],"dominant":"missed"},"phyllisk@source-hive.com":{"short":"phyllisk","emr":59,"missed_pct":78,"extra_pct":18,"confusion_pct":3,"top3":["lawn-debris_extreme","bad_picture-bad_angle","lot_type-not_residential"],"dominant":"missed"},"preciousa@source-hive.com":{"short":"preciousa","emr":55,"missed_pct":86,"extra_pct":12,"confusion_pct":2,"top3":["bad_picture-bad_angle","lawn-grass_height","lawn-dead_patch_extreme"],"dominant":"missed"},"ruthd@source-hive.com":{"short":"ruthd","emr":42,"missed_pct":67,"extra_pct":33,"confusion_pct":0,"top3":["lawn-dead_patch_extreme","lawn-leaves_extreme","lawn-debris_extreme"],"dominant":"missed"},"samuell@source-hive.com":{"short":"samuell","emr":52,"missed_pct":68,"extra_pct":27,"confusion_pct":5,"top3":["lawn-debris_extreme","lawn-leaves_extreme","lawn-dead_patch_extreme"],"dominant":"missed"},"samuelo@sourcehive.com":{"short":"samuelo","emr":51,"missed_pct":89,"extra_pct":11,"confusion_pct":0,"top3":["lot_type-not_residential","lawn-overgrown_weeds_extreme","wall-paint_rust_extreme"],"dominant":"missed"},"theo@sourcehive.com":{"short":"theo","emr":39,"missed_pct":78,"extra_pct":20,"confusion_pct":2,"top3":["sidewalk-overgrown_extreme","lawn-dead_patch_extreme","lot_type-not_residential"],"dominant":"missed"}};
+const CONFUSION = [{"pair":"bad_picture-wrong_parcel → bad_picture-bad_angle","n":49},{"pair":"bad_picture-blocked → bad_picture-bad_angle","n":20},{"pair":"bad_picture-bad_angle → bad_picture-wrong_parcel","n":19},{"pair":"bad_picture-blocked → bad_picture-wrong_parcel","n":7},{"pair":"bad_picture-bad_angle → bad_picture-blocked","n":1}];
+const ATTENTION = [{"short":"leonardm","emr":28,"concern":"Low exact match rate","top1":"bad_picture-wrong_parcel → bad_picture-bad_angle"},{"short":"maxwellt","emr":31,"concern":"Low exact match rate","top1":"bad_picture-bad_angle → bad_picture-wrong_parcel"},{"short":"irisa","emr":36,"concern":"Low exact match rate","top1":"lawn-grass_height"},{"short":"theo","emr":39,"concern":"Low exact match rate","top1":"sidewalk-overgrown_extreme"},{"short":"godwina","emr":41,"concern":"Low exact match rate","top1":"lot_type-not_residential"},{"short":"ruthd","emr":42,"concern":"Low exact match rate","top1":"lawn-dead_patch_extreme"},{"short":"obed","emr":43,"concern":"Low exact match rate","top1":"bad_picture-wrong_parcel → bad_picture-bad_angle"}];
+
+function ec(v){ return v>=55?'emr-hi':v>=45?'emr-mid':'emr-lo'; }
+function domLabel(a){ return a==='missed'?'Mostly missed labels':a==='extra'?'Mostly extra labels':'Mostly label confusion'; }
+function coachArea(s){
+  const m = {
+    leonardm:'1:1 calibration on bad-picture labels', maxwellt:'1:1 calibration on bad-picture labels',
+    irisa:'Lawn condition inspection checklist', theo:'Lawn + sidewalk condition review',
+    godwina:'lot_type classification guidance', ruthd:'Lawn zone pass protocol',
+    obed:'Bad-picture label distinction', jeremiah:'Lawn overgrowth + lot_type guidance',
+    jezemiah:'lot_type + driveway label review', samuelo:'lot_type + lawn condition review',
+    samuell:'Lawn attribute thresholds', preciousa:'Lawn + bad-picture guidance',
+    phyllisk:'Lawn debris threshold review', Irenen:'Fence/sidewalk condition review',
+    emmanuel:'Bad-picture + lawn label review'
+  };
+  return m[s] || 'General review';
+}
+
+// Section 2 tables
+const maxP = Math.max(...TEAM_ATTRS.map(a=>a.pCorr));
+const confAttrs = TEAM_ATTRS.filter(a=>a.group==='miss' && a.attr.includes('→'));
+const missAttrs  = TEAM_ATTRS.filter(a=>a.group==='miss' && !a.attr.includes('→'));
+const extAttrs   = TEAM_ATTRS.filter(a=>a.group==='ext');
+const mixAttrs   = TEAM_ATTRS.filter(a=>a.group==='mix');
+
+function attrRow(a, color){
+  const w = Math.round(a.pCorr/maxP*100);
+  return `<tr><td><div class="aname">${a.attr}</div></td>
+    <td><div class="dbar-wrap"><div class="dbar-outer"><div class="dbar-fill" style="width:${w}%;background:${color}"></div></div><span class="dpct" style="color:${color}">${a.pCorr}%</span></div></td>
+    <td style="font-size:11px;color:var(--ink-3)">${noteFor(a.attr)}</td></tr>`;
+}
+function noteFor(attr){
+  const notes = {
+    'bad_picture-bad_angle':'Frequently both missed and incorrectly applied; highest volume attribute',
+    'lawn-dead_patch_extreme':'Both missed and over-applied; inconsistent threshold across team',
+    'lot_type-not_residential':'Mostly missed; affects 8+ annotators',
+    'lawn-debris_extreme':'Missed in majority of cases; often co-occurs with missed lawn-leaves_extreme',
+    'lawn-grass_height':'Predominantly missed; irisa at 85% miss rate',
+    'bad_picture-wrong_parcel → bad_picture-bad_angle':'Most frequent bad-picture confusion; 6 annotators affected',
+    'bad_picture-blocked → bad_picture-bad_angle':'Second most common bad-picture swap',
+    'bad_picture-bad_angle → bad_picture-wrong_parcel':'Reverse confusion from leonardm/maxwellt',
+    'lawn-leaves_extreme':'Missed in all reviewed cases across team',
+    'lawn-overgrown_weeds_extreme':'Mostly missed; also over-applied in some cases',
+    'bad_picture-wrong_parcel':'Inconsistently applied; both missed and over-labeled',
+    'wall-paint_rust_extreme':'Split: some annotators miss, others over-apply',
+    'lot_type-abandoned':'Inconsistent application of abandonment criteria',
+    'window-plywood':'Nearly evenly split between missed and extra labels',
+  };
+  return notes[attr] || '';
+}
+
+document.getElementById('tb-miss').innerHTML  = missAttrs.map(a=>attrRow(a,'#c0392b')).join('');
+document.getElementById('tb-conf').innerHTML  = confAttrs.map(a=>attrRow(a,'#5b21b6')).join('');
+document.getElementById('tb-ext').innerHTML   = extAttrs.map(a=>attrRow(a,'#b45309')).join('');
+document.getElementById('tb-mix').innerHTML   = mixAttrs.map(a=>attrRow(a,'#4a4a4a')).join('');
+
+// Section 3 annotator pattern
+const annKeys = Object.keys(ANN_STATS).sort((a,b)=>ANN_STATS[a].emr-ANN_STATS[b].emr);
+document.getElementById('ann-pattern-body').innerHTML = annKeys.map(k=>{
+  const a = ANN_STATS[k];
+  const dc = a.dominant==='missed'?'miss':a.dominant==='extra'?'ext':'conf';
+  return `<tr>
+    <td><b>${a.short}</b></td>
+    <td><span class="emr-val ${ec(a.emr)}">${a.emr}%</span></td>
+    <td class="top-attr">${a.top3.slice(0,2).join('<br>')}</td>
+    <td><span class="badge ${dc}">${domLabel(a.dominant)}</span></td>
+    <td class="coaching">${coachArea(a.short)}</td>
+  </tr>`;
+}).join('');
+
+// Section 4 distribution
+document.getElementById('dist-body').innerHTML = annKeys.map(k=>{
+  const a = ANN_STATS[k];
+  const profile = a.confusion_pct>=20?'Label confusion dominant':a.extra_pct>=30?'Over-labeling tendency':'Under-labeling tendency';
+  const pc = a.dominant==='missed'?'miss':a.dominant==='extra'?'ext':'conf';
+  return `<tr>
+    <td><b>${a.short}</b></td>
+    <td style="color:var(--red);font-weight:500">${a.missed_pct}%</td>
+    <td style="color:var(--amber);font-weight:500">${a.extra_pct}%</td>
+    <td style="color:var(--purple);font-weight:500">${a.confusion_pct}%</td>
+    <td><div class="seg-bar">
+      <div class="seg-miss"  style="width:${a.missed_pct}%"></div>
+      <div class="seg-extra" style="width:${a.extra_pct}%"></div>
+      <div class="seg-conf"  style="width:${a.confusion_pct}%"></div>
+    </div></td>
+    <td style="font-size:11px;color:var(--ink-2)">${profile}</td>
+  </tr>`;
+}).join('');
+
+// Section 5 confusion
+document.getElementById('confusion-grid').innerHTML = CONFUSION.map(c=>{
+  const [from,to] = c.pair.split(' → ');
+  return `<div class="confusion-card">
+    <div class="confusion-pair">${from}<span class="arrow">→</span>${to}</div>
+    <div class="confusion-freq">Observed across multiple annotators · ${c.n} occurrences in reviewed sample</div>
+  </div>`;
+}).join('');
+
+// Section 6 attention
+const attnActions = {
+  'Low exact match rate': 'Individual calibration session + reviewed sample walkthrough',
+  'High missed label rate': 'Team protocol update + targeted attribute examples'
+};
+document.getElementById('attn-body').innerHTML = ATTENTION.filter(a=>a.emr<46).map(a=>{
+  const rowC = a.emr<35?'attn-row-hi':a.emr<45?'attn-row-mid':'';
+  return `<tr class="${rowC}">
+    <td><b>${a.short}</b></td>
+    <td><span class="emr-val ${ec(a.emr)}">${a.emr}%</span></td>
+    <td style="font-size:12px;color:var(--ink-2)">${a.concern}</td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-2)">${a.top1}</td>
+    <td style="font-size:11px;color:var(--ink-2)">${attnActions[a.concern]}</td>
+  </tr>`;
+}).join('');
+</script>
+</body>
+</html>

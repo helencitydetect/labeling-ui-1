@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Annotation Metrics Report · Manager View · Apr 10–22 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --ink:#1a1a1a;--ink2:#4a4a4a;--ink3:#777;--ink4:#aaa;
+  --border:#e2dfd8;--bg:#f9f8f5;--white:#fff;
+  --red:#c0392b;--redl:#fdf0ee;--redb:#f5b8b2;
+  --amber:#b45309;--ambl:#fef9ee;--ambb:#fde68a;
+  --green:#166534;--grnl:#f0fdf4;--grnb:#bbf7d0;
+  --purple:#5b21b6;--purpl:#f5f3ff;--purpb:#ddd6fe;
+  --blue:#1e3a5f;--bluel:#eff6ff;
+  --na:#f2f1ee;--nab:#d5d2cc;--naink:#6b6b6b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.65;padding:32px 18px}
+.page{max-width:980px;margin:0 auto}
+code{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.07);padding:1px 5px;border-radius:3px;font-size:11px}
+
+/* ── TOP NAV ── */
+.nav{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 20px;margin-bottom:20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nav-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-right:4px}
+.nav a{font-size:11px;padding:3px 11px;border-radius:100px;border:1px solid var(--border);color:var(--ink3);text-decoration:none;white-space:nowrap}
+.nav a:hover{background:var(--bg)}
+.nav a.speed{border-color:#b5d4f4;color:var(--blue)}
+.nav a.qual{border-color:var(--grnb);color:var(--green)}
+.nav a.rw{border-color:var(--ambb);color:var(--amber)}
+.nav a.con{border-color:var(--purpb);color:var(--purple)}
+
+/* ── HEADER ── */
+.hdr{background:var(--ink);border-radius:8px 8px 0 0;padding:26px 32px 20px;color:#fff}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:16px}
+.hdr-left .rtype{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:5px}
+.hdr-left h1{font-size:19px;font-weight:600;color:#fff}
+.hdr-kpis{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.hk{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 14px;text-align:center;min-width:80px}
+.hk strong{display:block;font-size:18px;font-weight:600;color:#fff;line-height:1}
+.hk span{font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;display:block}
+.hdr-meta{display:flex;gap:20px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.12);padding-top:12px;font-size:11px;color:rgba(255,255,255,.5)}
+.hdr-meta b{color:rgba(255,255,255,.85);font-weight:500}
+
+/* ── COVERAGE STRIP ── */
+.coverage{background:var(--white);border:1px solid var(--border);border-top:none;padding:14px 32px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.cov-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2)}
+.cov-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cov-n{font-weight:600;color:var(--ink)}
+
+/* ── SECTION ── */
+.section{background:var(--white);border:1px solid var(--border);border-top:none;padding:28px 32px}
+.section:last-child{border-radius:0 0 8px 8px}
+.sec-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.sec-tag{padding:3px 10px;border-radius:100px;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase}
+.t-speed{background:var(--bluel);color:var(--blue)}
+.t-qual{background:var(--grnl);color:var(--green)}
+.t-rw{background:var(--ambl);color:var(--amber)}
+.t-con{background:var(--purpl);color:var(--purple)}
+.sec-head h2{font-size:15px;font-weight:600}
+.sec-desc{font-size:12px;color:var(--ink3);margin-bottom:22px;padding:9px 13px;background:var(--bg);border-radius:6px;border-left:3px solid var(--border);line-height:1.6}
+
+/* ── METRIC BLOCK ── */
+.mb{margin-bottom:26px;padding-bottom:26px;border-bottom:1px solid var(--border)}
+.mb:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.mb-hdr{display:flex;align-items:flex-start;gap:9px;margin-bottom:8px}
+.status{padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.s-ok{background:var(--grnl);color:var(--green)}
+.s-proxy{background:var(--ambl);color:var(--amber)}
+.s-na{background:var(--redl);color:var(--red)}
+.mb-title{font-size:13px;font-weight:600;color:var(--ink)}
+.mb-why{font-size:12px;color:var(--ink3);margin-bottom:12px;line-height:1.55}
+
+/* ── PLACEHOLDER ── */
+.ph{background:var(--na);border:1px dashed var(--nab);border-radius:7px;padding:16px 18px}
+.ph-row{display:flex;gap:10px;margin-bottom:9px;font-size:12px}
+.ph-row:last-child{margin-bottom:0}
+.ph-key{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink4);min-width:130px;flex-shrink:0;padding-top:1px}
+.ph-val{color:var(--naink);line-height:1.55}
+.ph-val b{color:var(--ink2);font-weight:500}
+.formula{font-family:'JetBrains Mono',monospace;font-size:11px;background:#e9e7e3;padding:3px 8px;border-radius:4px;display:inline-block;color:var(--ink2)}
+.proxy-warn{background:var(--ambl);border:1px solid var(--ambb);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--amber);margin-bottom:12px;line-height:1.5}
+.proxy-warn b{font-weight:600}
+
+/* ── KPI GRID ── */
+.kpi-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.kc{background:var(--bg);border-radius:6px;padding:11px 13px}
+.kl{font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:3px}
+.kv{font-size:22px;font-weight:600;line-height:1}
+.ks{font-size:10px;color:var(--ink4);margin-top:2px}
+.kv-r{color:var(--red)}.kv-a{color:var(--amber)}.kv-g{color:var(--green)}
+
+/* ── HBARS ── */
+.hbar{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.hn{width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:var(--ink2);flex-shrink:0}
+.ho{flex:1;height:16px;background:#eee;border-radius:3px;overflow:hidden}
+.hi{height:100%;border-radius:3px}
+.hv{width:38px;text-align:right;font-size:11px;font-weight:500;flex-shrink:0}
+.hsub{width:32px;font-size:10px;color:var(--ink4);flex-shrink:0}
+.ct{font-size:11px;font-weight:500;color:var(--ink3);margin-bottom:8px}
+
+/* ── LEGEND ── */
+.leg{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--ink3);padding-top:8px;border-top:1px solid var(--border)}
+.ld{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
+
+/* ── TABLES ── */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl thead tr{border-bottom:1.5px solid var(--ink)}
+.tbl th{padding:6px 9px;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);text-align:left}
+.tbl td{padding:7px 9px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tbody tr:last-child td{border-bottom:none}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px}
+.badge{display:inline-block;padding:2px 7px;border-radius:100px;font-size:10px;font-weight:500;white-space:nowrap}
+.b-miss{background:var(--redl);color:var(--red)}
+.b-ext{background:var(--ambl);color:var(--amber)}
+.b-mix{background:#f1f5f9;color:#475569}
+.b-conf{background:var(--purpl);color:var(--purple)}
+
+/* ── STACKED BAR ── */
+.sb-wrap{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.sb{display:flex;height:12px;border-radius:3px;overflow:hidden;flex:1}
+.sbm{background:var(--red)}.sbe{background:var(--amber)}.sbc{background:var(--purple)}
+
+/* ── ATTR AGREE ── */
+.aa{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:11px}
+.aan{width:170px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:var(--ink2);flex-shrink:0}
+.aao{width:100px;height:12px;background:#eee;border-radius:2px;overflow:hidden;flex-shrink:0}
+.aaf{height:100%;border-radius:2px}
+.aav{width:30px;text-align:right;font-size:11px;font-weight:500;flex-shrink:0}
+.aasub{font-size:9px;color:var(--ink4);width:30px;flex-shrink:0}
+.err-bar{display:flex;width:70px;height:6px;background:#eee;border-radius:2px;overflow:hidden;flex-shrink:0}
+
+@media print{body{padding:0;background:#fff}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- NAV -->
+<div class="nav">
+  <span class="nav-lbl">Sections:</span>
+  <a href="#s2" class="speed">2 · Speed</a>
+  <a href="#s3" class="qual">3 · Quality</a>
+  <a href="#s4" class="rw">4 · Review &amp; Rework</a>
+  <a href="#s5" class="con">5 · Consistency</a>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="hdr-left">
+      <div class="rtype">Annotation Metrics Report · Manager View</div>
+      <h1>Full metrics overview — all 22 planned metrics</h1>
+    </div>
+    <div class="hdr-kpis">
+      <div class="hk"><strong>46%</strong><span>Team EMR</span></div>
+      <div class="hk"><strong>15</strong><span>Annotators</span></div>
+      <div class="hk"><strong>147 656</strong><span>Label sets</span></div>
+      <div class="hk"><strong>1 363</strong><span>Reviewed</span></div>
+    </div>
+  </div>
+  <div class="hdr-meta">
+    <span><b>Period:</b> Apr 10 – Apr 22, 2026</span>
+    <span><b>Source:</b> all_labeler_labels_4-10.csv · admin_with_labelers_labels_4-10.csv</span>
+    <span><b>For:</b> Management · Operational overview</span>
+  </div>
+</div>
+
+<!-- COVERAGE STRIP -->
+<div class="coverage">
+  <span class="nav-lbl">Metric coverage:</span>
+  <span class="cov-item"><span class="cov-dot" style="background:var(--green)"></span><span class="cov-n">8</span>&nbsp;fully collected</span>
+  <span class="cov-item"><span class="cov-dot" style="background:var(--amber)"></span><span class="cov-n">4</span>&nbsp;proxy / partial</span>
+  <span class="cov-item"><span class="cov-dot" style="background:var(--red)"></span><span class="cov-n">10</span>&nbsp;not yet available — DB fields needed</span>
+  <span style="font-size:11px;color:var(--ink3);margin-left:auto">Missing metrics marked with a grey placeholder explaining what data is needed</span>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 2 — SPEED
+═══════════════════════════════════════════ -->
+<div id="s2" class="section">
+  <div class="sec-head">
+    <span class="sec-tag t-speed">Section 2 · Speed Metrics</span>
+    <h2>Throughput, handling time &amp; effort distribution</h2>
+  </div>
+  <div class="sec-desc">Speed metrics explain how fast the team works and why. <b>2 of 10 metrics fully collected, 2 via proxy, 6 not yet available.</b> The primary blocker for all missing time metrics is the absence of <code>annotation_started_at</code> and <code>annotation_completed_at</code> per label set, and of an active-hours or session table.</div>
+
+  <!-- S2-1 Throughput by day -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S2-1 · Throughput by day (team total)</span></div>
+    <div class="mb-why">Total label sets completed each day. Shows working rhythm and identifies operational pauses or low-activity days.</div>
+    <div class="ct">Label sets per day — Apr 10–22</div>
+    <div id="day-chart" style="position:relative;height:160px"><canvas id="dayCanvas" role="img" aria-label="Daily throughput"></canvas></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#3266ad"></span>Working day (≥5 000)</span>
+      <span><span class="ld" style="background:var(--red)"></span>Low activity (&lt;5 000) — likely weekends or pauses</span>
+    </div>
+  </div>
+
+  <!-- S2-2 Throughput by annotator -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S2-2 · Label sets per annotator (total period)</span></div>
+    <div class="mb-why">Total annotation volume per person. Ideally balanced. Large gaps may indicate uneven task distribution or absences. Team average: <b>9 844</b>.</div>
+    <div id="tp-bars"></div>
+    <div class="leg"><span style="color:var(--ink3)">All values in label sets completed. Team average: 9 844.</span></div>
+  </div>
+
+  <!-- S2-3 Avg labels per image -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S2-3 · Avg labels per image — team &amp; per annotator</span></div>
+    <div class="mb-why">Average number of attributes applied per image. Reflects average task complexity. Annotators with consistently low values may be under-labeling; high values may indicate over-labeling. Team baseline: <b>1.28</b>.</div>
+    <div class="kpi-g">
+      <div class="kc"><div class="kl">Team avg</div><div class="kv">1.28</div><div class="ks">labels / image</div></div>
+      <div class="kc"><div class="kl">Highest</div><div class="kv kv-g">1.19</div><div class="ks">ruthd</div></div>
+      <div class="kc"><div class="kl">Lowest</div><div class="kv kv-a">0.60</div><div class="ks">preciousa</div></div>
+    </div>
+    <div class="ct">Avg labels per image by annotator — baseline 1.28</div>
+    <div id="lpi-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>Above baseline (≥1.1)</span>
+      <span><span class="ld" style="background:#3266ad"></span>Near baseline (0.8–1.1)</span>
+      <span><span class="ld" style="background:var(--amber)"></span>Below baseline (&lt;0.8)</span>
+    </div>
+  </div>
+
+  <!-- S2-4 Median handling time — PROXY -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-proxy">proxy</span><span class="mb-title">S2-4 · Median &amp; P90 handling time per image</span></div>
+    <div class="mb-why">Typical time to process one image (P50) and the slow-tail cutoff (P90). The main speed baseline — should decrease as the team calibrates.</div>
+    <div class="proxy-warn"><b>Proxy only:</b> Real task duration requires <code>annotation_started_at</code> and <code>annotation_completed_at</code> per label set. These fields are not in the current data. A proxy via queue <code>assigned_at</code> is available but overestimates duration by including idle time.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">P50 / P90 (annotation_completed_at − annotation_started_at)</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val"><code>annotation_started_at</code> and <code>annotation_completed_at</code> on every <code>label_set</code> row</span></div>
+      <div class="ph-row"><span class="ph-key">What it will show</span><span class="ph-val">The team's real working pace and the slow tail. P90 should be tracked separately to catch the edge cases that block throughput improvements.</span></div>
+      <div class="ph-row"><span class="ph-key">Recommendation</span><span class="ph-val"><b>Add these timestamps as a priority.</b> Without them, no time-based speed metric can be computed accurately, and throughput targets (e.g. 1 200 images/day) cannot be validated against actual working pace.</span></div>
+    </div>
+  </div>
+
+  <!-- S2-5 Images per hour — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S2-5 · Images per hour</span></div>
+    <div class="mb-why">Number of completed label sets per active working hour. The main capacity metric — shows whether the daily target is realistic and enables fair comparison across annotators with different schedules.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">COUNT(completed_images) / SUM(active_hours)</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val"><code>active_hours</code> per annotator per day, or a <code>work_session</code> table with <code>session_start</code> / <code>session_end</code></span></div>
+      <div class="ph-row"><span class="ph-key">What it will show</span><span class="ph-val">Whether the 1 200 images/day target is achievable. Without active hours, dividing by calendar time penalises annotators who worked shorter shifts and rewards those who were simply logged in longer.</span></div>
+      <div class="ph-row"><span class="ph-key">Recommendation</span><span class="ph-val"><b>Implement session logging.</b> Even a simple session start/end table would unlock this metric and all per-hour comparisons.</span></div>
+    </div>
+  </div>
+
+  <!-- S2-6 Handling time by label count bucket — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S2-6 · Handling time by label count bucket (0 / 1 / 2–3 / 4–5 / 6+)</span></div>
+    <div class="mb-why">Average handling time grouped by image complexity (number of labels). Shows whether slowdowns are caused by complex multi-label images rather than process or training issues.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">P50(duration) GROUP BY label_count_bucket</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val"><code>annotation_started_at</code>, <code>annotation_completed_at</code></span></div>
+      <div class="ph-row"><span class="ph-key">What it will show</span><span class="ph-val">Complexity jump points — e.g. "images with 4+ labels take 40% longer". Enables separate throughput targets for simple vs complex image types.</span></div>
+      <div class="ph-row"><span class="ph-key">Recommendation</span><span class="ph-val"><b>Prioritise with S2-4.</b> Both require the same two timestamp fields — adding them resolves three speed metrics at once.</span></div>
+    </div>
+  </div>
+
+  <!-- S2-7 Handling time by attribute presence — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S2-7 · Handling time by attribute presence</span></div>
+    <div class="mb-why">Average handling time for images where a specific attribute is present. Identifies which attributes are associated with slower, more expensive tasks.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">AVG(duration) WHERE attribute_id = X</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val"><code>annotation_started_at</code>, <code>annotation_completed_at</code>, optionally <code>task_complexity_score</code></span></div>
+      <div class="ph-row"><span class="ph-key">What it will show</span><span class="ph-val">Which attributes drive the most annotation time. Feeds into guideline prioritisation and tooling decisions.</span></div>
+    </div>
+  </div>
+
+  <!-- S2-8 Incremental time cost — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S2-8 · Incremental time cost by attribute</span></div>
+    <div class="mb-why">Extra time added by each attribute compared to images without it. The most actionable speed metric — directly identifies where simplifying a guideline or adding visual examples would save the most time.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">AVG(time | attr present) − AVG(time | attr absent)</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val"><code>annotation_started_at</code>, <code>annotation_completed_at</code>, <code>task_complexity_score</code></span></div>
+      <div class="ph-row"><span class="ph-key">Recommendation</span><span class="ph-val"><b>High ROI metric.</b> Once timestamps are added, focus analysis on the top 5–10 attributes by incremental cost to identify the highest-leverage guideline improvements.</span></div>
+    </div>
+  </div>
+
+  <!-- S2-9 Time by annotator vs team median — PROXY -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-proxy">proxy</span><span class="mb-title">S2-9 · Time by annotator vs team median</span></div>
+    <div class="mb-why">Difference between each annotator's typical handling time and the team median. Quickly shows who works faster or slower than the norm, and where to look for training or process gaps.</div>
+    <div class="proxy-warn"><b>Proxy:</b> Volume count (label sets per period) is shown above as an indirect proxy. It does not capture speed — an annotator with fewer label sets may have worked fewer hours, not worked more slowly. Real comparison requires per-image duration.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">P50(annotator_duration) − P50(team_duration)</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val"><code>annotation_started_at</code>, <code>annotation_completed_at</code>, <code>active_hours</code></span></div>
+      <div class="ph-row"><span class="ph-key">Target</span><span class="ph-val">Near team norm. Deviations &gt;40% from median should be investigated — may indicate a process issue, workload imbalance, or training need.</span></div>
+    </div>
+  </div>
+
+  <!-- S2-10 Labels per hour — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S2-10 · Labels per hour</span></div>
+    <div class="mb-why">Number of individual attributes applied per active hour. A fairer throughput comparison than images per hour when annotators handle different mixes of simple and complex images.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">COUNT(labels_applied) / SUM(active_hours)</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val"><code>active_hours</code> or work session table</span></div>
+      <div class="ph-row"><span class="ph-key">Recommendation</span><span class="ph-val">Unlocked by the same session table required for S2-5. Low additional implementation cost once sessions are logged.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 3 — QUALITY
+═══════════════════════════════════════════ -->
+<div id="s3" class="section">
+  <div class="sec-head">
+    <span class="sec-tag t-qual">Section 3 · Quality Metrics</span>
+    <h2>Label correctness, agreement &amp; error patterns</h2>
+  </div>
+  <div class="sec-desc">Quality metrics measure whether labels are correct, stable, and usable. <b>5 of 8 metrics fully collected.</b> Precision, Recall, and F1 require a TP/FP/TN/FN comparison table that does not yet exist in the database.</div>
+
+  <!-- Q1 Exact match rate -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S3-1 · Exact match rate (EMR)</span></div>
+    <div class="mb-why">Share of reviewed images where the annotator's labels exactly matched the admin's output — nothing added, nothing removed. The clearest top-level quality signal. Higher is better; should increase over time.</div>
+    <div class="kpi-g">
+      <div class="kc"><div class="kl">Team avg EMR</div><div class="kv kv-a">46%</div><div class="ks">of reviewed images</div></div>
+      <div class="kc"><div class="kl">Best annotator</div><div class="kv kv-g">61%</div><div class="ks">emmanuel</div></div>
+      <div class="kc"><div class="kl">Lowest annotator</div><div class="kv kv-r">28%</div><div class="ks">leonardm</div></div>
+      <div class="kc"><div class="kl">Review coverage</div><div class="kv kv-a">0.9%</div><div class="ks">1 363 of 147 656</div></div>
+    </div>
+    <div class="ct">Exact match rate by annotator (low → high)</div>
+    <div id="emr-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>Good (≥55%)</span>
+      <span><span class="ld" style="background:var(--amber)"></span>Average (45–54%)</span>
+      <span><span class="ld" style="background:var(--red)"></span>Needs attention (&lt;45%)</span>
+    </div>
+  </div>
+
+  <!-- Q2 Correction rate -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S3-2 · Reviewer correction rate &amp; type breakdown</span></div>
+    <div class="mb-why">Share of reviewed images where at least one label was changed. Shows how much first-pass output requires correction and reveals the dominant error type per annotator.</div>
+    <div class="kpi-g">
+      <div class="kc"><div class="kl">Team correction rate</div><div class="kv kv-a">54%</div><div class="ks">of reviewed images</div></div>
+      <div class="kc"><div class="kl">Admin added labels</div><div class="kv kv-r">73%</div><div class="ks">of all corrections</div></div>
+      <div class="kc"><div class="kl">Admin removed labels</div><div class="kv kv-a">19%</div><div class="ks">of all corrections</div></div>
+      <div class="kc"><div class="kl">Label confusion</div><div class="kv">8%</div><div class="ks">of all corrections</div></div>
+    </div>
+    <div class="ct">Correction type breakdown by annotator (sorted by EMR high → low)</div>
+    <div id="dist-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:var(--red)"></span>Missed labels (admin added)</span>
+      <span><span class="ld" style="background:var(--amber)"></span>Extra labels (admin removed)</span>
+      <span><span class="ld" style="background:var(--purple)"></span>Label confusion (wrong attribute)</span>
+    </div>
+  </div>
+
+  <!-- Q3 Attribute agreement rate -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S3-3 · Attribute agreement rate</span></div>
+    <div class="mb-why">For each attribute: how often annotator and admin agreed — both marked it present or both absent. Shows which attributes are well-understood and which create the most disagreement. Bottom 15 shown (min 10 reviews).</div>
+    <div class="ct">Agreement rate + error type (blue = missed by annotator, red = false positive)</div>
+    <div id="agree-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#3266ad"></span>Missed (admin added)</span>
+      <span><span class="ld" style="background:var(--red)"></span>False positive (admin removed)</span>
+    </div>
+  </div>
+
+  <!-- Q4 Added by reviewer -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S3-4 · Added-by-reviewer rate (under-labeling)</span></div>
+    <div class="mb-why">Share of reviewed images where admin added at least one missing label. Indicates false-negative / under-labeling tendency. Team-wide pattern: <b>73% of all corrections were additions</b> — under-labeling is the dominant issue.</div>
+    <div class="ct">% of reviewed images with at least one label added by admin</div>
+    <div id="added-bars"></div>
+    <div class="leg"><span style="color:var(--ink3)">Lower is better. Team average: 46% of reviewed images had at least one label added.</span></div>
+  </div>
+
+  <!-- Q5 Removed by reviewer -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S3-5 · Removed-by-reviewer rate (over-labeling)</span></div>
+    <div class="mb-why">Share of reviewed images where admin removed at least one label. Indicates over-labeling / false positives in first-pass work. Less prevalent than missed labels but still present in ~20% of reviewed cases.</div>
+    <div class="ct">% of reviewed images with at least one label removed by admin</div>
+    <div id="removed-bars"></div>
+    <div class="leg"><span style="color:var(--ink3)">Lower is better. Team average: 18% of reviewed images had at least one label removed.</span></div>
+  </div>
+
+  <!-- Q6 Precision — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S3-6 · Attribute precision — TP / (TP + FP)</span></div>
+    <div class="mb-why">For reviewed images: how often a positive label by the annotator was confirmed by the admin. High precision means the annotator is not over-calling an attribute. Especially important for high-cost false positives on structural damage attributes.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">TP / (TP + FP)</span> per attribute per annotator</span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val">A comparison table storing <code>TP</code>, <code>FP</code>, <code>TN</code>, <code>FN</code> per reviewed image × attribute. Currently these values can be partially reconstructed from raw label diffs but the logic is fragile and must be rebuilt each time.</span></div>
+      <div class="ph-row"><span class="ph-key">What it will show</span><span class="ph-val">Which attributes are being over-called most often, ranked by false positive rate. Especially important for attributes like <code>roof-structural_extreme</code> where a false positive has real downstream cost.</span></div>
+      <div class="ph-row"><span class="ph-key">Recommendation</span><span class="ph-val"><b>Add the TP/FP/TN/FN comparison table.</b> This single table unlocks Precision, Recall, and F1 simultaneously — three metrics from one schema addition.</span></div>
+    </div>
+  </div>
+
+  <!-- Q7 Recall — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S3-7 · Attribute recall — TP / (TP + FN)</span></div>
+    <div class="mb-why">For reviewed images: how often an attribute present in the admin's output was already found by the annotator. Low recall means the annotator is systematically missing a real condition. Critical for high-priority structural attributes where missed labels mean real conditions go undetected.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">TP / (TP + FN)</span> per attribute per annotator</span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val">Same TP/FP/TN/FN table as Precision. No additional fields required.</span></div>
+      <div class="ph-row"><span class="ph-key">What it will show</span><span class="ph-val">Systematic miss patterns per attribute — which conditions are most frequently overlooked, and by whom. Current agreement rate approximates this but conflates missed and false positive cases, making it impossible to distinguish the two without the comparison table.</span></div>
+    </div>
+  </div>
+
+  <!-- Q8 F1 — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S3-8 · Attribute F1 score — 2·P·R / (P + R)</span></div>
+    <div class="mb-why">Balanced summary of precision and recall per attribute. Most useful for cross-attribute comparison and for prioritising which attributes to address in guideline updates — a low-F1 attribute with high review volume represents the highest ROI for calibration effort.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">2 × Precision × Recall / (Precision + Recall)</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val">Derived from Precision + Recall — same TP/FP/TN/FN table. No additional fields.</span></div>
+      <div class="ph-row"><span class="ph-key">Recommendation</span><span class="ph-val"><b>Zero marginal cost once Precision and Recall are available.</b> Add to the standard reporting dashboard as the single quality summary score per attribute.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 4 — REVIEW & REWORK
+═══════════════════════════════════════════ -->
+<div id="s4" class="section">
+  <div class="sec-head">
+    <span class="sec-tag t-rw">Section 4 · Review &amp; Rework Metrics</span>
+    <h2>Capacity spent on checking and correcting completed work</h2>
+  </div>
+  <div class="sec-desc">Review and rework metrics track how much team capacity goes into re-checking or fixing work rather than producing new annotations. <b>2 of 4 metrics collected.</b> Rework tracking and time-load measurement require <code>image_id</code> chaining across label sets and review timestamps.</div>
+
+  <!-- RW1 Review coverage -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S4-1 · Review coverage rate</span></div>
+    <div class="mb-why">Share of first-pass label sets reviewed by admin. Shows what proportion of production is quality-controlled. At <b>0.9%</b> the current review is a sampled approach — sufficient for trend detection but not for per-annotator certification.</div>
+    <div class="kpi-g">
+      <div class="kc"><div class="kl">Review coverage</div><div class="kv kv-a">0.9%</div><div class="ks">of all label sets</div></div>
+      <div class="kc"><div class="kl">Total label sets</div><div class="kv">147 656</div><div class="ks">first-pass</div></div>
+      <div class="kc"><div class="kl">Reviewed by admin</div><div class="kv">1 363</div><div class="ks">images in sample</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--ink3)">Coverage depends on QC policy. The current 0.9% should be tracked against the intended sampling strategy to confirm it provides sufficient statistical confidence for quality estimates at both team and annotator level.</div>
+  </div>
+
+  <!-- RW2 First-pass acceptance -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S4-2 · First-pass acceptance rate</span></div>
+    <div class="mb-why">Share of reviewed images accepted without any change. Equal to Exact Match Rate. Shows how much first-pass work is truly production-ready without requiring reviewer correction.</div>
+    <div class="ct">First-pass acceptance rate by annotator (= EMR, low → high)</div>
+    <div id="fpa-bars"></div>
+    <div class="leg"><span style="color:var(--ink3)">Higher is better. Team average: 46%. 100% would mean zero reviewer corrections on sampled work.</span></div>
+  </div>
+
+  <!-- RW3 Rework rate — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S4-3 · Rework rate</span></div>
+    <div class="mb-why">Share of images that required additional correction after original annotation — images with more than one label_set version in the revision chain. Shows how much throughput is consumed by rework rather than net-new annotation.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">COUNT(images with revision chain &gt; 1) / COUNT(DISTINCT image_id)</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val"><code>image_id</code> consistently populated in all <code>label_set</code> rows (currently absent from the labeler CSV). Also: <code>rework_reason</code>, <code>rework_stage</code>, <code>final_status</code> to distinguish QA correction from other re-processing reasons.</span></div>
+      <div class="ph-row"><span class="ph-key">What it will show</span><span class="ph-val">True net productivity. Even a 5% rework rate means 1 in 20 images requires extra time from both the annotator and the reviewer — a significant hidden cost at the current production volume.</span></div>
+      <div class="ph-row"><span class="ph-key">Recommendation</span><span class="ph-val"><b>Add <code>image_id</code> to all label_set rows.</b> This is the highest-priority missing field — it unlocks rework tracking, revision chains, and avg revisions per item simultaneously.</span></div>
+    </div>
+  </div>
+
+  <!-- RW4 Review share / rework time load — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S4-4 · Review share of total work &amp; rework time load</span></div>
+    <div class="mb-why">What fraction of total capacity is spent on review and rework rather than net-new annotation, and what is the actual time cost of that correction work. Critical for understanding true team productivity vs apparent throughput.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Volume formula</span><span class="ph-val"><span class="formula">review_items / total_items</span></span></div>
+      <div class="ph-row"><span class="ph-key">Time formula</span><span class="ph-val"><span class="formula">SUM(review_duration) / SUM(all_annotation_duration)</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val"><code>review_started_at</code>, <code>review_completed_at</code> per review event; <code>annotation_started_at</code>, <code>annotation_completed_at</code> per label_set</span></div>
+      <div class="ph-row"><span class="ph-key">What it will show</span><span class="ph-val">The true cost of the review process. Helps determine whether increasing review coverage would meaningfully raise quality or simply absorb capacity without proportionate quality gain.</span></div>
+      <div class="ph-row"><span class="ph-key">Recommendation</span><span class="ph-val"><b>Prioritise review timestamp logging.</b> Combined with annotation timestamps (required for S2-4), this enables a complete picture of where team capacity actually goes.</span></div>
+    </div>
+  </div>
+
+  <!-- RW5 Avg revisions — PARTIAL -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-proxy">partial</span><span class="mb-title">S4-5 · Average revisions per item</span></div>
+    <div class="mb-why">Average number of label_set versions created per image. Shows how often the same image is revisited or re-annotated.</div>
+    <div class="proxy-warn"><b>Partial only:</b> <code>image_id</code> is present in the admin review CSV (1 363 images) but absent from the labeler CSV (147 656 label sets). Revision chaining can only be computed for the reviewed subset — not for all production output.</div>
+    <div class="kpi-g">
+      <div class="kc"><div class="kl">Avg versions (reviewed subset)</div><div class="kv kv-a">2.0</div><div class="ks">original + 1 review version</div></div>
+      <div class="kc"><div class="kl">Production-wide avg</div><div class="kv" style="color:var(--ink3)">—</div><div class="ks">image_id missing from labeler CSV</div></div>
+    </div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">To fully compute</span><span class="ph-val">Add <code>image_id</code> to all <code>label_set</code> rows in the labeler data. Also add <code>revision_number</code> and <code>label_set_stage</code> to reconstruct revision chains without complex logic.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 5 — CONSISTENCY
+═══════════════════════════════════════════ -->
+<div id="s5" class="section">
+  <div class="sec-head">
+    <span class="sec-tag t-con">Section 5 · Annotator Consistency Metrics</span>
+    <h2>Stability and comparability of labeling behaviour</h2>
+  </div>
+  <div class="sec-desc">Consistency metrics detect whether annotators interpret and apply labels in a comparable, stable way — not just who is right or wrong but whether the team is calibrated to the same standard. <b>3 of 5 metrics collected.</b> Day-to-day variance metrics require per-image timestamps.</div>
+
+  <!-- C1 Avg labels per image by annotator -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S5-1 · Avg labels per image by annotator vs team baseline</span></div>
+    <div class="mb-why">Detects systematic over- or under-labeling tendencies. Large deviation from the team baseline (1.28) may signal calibration need rather than a one-off error — it means the annotator is consistently applying a different threshold than the rest of the team.</div>
+    <div class="ct">Avg labels per image — baseline 1.28 (same data as S2-3, consistency lens)</div>
+    <div id="lpi2-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>Above baseline (≥1.1)</span>
+      <span><span class="ld" style="background:#3266ad"></span>Near baseline (0.8–1.1)</span>
+      <span><span class="ld" style="background:var(--amber)"></span>Below baseline (&lt;0.8) — potential under-labeling</span>
+    </div>
+  </div>
+
+  <!-- C2 Positive rate heatmap -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S5-2 · Positive rate by attribute and annotator</span></div>
+    <div class="mb-why">How often (% of images) each annotator marks a given attribute as present. Similar values across the team indicate consistent interpretation. Large deviations signal calibration divergence — the annotator is applying a systematically different threshold, not just making random errors.</div>
+    <div class="ct">Positive rate — top 8 attributes · cells highlighted when deviation ≥40% from team avg</div>
+    <div style="overflow-x:auto"><table class="tbl" id="pos-rate-tbl"></table></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>Significantly above team avg (&gt;+40%)</span>
+      <span><span class="ld" style="background:#993C1D"></span>Significantly below team avg (&lt;−40%)</span>
+      <span style="color:var(--ink4)">No highlight = within normal range</span>
+    </div>
+  </div>
+
+  <!-- C3 Deviation from team mean -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-ok">collected</span><span class="mb-title">S5-3 · Deviation from team mean — exact match rate</span></div>
+    <div class="mb-why">Each annotator's EMR vs the team average (46%). Positive = above norm; negative = below. Large deviations warrant investigation into root cause before attributing to skill alone — batch composition, working hours, and image type mix all affect the score.</div>
+    <div class="ct">EMR deviation from team avg (46%) — positive bar = better than team</div>
+    <div id="dev-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>Above team avg</span>
+      <span><span class="ld" style="background:var(--red)"></span>Below team avg</span>
+    </div>
+  </div>
+
+  <!-- C4 Day-to-day label variance — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S5-4 · Day-to-day variance in label behaviour — STDDEV</span></div>
+    <div class="mb-why">Stability of label density and attribute usage rates over time per annotator. High variance may indicate fatigue, changing interpretation, or inconsistent conditions — rather than consistent performance in either direction.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">STDDEV(labels_per_image) per annotator per day</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val">Daily per-annotator per-attribute breakdowns with session/workload context to separate genuine inconsistency from normal variation caused by changing input data composition (different image batches on different days).</span></div>
+      <div class="ph-row"><span class="ph-key">What it will show</span><span class="ph-val">Whether an annotator's behaviour is stable over time or drifts. Accumulate 4+ weeks of data before setting a threshold for "acceptable variance".</span></div>
+      <div class="ph-row"><span class="ph-key">Recommendation</span><span class="ph-val"><b>Low implementation cost</b> — requires only daily task-mix snapshots and the session context already needed for speed metrics. Adds longitudinal quality visibility with minimal additional data.</span></div>
+    </div>
+  </div>
+
+  <!-- C5 Day-to-day speed variance — MISSING -->
+  <div class="mb">
+    <div class="mb-hdr"><span class="status s-na">not available</span><span class="mb-title">S5-5 · Day-to-day variance in speed — STDDEV</span></div>
+    <div class="mb-why">Stability of handling time or throughput over time per annotator. Flags fatigue, unstable pacing, or inconsistent process conditions that would otherwise be hidden behind average figures.</div>
+    <div class="ph">
+      <div class="ph-row"><span class="ph-key">Formula</span><span class="ph-val"><span class="formula">STDDEV(images_per_hour) per annotator per day</span></span></div>
+      <div class="ph-row"><span class="ph-key">DB fields needed</span><span class="ph-val"><code>annotation_started_at</code>, <code>annotation_completed_at</code> for per-image duration; <code>active_hours</code> or session table for daily images-per-hour (not images-per-calendar-day, which conflates working time with schedule differences)</span></div>
+      <div class="ph-row"><span class="ph-key">What it will show</span><span class="ph-val">Flag annotators whose speed fluctuates more than 30–40% day-over-day as candidates for a check-in. Distinguish real speed instability from workload variation caused by different image batches.</span></div>
+      <div class="ph-row"><span class="ph-key">Recommendation</span><span class="ph-val">Unlocked by the same session and timestamp fields required for speed metrics S2-4 through S2-6. <b>No additional DB work needed beyond what is already recommended above.</b></span></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const DAY={  "2026-04-10":17250,"2026-04-11":943,"2026-04-12":6,"2026-04-13":17121,"2026-04-14":5090,"2026-04-15":18192,"2026-04-16":17050,"2026-04-17":18067,"2026-04-19":478,"2026-04-20":17539,"2026-04-21":18005,"2026-04-22":17922};
+const TP={"maxwellt":10080,"theo":10051,"ruthd":10031,"godwina":9990,"leonardm":9966,"samuelo":9960,"jeremiah":9950,"obed":9922,"samuell":9916,"preciousa":9910,"phyllisk":9901,"jezemiah":9787,"Irenen":9682,"irisa":9404,"emmanuel":9106};
+const LPI={"ruthd":1.19,"Irenen":1.12,"obed":1.05,"phyllisk":1.0,"jezemiah":0.99,"godwina":0.94,"emmanuel":0.88,"leonardm":0.87,"maxwellt":0.83,"theo":0.81,"samuell":0.8,"samuelo":0.74,"irisa":0.7,"jeremiah":0.62,"preciousa":0.6};
+const ANN={"Irenen":{"emr":57,"missed_pct":73,"extra_pct":22,"confusion_pct":4,"imgs_missed_pct":36,"imgs_extra_pct":12},"emmanuel":{"emr":61,"missed_pct":76,"extra_pct":10,"confusion_pct":14,"imgs_missed_pct":29,"imgs_extra_pct":5},"godwina":{"emr":41,"missed_pct":58,"extra_pct":28,"confusion_pct":14,"imgs_missed_pct":41,"imgs_extra_pct":22},"irisa":{"emr":36,"missed_pct":92,"extra_pct":8,"confusion_pct":0,"imgs_missed_pct":63,"imgs_extra_pct":8},"jeremiah":{"emr":49,"missed_pct":81,"extra_pct":11,"confusion_pct":8,"imgs_missed_pct":44,"imgs_extra_pct":16},"jezemiah":{"emr":47,"missed_pct":85,"extra_pct":15,"confusion_pct":0,"imgs_missed_pct":49,"imgs_extra_pct":10},"leonardm":{"emr":28,"missed_pct":53,"extra_pct":19,"confusion_pct":28,"imgs_missed_pct":35,"imgs_extra_pct":16},"maxwellt":{"emr":31,"missed_pct":62,"extra_pct":16,"confusion_pct":22,"imgs_missed_pct":46,"imgs_extra_pct":11},"obed":{"emr":43,"missed_pct":67,"extra_pct":23,"confusion_pct":10,"imgs_missed_pct":42,"imgs_extra_pct":16},"phyllisk":{"emr":59,"missed_pct":78,"extra_pct":18,"confusion_pct":3,"imgs_missed_pct":35,"imgs_extra_pct":11},"preciousa":{"emr":55,"missed_pct":86,"extra_pct":12,"confusion_pct":2,"imgs_missed_pct":43,"imgs_extra_pct":7},"ruthd":{"emr":42,"missed_pct":67,"extra_pct":33,"confusion_pct":0,"imgs_missed_pct":46,"imgs_extra_pct":26},"samuell":{"emr":52,"missed_pct":68,"extra_pct":27,"confusion_pct":5,"imgs_missed_pct":42,"imgs_extra_pct":16},"samuelo":{"emr":51,"missed_pct":89,"extra_pct":11,"confusion_pct":0,"imgs_missed_pct":48,"imgs_extra_pct":8},"theo":{"emr":39,"missed_pct":78,"extra_pct":20,"confusion_pct":2,"imgs_missed_pct":55,"imgs_extra_pct":18}};
+const AGREE=[{"attr":"lawn-leaves_extreme","rate":26,"n":65,"miss":74,"fp":0},{"attr":"sidewalk-leaves_extreme","rate":28,"n":25,"miss":72,"fp":0},{"attr":"sidewalk-debris_extreme","rate":28,"n":18,"miss":72,"fp":0},{"attr":"driveway-leaves_extreme","rate":31,"n":16,"miss":56,"fp":12},{"attr":"lawn-grass_height","rate":39,"n":80,"miss":54,"fp":8},{"attr":"bad_picture-wrong_parcel","rate":40,"n":188,"miss":29,"fp":31},{"attr":"lawn-overgrown_weeds_extreme","rate":40,"n":70,"miss":56,"fp":4},{"attr":"fence-paint_rust_extreme","rate":43,"n":28,"miss":57,"fp":0},{"attr":"lawn-branches_extreme","rate":44,"n":27,"miss":52,"fp":4},{"attr":"porch-paint_rust_extreme","rate":48,"n":27,"miss":15,"fp":37},{"attr":"soffit-structural_extreme","rate":48,"n":31,"miss":48,"fp":3},{"attr":"railing-paint_rust_extreme","rate":48,"n":21,"miss":48,"fp":5},{"attr":"bad_picture-blocked","rate":50,"n":78,"miss":5,"fp":45},{"attr":"fence-overgrown_extreme","rate":50,"n":46,"miss":50,"fp":0},{"attr":"lawn-debris_extreme","rate":50,"n":108,"miss":46,"fp":4}];
+const PM={"jezemiah":{"bad_picture-bad_angle":12.4,"lot_type-not_residential":9.2,"window-plywood":0.5,"bad_picture-wrong_parcel":7.9,"lot_type-abandoned":0.1,"lot_type-vacant":8.0,"door-plywood":0.2,"lawn-dead_patch_extreme":10.4},"ruthd":{"bad_picture-bad_angle":13.8,"lot_type-not_residential":7.9,"window-plywood":0.4,"bad_picture-wrong_parcel":6.3,"lot_type-abandoned":0.3,"lot_type-vacant":6.6,"door-plywood":0.2,"lawn-dead_patch_extreme":7.1},"phyllisk":{"bad_picture-bad_angle":10.5,"lot_type-not_residential":7.0,"window-plywood":1.0,"bad_picture-wrong_parcel":5.6,"lot_type-abandoned":0.3,"lot_type-vacant":8.4,"door-plywood":0.3,"lawn-dead_patch_extreme":7.6},"jeremiah":{"bad_picture-bad_angle":18.9,"lot_type-not_residential":8.7,"window-plywood":0.2,"bad_picture-wrong_parcel":8.0,"lot_type-abandoned":0.0,"lot_type-vacant":6.8,"door-plywood":0.1,"lawn-dead_patch_extreme":1.2},"theo":{"bad_picture-bad_angle":7.9,"lot_type-not_residential":9.3,"window-plywood":0.7,"bad_picture-wrong_parcel":5.6,"lot_type-abandoned":0.3,"lot_type-vacant":9.0,"door-plywood":0.3,"lawn-dead_patch_extreme":4.5},"leonardm":{"bad_picture-bad_angle":11.9,"lot_type-not_residential":6.4,"window-plywood":0.4,"bad_picture-wrong_parcel":9.9,"lot_type-abandoned":0.1,"lot_type-vacant":6.9,"door-plywood":0.2,"lawn-dead_patch_extreme":3.4},"godwina":{"bad_picture-bad_angle":10.7,"lot_type-not_residential":7.5,"window-plywood":0.6,"bad_picture-wrong_parcel":10.7,"lot_type-abandoned":0.4,"lot_type-vacant":6.8,"door-plywood":0.3,"lawn-dead_patch_extreme":3.8},"preciousa":{"bad_picture-bad_angle":12.8,"lot_type-not_residential":11.1,"window-plywood":0.3,"bad_picture-wrong_parcel":9.5,"lot_type-abandoned":0.2,"lot_type-vacant":8.8,"door-plywood":0.2,"lawn-dead_patch_extreme":1.5},"samuelo":{"bad_picture-bad_angle":10.8,"lot_type-not_residential":9.2,"window-plywood":0.3,"bad_picture-wrong_parcel":7.5,"lot_type-abandoned":0.2,"lot_type-vacant":7.8,"door-plywood":0.2,"lawn-dead_patch_extreme":2.0},"Irenen":{"bad_picture-bad_angle":11.8,"lot_type-not_residential":8.3,"window-plywood":0.3,"bad_picture-wrong_parcel":3.2,"lot_type-abandoned":0.1,"lot_type-vacant":8.3,"door-plywood":0.2,"lawn-dead_patch_extreme":9.0},"samuell":{"bad_picture-bad_angle":18.6,"lot_type-not_residential":12.3,"window-plywood":0.4,"bad_picture-wrong_parcel":9.4,"lot_type-abandoned":0.0,"lot_type-vacant":7.3,"door-plywood":0.1,"lawn-dead_patch_extreme":0.7},"obed":{"bad_picture-bad_angle":13.9,"lot_type-not_residential":9.2,"window-plywood":0.3,"bad_picture-wrong_parcel":9.5,"lot_type-abandoned":0.0,"lot_type-vacant":7.2,"door-plywood":0.1,"lawn-dead_patch_extreme":5.8},"irisa":{"bad_picture-bad_angle":5.1,"lot_type-not_residential":7.5,"window-plywood":0.4,"bad_picture-wrong_parcel":5.8,"lot_type-abandoned":0.0,"lot_type-vacant":10.6,"door-plywood":0.1,"lawn-dead_patch_extreme":1.7},"maxwellt":{"bad_picture-bad_angle":11.2,"lot_type-not_residential":11.1,"window-plywood":0.4,"bad_picture-wrong_parcel":6.1,"lot_type-abandoned":0.2,"lot_type-vacant":7.5,"door-plywood":0.2,"lawn-dead_patch_extreme":3.6},"emmanuel":{"bad_picture-bad_angle":13.7,"lot_type-not_residential":9.6,"window-plywood":0.5,"bad_picture-wrong_parcel":6.4,"lot_type-abandoned":0.3,"lot_type-vacant":7.7,"door-plywood":0.2,"lawn-dead_patch_extreme":5.0}};
+const TOP_ATTRS=["bad_picture-bad_angle","lot_type-not_residential","window-plywood","bad_picture-wrong_parcel","lot_type-abandoned","lot_type-vacant","door-plywood","lawn-dead_patch_extreme"];
+
+function lpiCol(v){return v>=1.1?'#1D9E75':v>=0.8?'#3266ad':'#b45309'}
+function emrCol(v){return v>=55?'#1D9E75':v>=45?'#b45309':'#c0392b'}
+
+function hbars(id,items,maxV,colFn,valFn,subFn){
+  document.getElementById(id).innerHTML=items.map(([n,v])=>`
+    <div class="hbar">
+      <div class="hn" title="${n}">${n}</div>
+      <div class="ho"><div class="hi" style="width:${Math.round(v/maxV*100)}%;background:${colFn(v)}"></div></div>
+      <div class="hv" style="color:${colFn(v)}">${valFn(v)}</div>
+      ${subFn?`<div class="hsub">${subFn(v)}</div>`:''}
+    </div>`).join('');
+}
+
+/* Day chart */
+const dc=document.getElementById('dayCanvas');
+dc.style.width='100%'; dc.style.height='160px';
+new Chart(dc,{type:'bar',data:{labels:Object.keys(DAY).map(d=>d.slice(5)),datasets:[{data:Object.values(DAY),backgroundColor:Object.values(DAY).map(v=>v<5000?'#c0392b':'#3266ad'),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toLocaleString()+' label sets'}}},scales:{x:{ticks:{autoSkip:false,maxRotation:0,font:{size:10}}},y:{ticks:{callback:v=>(v/1000).toFixed(0)+'k'}}}}});
+
+/* Throughput */
+hbars('tp-bars',Object.entries(TP).sort((a,b)=>b[1]-a[1]),Math.max(...Object.values(TP)),()=>'#3266ad',v=>v.toLocaleString(),null);
+
+/* LPI */
+const lpiPairs=Object.entries(LPI).sort((a,b)=>b[1]-a[1]);
+hbars('lpi-bars',lpiPairs,1.5,lpiCol,v=>v.toFixed(2),null);
+hbars('lpi2-bars',lpiPairs,1.5,lpiCol,v=>v.toFixed(2),null);
+
+/* EMR */
+const emrPairs=Object.entries(ANN).map(([n,v])=>[n,v.emr]).sort((a,b)=>a[1]-b[1]);
+hbars('emr-bars',emrPairs,100,emrCol,v=>v+'%',null);
+hbars('fpa-bars',emrPairs,100,emrCol,v=>v+'%',null);
+
+/* Added / Removed */
+hbars('added-bars',Object.entries(ANN).map(([n,v])=>[n,v.imgs_missed_pct]).sort((a,b)=>b[1]-a[1]),100,()=>'#c0392b',v=>v+'%',null);
+hbars('removed-bars',Object.entries(ANN).map(([n,v])=>[n,v.imgs_extra_pct]).sort((a,b)=>b[1]-a[1]),100,()=>'#b45309',v=>v+'%',null);
+
+/* Correction dist */
+document.getElementById('dist-bars').innerHTML=Object.entries(ANN).sort((a,b)=>b[1].emr-a[1].emr).map(([n,a])=>`
+  <div class="sb-wrap">
+    <div class="hn">${n}</div>
+    <div class="sb" style="flex:1">
+      <div class="sbm" style="width:${a.missed_pct}%"></div>
+      <div class="sbe" style="width:${a.extra_pct}%"></div>
+      <div class="sbc" style="width:${a.confusion_pct}%"></div>
+    </div>
+    <div class="hv" style="color:var(--ink3);font-size:10px">${a.emr}% match</div>
+  </div>`).join('');
+
+/* Agreement */
+document.getElementById('agree-bars').innerHTML=AGREE.map(a=>{
+  const col=a.rate<40?'#c0392b':a.rate<55?'#b45309':'#1D9E75';
+  return `<div class="aa">
+    <div class="aan" title="${a.attr}">${a.attr}</div>
+    <div class="aao"><div class="aaf" style="width:${a.rate}%;background:${col}"></div></div>
+    <div class="aav" style="color:${col}">${a.rate}%</div>
+    <div class="aasub">n=${a.n}</div>
+    <div class="err-bar"><div style="width:${a.miss}%;background:#3266ad;height:100%"></div><div style="width:${a.fp}%;background:#c0392b;height:100%"></div></div>
+    <div style="font-size:9px;color:var(--ink4);width:70px;flex-shrink:0">${a.miss}% miss / ${a.fp}% FP</div>
+  </div>`;
+}).join('');
+
+/* Deviation */
+const teamEMR=46;
+const devPairs=Object.entries(ANN).map(([n,v])=>[n,v.emr-teamEMR]).sort((a,b)=>b[1]-a[1]);
+const maxDev=Math.max(...devPairs.map(d=>Math.abs(d[1])));
+document.getElementById('dev-bars').innerHTML=devPairs.map(([n,dev])=>{
+  const p=Math.round(Math.abs(dev)/maxDev*44);
+  const c=dev>=0?'#1D9E75':'#c0392b';
+  return `<div class="hbar"><div class="hn">${n}</div>
+    <div class="ho" style="display:flex;align-items:center">
+      ${dev>=0
+        ?`<div style="flex:1"></div><div style="width:${p}%;height:16px;background:${c};border-radius:0 3px 3px 0"></div>`
+        :`<div style="width:${p}%;height:16px;background:${c};border-radius:3px 0 0 3px;margin-left:auto"></div><div style="flex:1"></div>`
+      }
+    </div>
+    <div class="hv" style="color:${c}">${dev>0?'+':''}${dev}%</div>
+  </div>`;
+}).join('');
+
+/* Positive rate table */
+const anns=Object.keys(PM).sort();
+const ta={};
+TOP_ATTRS.forEach(attr=>{ta[attr]=anns.map(a=>PM[a][attr]).reduce((s,v)=>s+v,0)/anns.length});
+const sa=a=>a.replace('bad_picture-','bp-').replace('lot_type-','lt-');
+document.getElementById('pos-rate-tbl').innerHTML=
+  `<thead><tr><th>Annotator</th>${TOP_ATTRS.map(a=>`<th class="mono" style="font-size:10px" title="${a}">${sa(a)}</th>`).join('')}</tr></thead>
+  <tbody>${anns.map(ann=>`<tr><td><b>${ann}</b></td>${TOP_ATTRS.map(attr=>{
+    const v=PM[ann][attr],avg=ta[attr],d=v-avg;
+    const s=Math.abs(d)>avg*0.4?(d>0?'style="color:#0F6E56;font-weight:600"':'style="color:#993C1D;font-weight:600"'):'';
+    return `<td class="mono" ${s}>${v.toFixed(1)}</td>`;
+  }).join('')}</tr>`).join('')}
+  <tr style="border-top:1.5px solid var(--ink)"><td><b>avg</b></td>${TOP_ATTRS.map(a=>`<td class="mono" style="font-weight:600">${ta[a].toFixed(1)}</td>`).join('')}</tr>
+  </tbody>`;
+</script>
+</body>
+</html>

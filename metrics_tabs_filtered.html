@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Annotation Metrics Dashboard · Apr 10–22 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --ink:#1a1a1a;--ink2:#4a4a4a;--ink3:#777;--ink4:#aaa;
+  --border:#e2dfd8;--bg:#f9f8f5;--white:#fff;
+  --red:#c0392b;--redl:#fdf0ee;
+  --amber:#b45309;--ambl:#fef9ee;--ambb:#fde68a;
+  --green:#166534;--grnl:#f0fdf4;
+  --purple:#5b21b6;--purpl:#f5f3ff;--purpb:#ddd6fe;
+  --blue:#1e3a5f;--bluel:#eff6ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.65;padding:0}
+.page{max-width:980px;margin:0 auto;padding:24px 20px}
+code{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.07);padding:1px 5px;border-radius:3px;font-size:11px}
+
+/* HEADER */
+.hdr{background:var(--ink);border-radius:8px;padding:22px 28px 16px;color:#fff;margin-bottom:16px}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:16px;flex-wrap:wrap}
+.rtype{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:4px}
+.hdr h1{font-size:18px;font-weight:600;color:#fff}
+.hdr-kpis{display:flex;gap:8px;flex-wrap:wrap}
+.hk{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 13px;text-align:center;min-width:76px}
+.hk strong{display:block;font-size:16px;font-weight:600;color:#fff;line-height:1}
+.hk span{font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;display:block}
+.hdr-meta{display:flex;gap:18px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.12);padding-top:10px;font-size:11px;color:rgba(255,255,255,.5)}
+.hdr-meta b{color:rgba(255,255,255,.85);font-weight:500}
+
+/* DATE FILTER BAR */
+.filter-bar{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.filter-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);flex-shrink:0}
+.day-pills{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+.dp{padding:4px 10px;border-radius:100px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--ink3);font-family:'Inter',sans-serif;white-space:nowrap;transition:none}
+.dp:hover{background:var(--bg)}
+.dp.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.dp.low{border-color:#fcc;color:var(--red)}
+.dp.low.active{background:var(--red);color:#fff;border-color:var(--red)}
+.filter-actions{display:flex;gap:6px;flex-shrink:0}
+.fa-btn{padding:4px 12px;border-radius:100px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:11px;color:var(--ink3);font-family:'Inter',sans-serif}
+.fa-btn:hover{background:var(--bg);color:var(--ink)}
+.range-summary{font-size:11px;color:var(--ink3);padding:4px 12px;background:var(--bg);border-radius:100px;border:1px solid var(--border);white-space:nowrap}
+
+/* TABS */
+.tab-nav{display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap;border-bottom:1.5px solid var(--border);padding-bottom:0}
+.tn{padding:7px 18px;border-radius:6px 6px 0 0;border:1.5px solid transparent;background:transparent;cursor:pointer;font-size:13px;color:var(--ink3);font-family:'Inter',sans-serif;position:relative;bottom:-1.5px}
+.tn:hover{color:var(--ink2);background:var(--bg)}
+.tn.active{background:var(--white);color:var(--ink);font-weight:500;border-color:var(--border);border-bottom-color:var(--white)}
+.tn.speed.active{border-top:2.5px solid #3266ad}
+.tn.qual.active{border-top:2.5px solid var(--green)}
+.tn.rw.active{border-top:2.5px solid var(--amber)}
+.tn.con.active{border-top:2.5px solid var(--purple)}
+
+/* SECTION */
+.section{display:none}.section.active{display:block}
+.sec-intro{font-size:12px;color:var(--ink3);margin-bottom:20px;padding:9px 13px;background:var(--bg);border-radius:6px;border-left:3px solid var(--border);line-height:1.6}
+
+/* METRIC BLOCKS */
+.mb{margin-bottom:26px;padding-bottom:26px;border-bottom:1px solid var(--border)}
+.mb:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.mb-head{display:flex;align-items:flex-start;gap:9px;margin-bottom:7px}
+.mb-id{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);white-space:nowrap;margin-top:2px}
+.mb-title{font-size:13px;font-weight:600;color:var(--ink)}
+.mb-desc{font-size:12px;color:var(--ink3);margin-bottom:12px;line-height:1.55}
+
+/* KPI GRID */
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:9px;margin-bottom:14px}
+.kc{background:var(--bg);border-radius:6px;padding:10px 12px}
+.kl{font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px}
+.kv{font-size:21px;font-weight:600;line-height:1}
+.ks{font-size:10px;color:var(--ink4);margin-top:2px}
+.kv-r{color:var(--red)}.kv-a{color:var(--amber)}.kv-g{color:var(--green)}
+
+/* CHART */
+.cw{position:relative;height:175px;margin-bottom:8px}
+.ct{font-size:11px;font-weight:500;color:var(--ink3);margin-bottom:8px}
+
+/* HBARS */
+.hb{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.hn{width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:var(--ink2);flex-shrink:0}
+.ho{flex:1;height:15px;background:#eee;border-radius:3px;overflow:hidden}
+.hi{height:100%;border-radius:3px}
+.hv{width:38px;text-align:right;font-size:11px;font-weight:500;flex-shrink:0}
+.hs{width:34px;font-size:10px;color:var(--ink4);flex-shrink:0}
+
+/* STACKED */
+.sb-r{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.sb-n{width:90px;font-size:11px;color:var(--ink2);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb{display:flex;flex:1;height:13px;border-radius:3px;overflow:hidden}
+.sm{background:var(--red)}.se{background:var(--amber)}.sc{background:var(--purple)}
+.sv{width:60px;text-align:right;font-size:10px;color:var(--ink3);flex-shrink:0}
+
+/* LEGEND */
+.leg{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--ink3);padding-top:8px;border-top:1px solid var(--border)}
+.ld{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
+
+/* INSIGHT */
+.insight{border-left:3px solid var(--amber);border-radius:0 6px 6px 0;padding:9px 13px;margin-bottom:14px;font-size:12px;line-height:1.65;background:var(--ambl)}
+.insight b{font-weight:600}
+
+/* AGREE */
+.aa{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.aan{width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:var(--ink2);flex-shrink:0}
+.aao{width:80px;height:11px;background:#eee;border-radius:2px;overflow:hidden;flex-shrink:0}
+.aaf{height:100%;border-radius:2px}
+.aav{width:30px;text-align:right;font-size:11px;font-weight:500;flex-shrink:0}
+.aasub{font-size:9px;color:var(--ink4);width:30px;flex-shrink:0}
+.aaerr{display:flex;width:56px;height:6px;background:#eee;border-radius:2px;overflow:hidden;flex-shrink:0}
+.aaerrlbl{font-size:9px;color:var(--ink4);width:66px;flex-shrink:0}
+
+/* DEVIATION */
+.dv{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.dvn{width:90px;font-size:11px;color:var(--ink2);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dvt{flex:1;height:15px;background:#eee;border-radius:3px;position:relative;display:flex;align-items:center}
+.dvm{position:absolute;left:50%;top:0;width:1.5px;height:100%;background:#bbb}
+.dvb{position:absolute;height:11px;border-radius:2px;top:2px}
+.dvv{width:42px;text-align:right;font-size:11px;font-weight:500;flex-shrink:0}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl thead tr{border-bottom:1.5px solid var(--ink)}
+.tbl th{padding:5px 6px;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);text-align:left}
+.tbl td{padding:4px 6px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tbody tr:last-child td{border-bottom:none}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:2rem;color:var(--ink4);font-size:12px;background:var(--bg);border-radius:6px;border:1px dashed var(--border)}
+
+@media(max-width:640px){.hn,.sb-n,.dvn{width:68px}.aan{width:130px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="rtype">Annotation Metrics Dashboard · Manager View</div>
+      <h1>All collected metrics — date-filtered</h1>
+    </div>
+    <div class="hdr-kpis">
+      <div class="hk" id="hk-emr"><strong>46%</strong><span>Team EMR</span></div>
+      <div class="hk" id="hk-ann"><strong>15</strong><span>Annotators</span></div>
+      <div class="hk" id="hk-ls"><strong>147 656</strong><span>Label sets</span></div>
+      <div class="hk" id="hk-rev"><strong>1 363</strong><span>Reviewed</span></div>
+    </div>
+  </div>
+  <div class="hdr-meta">
+    <span><b>Full period:</b> Apr 10 – Apr 22, 2026</span>
+    <span><b>Source:</b> all_labeler_labels · admin_with_labelers_labels</span>
+    <span id="filter-status"><b>Filter:</b> All days selected</span>
+  </div>
+</div>
+
+<!-- DATE FILTER -->
+<div class="filter-bar">
+  <span class="filter-label">Date filter:</span>
+  <div class="day-pills" id="day-pills"></div>
+  <div class="filter-actions">
+    <button class="fa-btn" onclick="selectAll()">All</button>
+    <button class="fa-btn" onclick="selectWorkdays()">Work days</button>
+    <button class="fa-btn" onclick="clearAll()">Clear</button>
+  </div>
+  <span class="range-summary" id="range-summary">11 of 11 days</span>
+</div>
+
+<!-- TABS -->
+<div class="tab-nav">
+  <button class="tn speed active" onclick="sw('speed',this)">2 · Speed</button>
+  <button class="tn qual" onclick="sw('quality',this)">3 · Quality</button>
+  <button class="tn rw" onclick="sw('rework',this)">4 · Review &amp; Rework</button>
+  <button class="tn con" onclick="sw('consistency',this)">5 · Consistency</button>
+</div>
+
+<!-- ═══ SPEED ═══ -->
+<div id="speed" class="section active">
+  <div class="sec-intro"><b>Speed metrics</b> — throughput and label complexity for the selected period. Time-based metrics (handling time, images/hour) require <code>annotation_started_at</code> and session data not yet in the DB.</div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S2-1</span><span class="mb-title">Throughput by day — team total</span></div>
+    <div class="mb-desc">Total label sets completed each day. Red bars = low-activity days (&lt;5 000). Click days above to filter — the chart updates to show only selected days.</div>
+    <div class="cw"><canvas id="dayChart" role="img" aria-label="Daily throughput"></canvas></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#3266ad"></span>Working day (≥5 000)</span>
+      <span><span class="ld" style="background:var(--red)"></span>Low activity (&lt;5 000)</span>
+    </div>
+  </div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S2-2</span><span class="mb-title">Label sets per annotator — selected period</span></div>
+    <div class="mb-desc">Total annotation volume per person across selected days. Large gaps may indicate uneven distribution or absences on those days.</div>
+    <div class="ct" id="tp-title">Sorted by volume (high → low)</div>
+    <div id="tp-bars"></div>
+    <div class="leg" id="tp-avg-leg"></div>
+  </div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S2-3</span><span class="mb-title">Avg labels per image — by annotator</span></div>
+    <div class="mb-desc">Average number of attributes applied per image across selected days. Team baseline for full period = 1.28. Annotators below 0.8 may be under-labeling.</div>
+    <div class="kg" id="lpi-kpis"></div>
+    <div class="ct">Avg labels per image by annotator — full-period baseline: 1.28</div>
+    <div id="lpi-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>Above baseline (≥1.1)</span>
+      <span><span class="ld" style="background:#3266ad"></span>Near baseline (0.8–1.1)</span>
+      <span><span class="ld" style="background:var(--amber)"></span>Below baseline (&lt;0.8)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ QUALITY ═══ -->
+<div id="quality" class="section">
+  <div class="sec-intro"><b>Quality metrics</b> — based on the admin-reviewed sample within selected days. Note: quality data (EMR, corrections) is only available for days where admin reviews occurred — Apr 15 and Apr 17 contain the bulk of the review sample.</div>
+  <div class="insight" id="quality-insight"><b>Loading...</b></div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S3-1</span><span class="mb-title">Exact match rate (EMR) by annotator</span></div>
+    <div class="mb-desc">Share of reviewed images where the annotator's labels exactly matched admin output. Higher = better. n= number of reviewed images per annotator in the selected period.</div>
+    <div class="kg" id="emr-kpis"></div>
+    <div class="ct">Exact match rate (low → high) · n= reviewed images</div>
+    <div id="emr-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>Good (≥55%)</span>
+      <span><span class="ld" style="background:var(--amber)"></span>Average (45–54%)</span>
+      <span><span class="ld" style="background:var(--red)"></span>Needs attention (&lt;45%)</span>
+    </div>
+  </div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S3-2</span><span class="mb-title">Correction type breakdown by annotator</span></div>
+    <div class="mb-desc">How corrections break down between missed labels, extra labels, and label confusion per annotator. Sorted EMR high → low. Right value = exact match rate.</div>
+    <div id="dist-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:var(--red)"></span>Missed (admin added)</span>
+      <span><span class="ld" style="background:var(--amber)"></span>Extra (admin removed)</span>
+      <span><span class="ld" style="background:var(--purple)"></span>Label confusion</span>
+    </div>
+  </div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S3-3</span><span class="mb-title">Attribute agreement rate — bottom 12</span></div>
+    <div class="mb-desc">How often annotator and admin agreed on each attribute for the selected days. Lower = higher priority for guideline updates. Mini bar shows missed (blue) vs false positive (red) split.</div>
+    <div id="agree-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#3266ad"></span>Missed (admin added)</span>
+      <span><span class="ld" style="background:var(--red)"></span>False positive (admin removed)</span>
+    </div>
+  </div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S3-4 / S3-5</span><span class="mb-title">Added and removed by reviewer — by annotator</span></div>
+    <div class="mb-desc">Left: share of reviewed images where admin added at least one label (under-labeling). Right: share where admin removed at least one label (over-labeling).</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>
+        <div class="ct">S3-4 · Added by reviewer (missed labels)</div>
+        <div id="added-bars"></div>
+      </div>
+      <div>
+        <div class="ct">S3-5 · Removed by reviewer (extra labels)</div>
+        <div id="removed-bars"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ REWORK ═══ -->
+<div id="rework" class="section">
+  <div class="sec-intro"><b>Review &amp; rework metrics</b> — 2 of 4 metrics fully available. Rework rate and time-load require <code>image_id</code> chaining and review timestamps not yet in the DB.</div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S4-1</span><span class="mb-title">Review coverage rate</span></div>
+    <div class="mb-desc">Share of first-pass label sets reviewed by admin in selected period. At ~1% this is a sampled approach. Coverage varies by day — most review work happened on Apr 15 and Apr 17.</div>
+    <div class="kg" id="rw-kpis"></div>
+  </div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S4-2</span><span class="mb-title">First-pass acceptance rate by annotator</span></div>
+    <div class="mb-desc">Share of reviewed images accepted without any change. Equal to EMR. Shows how much first-pass work is production-ready without correction. n= reviewed images per annotator in selected period.</div>
+    <div class="ct">First-pass acceptance rate (low → high)</div>
+    <div id="fpa-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>Good (≥55%)</span>
+      <span><span class="ld" style="background:var(--amber)"></span>Average (45–54%)</span>
+      <span><span class="ld" style="background:var(--red)"></span>Needs attention (&lt;45%)</span>
+    </div>
+  </div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S4-5</span><span class="mb-title">Avg revisions per item — reviewed subset</span></div>
+    <div class="mb-desc">Currently computable only for reviewed images. All reviewed images have 2 versions (original + review pass). Production-wide tracking requires <code>image_id</code> on all label_set rows.</div>
+    <div class="kg">
+      <div class="kc"><div class="kl">Avg versions (reviewed)</div><div class="kv kv-a">2.0</div><div class="ks">original + 1 review pass</div></div>
+      <div class="kc"><div class="kl">Production-wide</div><div class="kv" style="color:var(--ink4)">—</div><div class="ks">image_id missing in labeler data</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONSISTENCY ═══ -->
+<div id="consistency" class="section">
+  <div class="sec-intro"><b>Consistency metrics</b> — 3 of 5 metrics collected. LPI and positive rate use all selected days. Deviation from team mean uses only days with quality data. Day-to-day variance requires per-image timestamps.</div>
+  <div class="insight"><b>Heatmap guide:</b> Green = annotator marks this attribute more than the team average (+40%). Red = marks it less (-40%). Calibration signal — not necessarily an error, but worth a conversation.</div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S5-1</span><span class="mb-title">Avg labels per image vs team baseline</span></div>
+    <div class="mb-desc">Detects systematic over- or under-labeling tendencies per annotator across selected days. Full-period baseline = 1.28.</div>
+    <div id="lpi2-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>Above baseline (≥1.1)</span>
+      <span><span class="ld" style="background:#3266ad"></span>Near baseline (0.8–1.1)</span>
+      <span><span class="ld" style="background:var(--amber)"></span>Below baseline (&lt;0.8)</span>
+    </div>
+  </div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S5-2</span><span class="mb-title">Positive rate by attribute and annotator</span></div>
+    <div class="mb-desc">How often each annotator marks a given attribute as present (% of their images). Last row = team average. Highlighted cells deviate ≥40% from team avg. Uses full-period data.</div>
+    <div style="overflow-x:auto"><table class="tbl" id="pos-rate-tbl"></table></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>Significantly above avg (&gt;+40%)</span>
+      <span><span class="ld" style="background:#993C1D"></span>Significantly below avg (&lt;−40%)</span>
+      <span style="color:var(--ink4)">No highlight = normal range</span>
+    </div>
+  </div>
+
+  <div class="mb">
+    <div class="mb-head"><span class="mb-id">S5-3</span><span class="mb-title">Deviation from team mean — EMR</span></div>
+    <div class="mb-desc">Each annotator's EMR minus the team average for selected days. Positive = above norm; negative = below. Centre line = team average. Only annotators with reviewed images in selected days are shown.</div>
+    <div id="dev-bars"></div>
+    <div class="leg">
+      <span><span class="ld" style="background:#1D9E75"></span>Above team avg</span>
+      <span><span class="ld" style="background:var(--red)"></span>Below team avg</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- .page -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+/* ══ STATIC DATA ══ */
+const DAILY = {"2026-04-10":{"tp":{"jezemiah":1201,"ruthd":1230,"phyllisk":1200,"jeremiah":1200,"theo":1200,"leonardm":1203,"godwina":1210,"preciousa":1200,"samuelo":1200,"Irenen":1201,"samuell":1200,"obed":1214,"irisa":1206,"maxwellt":1186,"emmanuel":399},"lpi":{"jezemiah":1.07,"ruthd":1.2,"phyllisk":0.95,"jeremiah":0.6,"theo":0.83,"leonardm":0.92,"godwina":0.89,"preciousa":0.57,"samuelo":0.65,"Irenen":1.0,"samuell":0.77,"obed":0.98,"irisa":0.61,"maxwellt":0.77,"emmanuel":0.95},"quality":{"theo":{"emr":0,"imgs_missed_pct":100,"imgs_extra_pct":50,"missed_pct":67,"extra_pct":33,"confusion_pct":0,"n":2},"ruthd":{"emr":0,"imgs_missed_pct":50,"imgs_extra_pct":100,"missed_pct":33,"extra_pct":67,"confusion_pct":0,"n":4},"irisa":{"emr":0,"imgs_missed_pct":100,"imgs_extra_pct":0,"missed_pct":100,"extra_pct":0,"confusion_pct":0,"n":2},"leonardm":{"emr":100,"imgs_missed_pct":0,"imgs_extra_pct":0,"missed_pct":0,"extra_pct":0,"confusion_pct":0,"n":1},"jezemiah":{"emr":0,"imgs_missed_pct":100,"imgs_extra_pct":0,"missed_pct":100,"extra_pct":0,"confusion_pct":0,"n":1}},"agree":[{"attr":"porch-paint_rust_extreme","rate":33,"n":3,"miss":0,"fp":67},{"attr":"window-paint_rust_extreme","rate":40,"n":5,"miss":20,"fp":40},{"attr":"door-plywood","rate":67,"n":3,"miss":33,"fp":0},{"attr":"sidewalk-overgrown_extreme","rate":67,"n":3,"miss":33,"fp":0},{"attr":"lot_type-abandoned","rate":75,"n":4,"miss":0,"fp":25},{"attr":"wall-paint_rust_extreme","rate":100,"n":5,"miss":0,"fp":0},{"attr":"fascia-paint_extreme","rate":100,"n":6,"miss":0,"fp":0},{"attr":"stairs-paint_rust_extreme","rate":100,"n":3,"miss":0,"fp":0},{"attr":"window-plywood","rate":100,"n":4,"miss":0,"fp":0}],"total_ls":17250},"2026-04-11":{"tp":{"emmanuel":943},"lpi":{"emmanuel":0.57},"quality":{},"agree":[],"total_ls":943},"2026-04-13":{"tp":{"ruthd":1230,"jezemiah":1201,"phyllisk":1200,"theo":1200,"jeremiah":1200,"samuell":1202,"godwina":1220,"Irenen":1201,"leonardm":1202,"preciousa":1200,"obed":1201,"irisa":1205,"samuelo":1200,"maxwellt":1202,"emmanuel":257},"lpi":{"ruthd":1.1,"jezemiah":0.87,"phyllisk":0.83,"theo":0.74,"jeremiah":0.6,"samuell":0.79,"godwina":0.88,"Irenen":0.87,"leonardm":0.8,"preciousa":0.61,"obed":0.89,"irisa":0.65,"samuelo":0.76,"maxwellt":0.77,"emmanuel":0.92},"quality":{"phyllisk":{"emr":100,"imgs_missed_pct":0,"imgs_extra_pct":0,"missed_pct":0,"extra_pct":0,"confusion_pct":0,"n":2},"maxwellt":{"emr":100,"imgs_missed_pct":0,"imgs_extra_pct":0,"missed_pct":0,"extra_pct":0,"confusion_pct":0,"n":1},"leonardm":{"emr":0,"imgs_missed_pct":100,"imgs_extra_pct":0,"missed_pct":100,"extra_pct":0,"confusion_pct":0,"n":3}},"agree":[{"attr":"window-plywood","rate":100,"n":3,"miss":0,"fp":0}],"total_ls":17121},"2026-04-14":{"tp":{"samuell":313,"theo":450,"jezemiah":201,"samuelo":360,"leonardm":321,"jeremiah":350,"obed":303,"ruthd":300,"Irenen":330,"maxwellt":470,"irisa":278,"preciousa":300,"phyllisk":270,"godwina":300,"emmanuel":543},"lpi":{"samuell":0.8,"theo":0.96,"jezemiah":1.11,"samuelo":0.8,"leonardm":1.02,"jeremiah":0.63,"obed":1.12,"ruthd":1.58,"Irenen":1.55,"maxwellt":1.0,"irisa":0.88,"preciousa":0.71,"phyllisk":1.17,"godwina":1.02,"emmanuel":0.92},"quality":{"samuelo":{"emr":0,"imgs_missed_pct":100,"imgs_extra_pct":100,"missed_pct":33,"extra_pct":67,"confusion_pct":0,"n":1}},"agree":[],"total_ls":5089},"2026-04-15":{"tp":{"irisa":1200,"jezemiah":1203,"phyllisk":1200,"obed":1200,"ruthd":1200,"jeremiah":1200,"godwina":1200,"leonardm":1210,"theo":1201,"samuelo":1200,"samuell":1199,"Irenen":1208,"preciousa":1200,"maxwellt":1209,"emmanuel":1362},"lpi":{"irisa":0.79,"jezemiah":0.98,"phyllisk":1.04,"obed":1.06,"ruthd":1.31,"jeremiah":0.51,"godwina":0.94,"leonardm":0.91,"theo":0.78,"samuelo":0.67,"samuell":0.74,"Irenen":1.18,"preciousa":0.53,"maxwellt":0.8,"emmanuel":0.98},"quality":{"godwina":{"emr":31,"imgs_missed_pct":66,"imgs_extra_pct":50,"missed_pct":38,"extra_pct":44,"confusion_pct":18,"n":32},"maxwellt":{"emr":55,"imgs_missed_pct":45,"imgs_extra_pct":0,"missed_pct":100,"extra_pct":0,"confusion_pct":0,"n":11},"emmanuel":{"emr":52,"imgs_missed_pct":48,"imgs_extra_pct":0,"missed_pct":100,"extra_pct":0,"confusion_pct":0,"n":31},"samuell":{"emr":50,"imgs_missed_pct":50,"imgs_extra_pct":8,"missed_pct":78,"extra_pct":22,"confusion_pct":0,"n":12},"Irenen":{"emr":56,"imgs_missed_pct":44,"imgs_extra_pct":6,"missed_pct":84,"extra_pct":16,"confusion_pct":0,"n":34},"irisa":{"emr":42,"imgs_missed_pct":58,"imgs_extra_pct":0,"missed_pct":100,"extra_pct":0,"confusion_pct":0,"n":33},"preciousa":{"emr":67,"imgs_missed_pct":33,"imgs_extra_pct":6,"missed_pct":87,"extra_pct":9,"confusion_pct":4,"n":33},"leonardm":{"emr":38,"imgs_missed_pct":62,"imgs_extra_pct":12,"missed_pct":89,"extra_pct":0,"confusion_pct":11,"n":8},"jezemiah":{"emr":57,"imgs_missed_pct":36,"imgs_extra_pct":7,"missed_pct":75,"extra_pct":25,"confusion_pct":0,"n":14},"theo":{"emr":29,"imgs_missed_pct":57,"imgs_extra_pct":43,"missed_pct":70,"extra_pct":20,"confusion_pct":10,"n":7},"ruthd":{"emr":69,"imgs_missed_pct":31,"imgs_extra_pct":0,"missed_pct":100,"extra_pct":0,"confusion_pct":0,"n":35},"phyllisk":{"emr":72,"imgs_missed_pct":28,"imgs_extra_pct":6,"missed_pct":88,"extra_pct":0,"confusion_pct":12,"n":18},"jeremiah":{"emr":57,"imgs_missed_pct":43,"imgs_extra_pct":14,"missed_pct":75,"extra_pct":0,"confusion_pct":25,"n":7},"samuelo":{"emr":47,"imgs_missed_pct":53,"imgs_extra_pct":13,"missed_pct":71,"extra_pct":29,"confusion_pct":0,"n":15},"obed":{"emr":45,"imgs_missed_pct":55,"imgs_extra_pct":27,"missed_pct":75,"extra_pct":19,"confusion_pct":6,"n":11}},"agree":[{"attr":"sidewalk-leaves_extreme","rate":0,"n":5,"miss":100,"fp":0},{"attr":"sidewalk-cracked_extreme","rate":20,"n":5,"miss":80,"fp":0},{"attr":"fence-paint_rust_extreme","rate":22,"n":9,"miss":78,"fp":0},{"attr":"fence-overgrown_extreme","rate":24,"n":17,"miss":76,"fp":0},{"attr":"bad_picture-blocked","rate":29,"n":14,"miss":14,"fp":57},{"attr":"lawn-leaves_extreme","rate":42,"n":12,"miss":58,"fp":0},{"attr":"lawn-overgrown_weeds_extreme","rate":43,"n":14,"miss":57,"fp":0},{"attr":"lawn-branches_extreme","rate":43,"n":7,"miss":57,"fp":0},{"attr":"lawn-grass_height","rate":43,"n":28,"miss":50,"fp":7},{"attr":"sidewalk-overgrown_extreme","rate":44,"n":9,"miss":56,"fp":0},{"attr":"sidewalk-debris_extreme","rate":50,"n":4,"miss":50,"fp":0},{"attr":"lawn-debris_extreme","rate":50,"n":32,"miss":50,"fp":0}],"total_ls":18192},"2026-04-16":{"tp":{"irisa":841,"jezemiah":1178,"phyllisk":1200,"ruthd":1200,"obed":1200,"maxwellt":1230,"theo":1200,"godwina":1240,"jeremiah":1200,"leonardm":1203,"preciousa":1200,"Irenen":958,"samuelo":1200,"samuell":1200,"emmanuel":800},"lpi":{"irisa":0.77,"jezemiah":1.01,"phyllisk":0.97,"ruthd":1.15,"obed":0.99,"maxwellt":0.84,"theo":0.79,"godwina":0.91,"jeremiah":0.62,"leonardm":0.84,"preciousa":0.58,"Irenen":1.08,"samuelo":0.64,"samuell":0.79,"emmanuel":0.91},"quality":{"obed":{"emr":38,"imgs_missed_pct":62,"imgs_extra_pct":31,"missed_pct":63,"extra_pct":0,"confusion_pct":37,"n":32},"emmanuel":{"emr":100,"imgs_missed_pct":0,"imgs_extra_pct":0,"missed_pct":0,"extra_pct":0,"confusion_pct":0,"n":8},"leonardm":{"emr":50,"imgs_missed_pct":50,"imgs_extra_pct":50,"missed_pct":33,"extra_pct":67,"confusion_pct":0,"n":2},"samuell":{"emr":67,"imgs_missed_pct":33,"imgs_extra_pct":0,"missed_pct":100,"extra_pct":0,"confusion_pct":0,"n":3},"theo":{"emr":100,"imgs_missed_pct":0,"imgs_extra_pct":0,"missed_pct":0,"extra_pct":0,"confusion_pct":0,"n":1}},"agree":[{"attr":"bad_picture-wrong_parcel","rate":33,"n":15,"miss":0,"fp":67},{"attr":"bad_picture-bad_angle","rate":50,"n":32,"miss":47,"fp":3},{"attr":"lawn-dead_patch_extreme","rate":80,"n":5,"miss":20,"fp":0},{"attr":"lot_type-vacant","rate":100,"n":3,"miss":0,"fp":0}],"total_ls":17050},"2026-04-17":{"tp":{"jezemiah":1201,"phyllisk":1211,"jeremiah":1200,"irisa":1200,"ruthd":1220,"obed":1200,"leonardm":1211,"theo":1200,"samuelo":1200,"samuell":1200,"preciousa":1200,"maxwellt":1201,"godwina":1220,"emmanuel":1200,"Irenen":1203},"lpi":{"jezemiah":0.87,"phyllisk":0.83,"jeremiah":0.61,"irisa":0.65,"ruthd":1.05,"obed":1.02,"leonardm":0.81,"theo":0.66,"samuelo":0.66,"samuell":0.75,"preciousa":0.61,"maxwellt":0.73,"godwina":0.89,"emmanuel":0.87,"Irenen":0.89},"quality":{"maxwellt":{"emr":26,"imgs_missed_pct":74,"imgs_extra_pct":40,"missed_pct":62,"extra_pct":2,"confusion_pct":36,"n":47},"phyllisk":{"emr":81,"imgs_missed_pct":15,"imgs_extra_pct":11,"missed_pct":50,"extra_pct":38,"confusion_pct":12,"n":27},"godwina":{"emr":64,"imgs_missed_pct":36,"imgs_extra_pct":19,"missed_pct":53,"extra_pct":0,"confusion_pct":47,"n":36},"samuelo":{"emr":78,"imgs_missed_pct":22,"imgs_extra_pct":0,"missed_pct":100,"extra_pct":0,"confusion_pct":0,"n":36},"preciousa":{"emr":61,"imgs_missed_pct":39,"imgs_extra_pct":3,"missed_pct":89,"extra_pct":11,"confusion_pct":0,"n":31},"irisa":{"emr":30,"imgs_missed_pct":70,"imgs_extra_pct":11,"missed_pct":84,"extra_pct":16,"confusion_pct":0,"n":27},"ruthd":{"emr":56,"imgs_missed_pct":28,"imgs_extra_pct":25,"missed_pct":57,"extra_pct":43,"confusion_pct":0,"n":32},"jezemiah":{"emr":60,"imgs_missed_pct":38,"imgs_extra_pct":7,"missed_pct":88,"extra_pct":12,"confusion_pct":0,"n":42},"emmanuel":{"emr":74,"imgs_missed_pct":26,"imgs_extra_pct":18,"missed_pct":44,"extra_pct":25,"confusion_pct":31,"n":39},"samuell":{"emr":71,"imgs_missed_pct":29,"imgs_extra_pct":8,"missed_pct":84,"extra_pct":0,"confusion_pct":16,"n":48},"leonardm":{"emr":21,"imgs_missed_pct":79,"imgs_extra_pct":64,"missed_pct":35,"extra_pct":13,"confusion_pct":52,"n":42},"obed":{"emr":57,"imgs_missed_pct":41,"imgs_extra_pct":7,"missed_pct":88,"extra_pct":12,"confusion_pct":0,"n":44},"theo":{"emr":49,"imgs_missed_pct":51,"imgs_extra_pct":11,"missed_pct":81,"extra_pct":16,"confusion_pct":3,"n":45},"Irenen":{"emr":88,"imgs_missed_pct":12,"imgs_extra_pct":12,"missed_pct":33,"extra_pct":33,"confusion_pct":33,"n":25},"jeremiah":{"emr":56,"imgs_missed_pct":44,"imgs_extra_pct":28,"missed_pct":65,"extra_pct":24,"confusion_pct":11,"n":32}},"agree":[{"attr":"lawn-branches_extreme","rate":0,"n":5,"miss":100,"fp":0},{"attr":"sidewalk-leaves_extreme","rate":0,"n":3,"miss":100,"fp":0},{"attr":"sidewalk-debris_extreme","rate":0,"n":3,"miss":100,"fp":0},{"attr":"lawn-litter_extreme","rate":0,"n":3,"miss":100,"fp":0},{"attr":"lawn-leaves_extreme","rate":17,"n":12,"miss":83,"fp":0},{"attr":"lawn-overgrown_weeds_extreme","rate":19,"n":21,"miss":71,"fp":10},{"attr":"lawn-grass_height","rate":31,"n":32,"miss":66,"fp":3},{"attr":"driveway-cracked_extreme","rate":33,"n":15,"miss":53,"fp":13},{"attr":"bad_picture-wrong_parcel","rate":34,"n":122,"miss":39,"fp":27},{"attr":"fence-paint_rust_extreme","rate":38,"n":8,"miss":62,"fp":0},{"attr":"fence-overgrown_extreme","rate":42,"n":12,"miss":58,"fp":0},{"attr":"lawn-debris_extreme","rate":44,"n":32,"miss":56,"fp":0}],"total_ls":18067},"2026-04-19":{"tp":{"emmanuel":478},"lpi":{"emmanuel":0.82},"quality":{},"agree":[],"total_ls":478},"2026-04-20":{"tp":{"irisa":1204,"jezemiah":1198,"preciousa":1200,"phyllisk":1219,"samuell":1200,"theo":1200,"obed":1202,"jeremiah":1200,"Irenen":1200,"ruthd":1210,"godwina":1200,"leonardm":1201,"samuelo":1200,"maxwellt":1181,"emmanuel":724},"lpi":{"irisa":0.58,"jezemiah":1.02,"preciousa":0.55,"phyllisk":0.93,"samuell":0.85,"theo":0.82,"obed":1.03,"jeremiah":0.68,"Irenen":1.28,"ruthd":1.11,"godwina":0.99,"leonardm":0.86,"samuelo":0.76,"maxwellt":0.86,"emmanuel":0.79},"quality":{"emmanuel":{"emr":70,"imgs_missed_pct":30,"imgs_extra_pct":20,"missed_pct":40,"extra_pct":0,"confusion_pct":60,"n":30},"jeremiah":{"emr":0,"imgs_missed_pct":100,"imgs_extra_pct":100,"missed_pct":75,"extra_pct":25,"confusion_pct":0,"n":1},"theo":{"emr":0,"imgs_missed_pct":100,"imgs_extra_pct":0,"missed_pct":100,"extra_pct":0,"confusion_pct":0,"n":1}},"agree":[{"attr":"bad_picture-bad_angle","rate":29,"n":7,"miss":71,"fp":0},{"attr":"bad_picture-wrong_parcel","rate":30,"n":10,"miss":20,"fp":50},{"attr":"lawn-grass_height","rate":33,"n":3,"miss":67,"fp":0},{"attr":"lawn-overgrown_weeds_extreme","rate":40,"n":5,"miss":60,"fp":0},{"attr":"wall-paint_rust_extreme","rate":67,"n":3,"miss":33,"fp":0},{"attr":"lot_type-not_residential","rate":100,"n":11,"miss":0,"fp":0},{"attr":"lot_type-vacant","rate":100,"n":5,"miss":0,"fp":0}],"total_ls":17539},"2026-04-21":{"tp":{"irisa":1204,"jezemiah":1201,"phyllisk":1200,"obed":1203,"jeremiah":1200,"ruthd":1210,"samuelo":1200,"leonardm":1205,"godwina":1200,"Irenen":1204,"preciousa":1200,"samuell":1200,"theo":1177,"maxwellt":1201,"emmanuel":1200},"lpi":{"irisa":0.7,"jezemiah":1.0,"phyllisk":1.23,"obed":1.28,"jeremiah":0.72,"ruthd":1.19,"samuelo":0.79,"leonardm":0.88,"godwina":0.94,"Irenen":1.19,"preciousa":0.64,"samuell":0.86,"theo":0.95,"maxwellt":0.8,"emmanuel":0.92},"quality":{"emmanuel":{"emr":58,"imgs_missed_pct":42,"imgs_extra_pct":11,"missed_pct":80,"extra_pct":13,"confusion_pct":7,"n":19},"ruthd":{"emr":0,"imgs_missed_pct":100,"imgs_extra_pct":100,"missed_pct":80,"extra_pct":20,"confusion_pct":0,"n":1}},"agree":[{"attr":"bad_picture-bad_angle","rate":33,"n":12,"miss":58,"fp":8},{"attr":"bad_picture-wrong_parcel","rate":67,"n":3,"miss":33,"fp":0},{"attr":"lot_type-not_residential","rate":86,"n":7,"miss":14,"fp":0},{"attr":"lot_type-vacant","rate":100,"n":3,"miss":0,"fp":0}],"total_ls":18005},"2026-04-22":{"tp":{"irisa":1066,"jezemiah":1203,"maxwellt":1200,"obed":1199,"jeremiah":1200,"phyllisk":1201,"preciousa":1210,"samuelo":1200,"ruthd":1231,"godwina":1200,"leonardm":1210,"samuell":1202,"Irenen":1177,"theo":1223,"emmanuel":1200},"lpi":{"irisa":0.82,"jezemiah":1.06,"maxwellt":1.03,"obed":1.15,"jeremiah":0.65,"phyllisk":1.19,"preciousa":0.7,"samuelo":0.93,"ruthd":1.29,"godwina":1.03,"leonardm":0.93,"samuell":0.84,"Irenen":1.36,"theo":0.89,"emmanuel":0.98},"quality":{},"agree":[],"total_ls":17922}};
+const ALL_DAYS = ["2026-04-10","2026-04-11","2026-04-13","2026-04-14","2026-04-15","2026-04-16","2026-04-17","2026-04-19","2026-04-20","2026-04-21","2026-04-22"];
+const LOW_DAYS = new Set(["2026-04-11","2026-04-12","2026-04-19"]);
+const PM={"jezemiah":{"bad_picture-bad_angle":12.4,"lot_type-not_residential":9.2,"window-plywood":0.5,"bad_picture-wrong_parcel":7.9,"lot_type-abandoned":0.1,"lot_type-vacant":8.0,"door-plywood":0.2,"lawn-dead_patch_extreme":10.4},"ruthd":{"bad_picture-bad_angle":13.8,"lot_type-not_residential":7.9,"window-plywood":0.4,"bad_picture-wrong_parcel":6.3,"lot_type-abandoned":0.3,"lot_type-vacant":6.6,"door-plywood":0.2,"lawn-dead_patch_extreme":7.1},"phyllisk":{"bad_picture-bad_angle":10.5,"lot_type-not_residential":7.0,"window-plywood":1.0,"bad_picture-wrong_parcel":5.6,"lot_type-abandoned":0.3,"lot_type-vacant":8.4,"door-plywood":0.3,"lawn-dead_patch_extreme":7.6},"jeremiah":{"bad_picture-bad_angle":18.9,"lot_type-not_residential":8.7,"window-plywood":0.2,"bad_picture-wrong_parcel":8.0,"lot_type-abandoned":0.0,"lot_type-vacant":6.8,"door-plywood":0.1,"lawn-dead_patch_extreme":1.2},"theo":{"bad_picture-bad_angle":7.9,"lot_type-not_residential":9.3,"window-plywood":0.7,"bad_picture-wrong_parcel":5.6,"lot_type-abandoned":0.3,"lot_type-vacant":9.0,"door-plywood":0.3,"lawn-dead_patch_extreme":4.5},"leonardm":{"bad_picture-bad_angle":11.9,"lot_type-not_residential":6.4,"window-plywood":0.4,"bad_picture-wrong_parcel":9.9,"lot_type-abandoned":0.1,"lot_type-vacant":6.9,"door-plywood":0.2,"lawn-dead_patch_extreme":3.4},"godwina":{"bad_picture-bad_angle":10.7,"lot_type-not_residential":7.5,"window-plywood":0.6,"bad_picture-wrong_parcel":10.7,"lot_type-abandoned":0.4,"lot_type-vacant":6.8,"door-plywood":0.3,"lawn-dead_patch_extreme":3.8},"preciousa":{"bad_picture-bad_angle":12.8,"lot_type-not_residential":11.1,"window-plywood":0.3,"bad_picture-wrong_parcel":9.5,"lot_type-abandoned":0.2,"lot_type-vacant":8.8,"door-plywood":0.2,"lawn-dead_patch_extreme":1.5},"samuelo":{"bad_picture-bad_angle":10.8,"lot_type-not_residential":9.2,"window-plywood":0.3,"bad_picture-wrong_parcel":7.5,"lot_type-abandoned":0.2,"lot_type-vacant":7.8,"door-plywood":0.2,"lawn-dead_patch_extreme":2.0},"Irenen":{"bad_picture-bad_angle":11.8,"lot_type-not_residential":8.3,"window-plywood":0.3,"bad_picture-wrong_parcel":3.2,"lot_type-abandoned":0.1,"lot_type-vacant":8.3,"door-plywood":0.2,"lawn-dead_patch_extreme":9.0},"samuell":{"bad_picture-bad_angle":18.6,"lot_type-not_residential":12.3,"window-plywood":0.4,"bad_picture-wrong_parcel":9.4,"lot_type-abandoned":0.0,"lot_type-vacant":7.3,"door-plywood":0.1,"lawn-dead_patch_extreme":0.7},"obed":{"bad_picture-bad_angle":13.9,"lot_type-not_residential":9.2,"window-plywood":0.3,"bad_picture-wrong_parcel":9.5,"lot_type-abandoned":0.0,"lot_type-vacant":7.2,"door-plywood":0.1,"lawn-dead_patch_extreme":5.8},"irisa":{"bad_picture-bad_angle":5.1,"lot_type-not_residential":7.5,"window-plywood":0.4,"bad_picture-wrong_parcel":5.8,"lot_type-abandoned":0.0,"lot_type-vacant":10.6,"door-plywood":0.1,"lawn-dead_patch_extreme":1.7},"maxwellt":{"bad_picture-bad_angle":11.2,"lot_type-not_residential":11.1,"window-plywood":0.4,"bad_picture-wrong_parcel":6.1,"lot_type-abandoned":0.2,"lot_type-vacant":7.5,"door-plywood":0.2,"lawn-dead_patch_extreme":3.6},"emmanuel":{"bad_picture-bad_angle":13.7,"lot_type-not_residential":9.6,"window-plywood":0.5,"bad_picture-wrong_parcel":6.4,"lot_type-abandoned":0.3,"lot_type-vacant":7.7,"door-plywood":0.2,"lawn-dead_patch_extreme":5.0}};
+const TOP_ATTRS=["bad_picture-bad_angle","lot_type-not_residential","window-plywood","bad_picture-wrong_parcel","lot_type-abandoned","lot_type-vacant","door-plywood","lawn-dead_patch_extreme"];
+
+/* ══ STATE ══ */
+let selectedDays = new Set(ALL_DAYS);
+let dayChart = null;
+
+/* ══ TAB SWITCH ══ */
+function sw(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ══ DATE PILLS ══ */
+function buildPills(){
+  const c = document.getElementById('day-pills');
+  c.innerHTML = '';
+  ALL_DAYS.forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'dp' + (LOW_DAYS.has(d) ? ' low' : '') + (selectedDays.has(d) ? ' active' : '');
+    btn.textContent = d.slice(5);
+    btn.title = d + (LOW_DAYS.has(d) ? ' (low activity)' : '');
+    btn.onclick = () => { toggleDay(d); };
+    c.appendChild(btn);
+  });
+  updateSummary();
+}
+
+function toggleDay(d){
+  if(selectedDays.has(d)) selectedDays.delete(d);
+  else selectedDays.add(d);
+  buildPills();
+  render();
+}
+function selectAll(){ selectedDays = new Set(ALL_DAYS); buildPills(); render(); }
+function clearAll(){ selectedDays = new Set(); buildPills(); render(); }
+function selectWorkdays(){ selectedDays = new Set(ALL_DAYS.filter(d=>!LOW_DAYS.has(d))); buildPills(); render(); }
+
+function updateSummary(){
+  document.getElementById('range-summary').textContent = `${selectedDays.size} of ${ALL_DAYS.length} days`;
+  const days = [...selectedDays].sort();
+  document.getElementById('filter-status').innerHTML = `<b>Filter:</b> ${selectedDays.size===ALL_DAYS.length?'All days':selectedDays.size===0?'No days selected':days[0].slice(5)+' – '+days[days.length-1].slice(5)} (${selectedDays.size} day${selectedDays.size!==1?'s':''})`;
+}
+
+/* ══ AGGREGATE DATA ══ */
+function aggregate(){
+  const days = [...selectedDays].sort();
+  if(!days.length) return null;
+
+  // throughput & lpi per annotator
+  const tp = {}, lpiSum = {}, lpiCount = {};
+  let totalLS = 0;
+  days.forEach(d => {
+    const day = DAILY[d];
+    if(!day) return;
+    totalLS += day.total_ls;
+    Object.entries(day.tp).forEach(([a,v]) => { tp[a] = (tp[a]||0)+v; });
+    Object.entries(day.lpi).forEach(([a,v]) => {
+      if(!lpiSum[a]){ lpiSum[a]=0; lpiCount[a]=0; }
+      lpiSum[a]+=v; lpiCount[a]++;
+    });
+  });
+  const lpi = {};
+  Object.keys(lpiSum).forEach(a => { lpi[a] = Math.round(lpiSum[a]/lpiCount[a]*100)/100; });
+
+  // quality aggregation
+  const qAgg = {}; // ann -> {total, exact, has_missed, has_extra, missed, extra, confusion}
+  days.forEach(d => {
+    const day = DAILY[d];
+    if(!day) return;
+    Object.entries(day.quality).forEach(([a,q]) => {
+      if(!qAgg[a]) qAgg[a]={total:0,exact:0,hm:0,he:0,missed:0,extra:0,confusion:0};
+      qAgg[a].total += q.n;
+      qAgg[a].exact += Math.round(q.emr/100*q.n);
+      qAgg[a].hm += Math.round(q.imgs_missed_pct/100*q.n);
+      qAgg[a].he += Math.round(q.imgs_extra_pct/100*q.n);
+      const tc = q.missed_pct+q.extra_pct+q.confusion_pct > 0 ? q.n - Math.round(q.emr/100*q.n) : 0;
+      qAgg[a].missed += Math.round(q.missed_pct/100*tc);
+      qAgg[a].extra  += Math.round(q.extra_pct/100*tc);
+      qAgg[a].confusion += Math.round(q.confusion_pct/100*tc);
+    });
+  });
+  const quality = {};
+  Object.entries(qAgg).forEach(([a,q]) => {
+    if(!q.total) return;
+    const tc = q.missed+q.extra+q.confusion;
+    quality[a] = {
+      emr: Math.round(q.exact/q.total*100),
+      imgs_missed_pct: Math.round(q.hm/q.total*100),
+      imgs_extra_pct:  Math.round(q.he/q.total*100),
+      missed_pct: tc ? Math.round(q.missed/tc*100) : 0,
+      extra_pct:  tc ? Math.round(q.extra/tc*100)  : 0,
+      confusion_pct: tc ? Math.round(q.confusion/tc*100) : 0,
+      n: q.total,
+    };
+  });
+
+  // agreement — aggregate counts then recompute
+  const agreeAgg = {}; // attr -> {match, total, miss, fp}
+  days.forEach(d => {
+    const day = DAILY[d];
+    if(!day) return;
+    day.agree.forEach(a => {
+      if(!agreeAgg[a.attr]) agreeAgg[a.attr]={match:0,total:0,miss:0,fp:0};
+      agreeAgg[a.attr].total += a.n;
+      agreeAgg[a.attr].match += Math.round(a.rate/100*a.n);
+      agreeAgg[a.attr].miss  += Math.round(a.miss/100*a.n);
+      agreeAgg[a.attr].fp    += Math.round(a.fp/100*a.n);
+    });
+  });
+  const agree = Object.entries(agreeAgg)
+    .filter(([,v])=>v.total>=3)
+    .map(([attr,v])=>({
+      attr,
+      rate: Math.round(v.match/v.total*100),
+      n: v.total,
+      miss: Math.round(v.miss/v.total*100),
+      fp:   Math.round(v.fp/v.total*100),
+    }))
+    .sort((a,b)=>a.rate-b.rate)
+    .slice(0,12);
+
+  // total reviewed
+  const totalReviewed = Object.values(quality).reduce((s,q)=>s+q.n,0);
+
+  return { days, tp, lpi, quality, agree, totalLS, totalReviewed };
+}
+
+/* ══ RENDER HELPERS ══ */
+function lpiC(v){return v>=1.1?'#1D9E75':v>=0.8?'#3266ad':'#b45309'}
+function emrC(v){return v>=55?'#1D9E75':v>=45?'#b45309':'#c0392b'}
+
+function hbars(id,items,maxV,cf,vf,sfFn){
+  const el=document.getElementById(id);
+  if(!items||!items.length){el.innerHTML='<div class="empty">No data for selected days</div>';return;}
+  el.innerHTML=items.map(([n,v,s])=>`
+    <div class="hb">
+      <div class="hn" title="${n}">${n}</div>
+      <div class="ho"><div class="hi" style="width:${Math.round(v/maxV*100)}%;background:${cf(v)}"></div></div>
+      <div class="hv" style="color:${cf(v)}">${vf(v)}</div>
+      ${s?`<div class="hs">${s}</div>`:''}
+    </div>`).join('');
+}
+
+function empty(id){ document.getElementById(id).innerHTML='<div class="empty">No quality data for selected days</div>'; }
+
+/* ══ MAIN RENDER ══ */
+function render(){
+  const data = aggregate();
+  if(!data){ ['tp-bars','lpi-bars','lpi2-bars','emr-bars','dist-bars','agree-bars','added-bars','removed-bars','fpa-bars','dev-bars'].forEach(id=>empty(id)); return; }
+  const { days, tp, lpi, quality, agree, totalLS, totalReviewed } = data;
+
+  /* header KPIs */
+  const emrAll = Object.values(quality);
+  const teamEMR = emrAll.length ? Math.round(emrAll.reduce((s,q)=>s+q.emr,0)/emrAll.length) : null;
+  document.getElementById('hk-ls').innerHTML = `<strong>${totalLS.toLocaleString()}</strong><span>Label sets</span>`;
+  document.getElementById('hk-rev').innerHTML = `<strong>${totalReviewed.toLocaleString()}</strong><span>Reviewed</span>`;
+  document.getElementById('hk-emr').innerHTML = `<strong>${teamEMR!==null?teamEMR+'%':'—'}</strong><span>Team EMR</span>`;
+
+  /* day chart */
+  const dcLabels = days.map(d=>d.slice(5));
+  const dcData   = days.map(d=>DAILY[d]?.total_ls||0);
+  const dcColors = days.map(d=>LOW_DAYS.has(d)?'#c0392b':'#3266ad');
+  if(dayChart){ dayChart.data.labels=dcLabels; dayChart.data.datasets[0].data=dcData; dayChart.data.datasets[0].backgroundColor=dcColors; dayChart.update(); }
+
+  /* throughput */
+  const tpItems = Object.entries(tp).sort((a,b)=>b[1]-a[1]).map(([n,v])=>[n,v]);
+  const tpMax = tpItems.length ? tpItems[0][1] : 1;
+  const tpAvg = tpItems.length ? Math.round(tpItems.reduce((s,[,v])=>s+v,0)/tpItems.length) : 0;
+  hbars('tp-bars',tpItems,tpMax,()=>'#3266ad',v=>v.toLocaleString(),null);
+  document.getElementById('tp-avg-leg').innerHTML=`<span style="color:var(--ink4)">Average: ${tpAvg.toLocaleString()} label sets · ${days.length} day${days.length!==1?'s':''} selected</span>`;
+
+  /* LPI */
+  const lpiItems = Object.entries(lpi).sort((a,b)=>b[1]-a[1]).map(([n,v])=>[n,v]);
+  const teamLPI = lpiItems.length ? Math.round(lpiItems.reduce((s,[,v])=>s+v,0)/lpiItems.length*100)/100 : 0;
+  const lpiMax = Math.max(...lpiItems.map(([,v])=>v),1.6);
+  hbars('lpi-bars',lpiItems,lpiMax,lpiC,v=>v.toFixed(2),null);
+  hbars('lpi2-bars',lpiItems,lpiMax,lpiC,v=>v.toFixed(2),null);
+  document.getElementById('lpi-kpis').innerHTML=`
+    <div class="kc"><div class="kl">Period avg LPI</div><div class="kv">${teamLPI}</div><div class="ks">labels / image</div></div>
+    <div class="kc"><div class="kl">Highest</div><div class="kv kv-g">${lpiItems.length?lpiItems[0][1].toFixed(2):'—'}</div><div class="ks">${lpiItems.length?lpiItems[0][0]:'—'}</div></div>
+    <div class="kc"><div class="kl">Lowest</div><div class="kv kv-a">${lpiItems.length?lpiItems[lpiItems.length-1][1].toFixed(2):'—'}</div><div class="ks">${lpiItems.length?lpiItems[lpiItems.length-1][0]:'—'}</div></div>`;
+
+  /* EMR */
+  const emrItems = Object.entries(quality).map(([n,q])=>[n,q.emr,`n=${q.n}`]).sort((a,b)=>a[1]-b[1]);
+  if(!emrItems.length){ empty('emr-bars'); empty('dist-bars'); empty('added-bars'); empty('removed-bars'); empty('fpa-bars');
+    document.getElementById('quality-insight').innerHTML='<b>No review data for selected days.</b> Quality metrics (EMR, corrections) require days with admin reviews. Apr 15 and Apr 17 contain the bulk of the review sample.';
+  } else {
+    const tm = Math.round(emrItems.reduce((s,[,v])=>s+v,0)/emrItems.length);
+    document.getElementById('quality-insight').innerHTML=`<b>Team avg EMR for selected days: ${tm}%</b> — Under-labeling remains dominant (admin adds missing labels more often than removes extra ones). ${tm<46?'Below the full-period average of 46% — consider adding more review-heavy days to the selection.':'Consistent with the full-period average of 46%.'}`;
+    document.getElementById('emr-kpis').innerHTML=`
+      <div class="kc"><div class="kl">Team avg EMR</div><div class="kv ${tm>=55?'kv-g':tm>=45?'kv-a':'kv-r'}">${tm}%</div><div class="ks">selected period</div></div>
+      <div class="kc"><div class="kl">Best</div><div class="kv kv-g">${emrItems[emrItems.length-1][1]}%</div><div class="ks">${emrItems[emrItems.length-1][0]} · ${emrItems[emrItems.length-1][2]}</div></div>
+      <div class="kc"><div class="kl">Lowest</div><div class="kv kv-r">${emrItems[0][1]}%</div><div class="ks">${emrItems[0][0]} · ${emrItems[0][2]}</div></div>
+      <div class="kc"><div class="kl">Total reviewed</div><div class="kv">${totalReviewed}</div><div class="ks">images in period</div></div>`;
+    hbars('emr-bars',emrItems,100,emrC,v=>v+'%',null);
+    document.getElementById('emr-bars').innerHTML=emrItems.map(([n,v,s])=>`
+      <div class="hb"><div class="hn">${n}</div><div class="ho"><div class="hi" style="width:${v}%;background:${emrC(v)}"></div></div><div class="hv" style="color:${emrC(v)}">${v}%</div><div class="hs">${s}</div></div>`).join('');
+    hbars('fpa-bars',emrItems,100,emrC,v=>v+'%',null);
+    document.getElementById('fpa-bars').innerHTML=document.getElementById('emr-bars').innerHTML;
+    const distArr = Object.entries(quality).sort((a,b)=>b[1].emr-a[1].emr);
+    document.getElementById('dist-bars').innerHTML=distArr.map(([n,q])=>`
+      <div class="sb-r"><div class="sb-n">${n}</div><div class="sb"><div class="sm" style="width:${q.missed_pct}%"></div><div class="se" style="width:${q.extra_pct}%"></div><div class="sc" style="width:${q.confusion_pct}%"></div></div><div class="sv">${q.emr}% match</div></div>`).join('');
+    hbars('added-bars',Object.entries(quality).map(([n,q])=>[n,q.imgs_missed_pct]).sort((a,b)=>b[1]-a[1]),100,()=>'#c0392b',v=>v+'%',null);
+    hbars('removed-bars',Object.entries(quality).map(([n,q])=>[n,q.imgs_extra_pct]).sort((a,b)=>b[1]-a[1]),100,()=>'#b45309',v=>v+'%',null);
+  }
+
+  /* agree */
+  if(!agree.length){ empty('agree-bars'); }
+  else {
+    document.getElementById('agree-bars').innerHTML=agree.map(a=>{
+      const c=a.rate<40?'#c0392b':a.rate<55?'#b45309':'#1D9E75';
+      return `<div class="aa"><div class="aan" title="${a.attr}">${a.attr}</div><div class="aao"><div class="aaf" style="width:${a.rate}%;background:${c}"></div></div><div class="aav" style="color:${c}">${a.rate}%</div><div class="aasub">n=${a.n}</div><div class="aaerr"><div style="width:${a.miss}%;background:#3266ad;height:100%"></div><div style="width:${a.fp}%;background:#c0392b;height:100%"></div></div><div class="aaerrlbl">${a.miss}% m/${a.fp}% fp</div></div>`;
+    }).join('');
+  }
+
+  /* rework KPIs */
+  document.getElementById('rw-kpis').innerHTML=`
+    <div class="kc"><div class="kl">Coverage rate</div><div class="kv kv-a">${totalLS?((totalReviewed/totalLS)*100).toFixed(1):'0'}%</div><div class="ks">of label sets</div></div>
+    <div class="kc"><div class="kl">Label sets</div><div class="kv">${totalLS.toLocaleString()}</div><div class="ks">in selected days</div></div>
+    <div class="kc"><div class="kl">Reviewed</div><div class="kv">${totalReviewed}</div><div class="ks">images</div></div>
+    <div class="kc"><div class="kl">Days selected</div><div class="kv">${days.length}</div><div class="ks">of ${ALL_DAYS.length} total</div></div>`;
+
+  /* deviation */
+  if(!emrItems.length){ empty('dev-bars'); return; }
+  const teamEMRdev = Math.round(emrItems.reduce((s,[,v])=>s+v,0)/emrItems.length);
+  const devArr = Object.entries(quality).map(([n,q])=>[n,q.emr-teamEMRdev]).sort((a,b)=>b[1]-a[1]);
+  const maxD = Math.max(...devArr.map(([,d])=>Math.abs(d)),1);
+  document.getElementById('dev-bars').innerHTML=devArr.map(([n,d])=>{
+    const p=Math.round(Math.abs(d)/maxD*44),c=d>=0?'#1D9E75':'#c0392b';
+    return `<div class="dv"><div class="dvn">${n}</div><div class="dvt"><div class="dvm"></div><div class="dvb" style="${d>=0?`left:50%;width:${p}%`:`right:50%;width:${p}%`};background:${c}"></div></div><div class="dvv" style="color:${c}">${d>0?'+':''}${d}%</div></div>`;
+  }).join('');
+}
+
+/* ══ POSITIVE RATE TABLE (static — full period) ══ */
+function buildPosTable(){
+  const anns=Object.keys(PM).sort();
+  const ta={};
+  TOP_ATTRS.forEach(a=>{ta[a]=anns.map(n=>PM[n][a]).reduce((s,v)=>s+v,0)/anns.length});
+  const sa=a=>a.replace('bad_picture-','bp-').replace('lot_type-','lt-');
+  document.getElementById('pos-rate-tbl').innerHTML=
+    `<thead><tr><th>Annotator</th>${TOP_ATTRS.map(a=>`<th class="mono" title="${a}">${sa(a)}</th>`).join('')}</tr></thead>
+    <tbody>${anns.map(n=>`<tr><td>${n}</td>${TOP_ATTRS.map(a=>{const v=PM[n][a],avg=ta[a],d=v-avg;const s=Math.abs(d)>avg*0.4?(d>0?'style="color:#0F6E56;font-weight:600"':'style="color:#993C1D;font-weight:600"'):'';return`<td class="mono" ${s}>${v.toFixed(1)}</td>`;}).join('')}</tr>`).join('')}
+    <tr style="border-top:1.5px solid var(--ink)"><td style="font-weight:600">avg</td>${TOP_ATTRS.map(a=>`<td class="mono" style="font-weight:600">${ta[a].toFixed(1)}</td>`).join('')}</tr>
+    </tbody>`;
+}
+
+/* ══ INIT ══ */
+const dc = document.getElementById('dayChart');
+dayChart = new Chart(dc,{type:'bar',data:{labels:[],datasets:[{data:[],backgroundColor:[],borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toLocaleString()+' label sets'}}},scales:{x:{ticks:{autoSkip:false,maxRotation:0,font:{size:10}}},y:{ticks:{callback:v=>(v/1000).toFixed(0)+'k'}}}}});
+
+buildPills();
+buildPosTable();
+render();
+</script>
+</body>
+</html>
