@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Reviewer Stats — Helen · Isabella</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --ink:#1a1a1a;--ink2:#4a4a4a;--ink3:#777;--ink4:#aaa;
+  --border:#e2dfd8;--bg:#f9f8f5;--white:#fff;
+  --red:#c0392b;--redl:#fdf0ee;
+  --amber:#b45309;--ambl:#fef9ee;
+  --green:#166534;--grnl:#f0fdf4;
+  --blue:#1e3a5f;--bluel:#eff6ff;
+  --helen:#3266ad;--helenl:#e8f0fb;
+  --isabella:#1D9E75;--isabelal:#e6f7f1;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.65}
+.page{max-width:1020px;margin:0 auto;padding:24px 20px}
+
+/* HEADER */
+.hdr{background:var(--ink);border-radius:8px;padding:20px 26px;margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.hdr h1{font-size:17px;font-weight:600;color:#fff;margin-bottom:3px}
+.hdr p{font-size:11px;color:rgba(255,255,255,.45)}
+.hdr-reviewers{display:flex;gap:8px}
+.rev-badge{padding:5px 14px;border-radius:100px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:opacity .1s}
+.rev-badge:hover{opacity:.85}
+
+/* TABS */
+.tab-nav{display:flex;gap:4px;margin-bottom:18px;border-bottom:1.5px solid var(--border);padding-bottom:0}
+.tn{padding:7px 20px;border-radius:6px 6px 0 0;border:1.5px solid transparent;background:transparent;cursor:pointer;font-size:13px;color:var(--ink3);font-family:'Inter',sans-serif;position:relative;bottom:-1.5px}
+.tn.active{background:var(--white);color:var(--ink);font-weight:500;border-color:var(--border);border-bottom-color:var(--white)}
+.tn.helen.active{border-top:3px solid var(--helen)}
+.tn.isabella.active{border-top:3px solid var(--isabella)}
+.section{display:none}.section.active{display:block}
+
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.kc{background:var(--bg);border-radius:6px;padding:11px 13px;border:1px solid var(--border)}
+.kl{font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:3px}
+.kv{font-size:21px;font-weight:600;line-height:1}
+.ks{font-size:10px;color:var(--ink4);margin-top:2px}
+
+/* COMPARE TABLE */
+.cmp-table{width:100%;border-collapse:collapse;margin-bottom:16px}
+.cmp-table th{padding:8px 12px;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);text-align:left;border-bottom:1.5px solid var(--ink)}
+.cmp-table th.r{text-align:right}
+.cmp-table td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px}
+.cmp-table td.r{text-align:right;font-weight:500}
+.cmp-table .metric-name{font-size:12px;color:var(--ink2)}
+.cmp-table .winner{font-weight:600}
+.val-helen{color:var(--helen)}
+.val-isabella{color:var(--isabella)}
+.val-neutral{color:var(--ink3)}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:18px 20px}
+.card-title{font-size:12px;font-weight:600;margin-bottom:2px}
+.card-sub{font-size:11px;color:var(--ink3);margin-bottom:12px}
+.cw{position:relative;height:180px}
+.cw-sm{position:relative;height:150px}
+
+/* BARS */
+.hb{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.hn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;flex-shrink:0;font-family:'JetBrains Mono',monospace;color:var(--ink2)}
+.hn-w{width:180px}
+.hn-ann{width:82px;font-family:'Inter',sans-serif;font-size:11px;color:var(--ink2)}
+.ho{flex:1;height:12px;background:#eee;border-radius:2px;overflow:hidden}
+.hi{height:100%;border-radius:2px}
+.hv{font-size:11px;font-weight:500;flex-shrink:0;min-width:22px;text-align:right}
+
+/* INSIGHT */
+.insight{border-left:3px solid var(--amber);border-radius:0 6px 6px 0;background:var(--ambl);padding:9px 13px;font-size:12px;margin-bottom:14px;line-height:1.65}
+.insight b{font-weight:600}
+
+/* DIFF BAR */
+.diff-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;margin-top:4px}
+
+/* LEG */
+.leg{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--ink3)}
+.ld{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
+
+code{font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(0,0,0,.06);padding:1px 4px;border-radius:3px}
+
+/* MATRIX TAB */
+.tn.matrix.active{border-top:3px solid #555}
+.mx-filter{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 18px;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mx-filter-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.mx-rev-btn{padding:4px 12px;border-radius:100px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:11px;font-family:'Inter',sans-serif;color:var(--ink3)}
+.mx-rev-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.mx-period-btn{padding:4px 12px;border-radius:100px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:11px;font-family:'Inter',sans-serif;color:var(--ink3)}
+.mx-period-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.mx-sep{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.mx-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:4px;margin-top:12px}
+.mx-sub{font-size:11px;color:var(--ink3);margin-bottom:10px}
+.mx-wrap{overflow-x:auto;margin-bottom:20px}
+.mx-tbl{border-collapse:collapse;font-size:11px;white-space:nowrap}
+.mx-tbl th{padding:5px 8px;font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);text-align:center;border-bottom:1.5px solid var(--ink);position:sticky;top:0;background:var(--white);z-index:2}
+.mx-tbl th.ann-col{text-align:left;position:sticky;left:0;background:var(--white);z-index:3;border-right:1px solid var(--border)}
+.mx-tbl td{padding:4px 8px;border-bottom:1px solid var(--border);text-align:center;min-width:52px}
+.mx-tbl td.ann-name{text-align:left;font-weight:500;position:sticky;left:0;background:var(--white);border-right:1px solid var(--border);padding-right:12px;z-index:1}
+.mx-tbl td.total-col{font-weight:600;border-left:1.5px solid var(--border)}
+.mx-tbl th.total-col{border-left:1.5px solid var(--border)}
+.mx-cell{display:inline-block;min-width:28px;padding:2px 5px;border-radius:3px;font-weight:500}
+.mx-cell-0{color:var(--ink4);font-weight:400}
+.mx-tbl tbody tr:last-child td{border-bottom:none;font-weight:600;border-top:1.5px solid var(--ink);font-size:12px}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr">
+  <div>
+    <h1>Reviewer Stats Dashboard</h1>
+    <p>Dec 2025 – Apr 22, 2026 &nbsp;·&nbsp; 1 363 reviewed images total</p>
+  </div>
+  <div class="hdr-reviewers">
+    <button class="rev-badge" style="background:var(--helenl);color:var(--helen)" onclick="sw('helen',0)">Helen — 997 imgs</button>
+    <button class="rev-badge" style="background:var(--isabelal);color:var(--isabella)" onclick="sw('isabella',1)">Isabella — 402 imgs</button>
+  </div>
+</div>
+
+<div class="tab-nav">
+  <button class="tn active" onclick="sw('compare',this)">Compare all</button>
+  <button class="tn helen" onclick="sw('helen',this)">Helen</button>
+  <button class="tn isabella" onclick="sw('isabella',this)">Isabella</button>
+  <button class="tn matrix" onclick="sw('matrix',this)">Matrix</button>
+</div>
+
+<!-- ══ COMPARE ══ -->
+<div id="compare" class="section active">
+
+  <div class="insight">
+    <b>Key difference:</b> Helen reviewed 2.5× more images (997 vs 402) but with a much lower correction rate — 48% acceptance vs Isabella's 26%. Isabella makes 1.53 corrections per image vs Helen's 0.66. Their top attributes also differ: Helen focuses on <code>bad_picture</code> confusion, Isabella on <code>lot_type</code> and structural labels.
+  </div>
+
+  <table class="cmp-table">
+    <thead>
+      <tr>
+        <th style="width:38%">Metric</th>
+        <th class="r" style="width:22%">Helen</th>
+        <th class="r" style="width:22%">Isabella</th>
+        <th style="width:18%">Difference</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="metric-name">Images reviewed</td>
+        <td class="r val-helen winner">997</td>
+        <td class="r val-isabella">402</td>
+        <td><div class="diff-bar"><div style="width:71%;background:var(--helen);height:100%"></div><div style="width:29%;background:var(--isabella);height:100%"></div></div></td>
+      </tr>
+      <tr>
+        <td class="metric-name">Acceptance rate (no changes)</td>
+        <td class="r val-helen winner">48%</td>
+        <td class="r val-isabella">26%</td>
+        <td><div class="diff-bar"><div style="width:65%;background:var(--helen);height:100%"></div><div style="width:35%;background:var(--isabella);height:100%"></div></div></td>
+      </tr>
+      <tr>
+        <td class="metric-name">Corrections per image</td>
+        <td class="r val-helen">0.66</td>
+        <td class="r val-isabella winner">1.53</td>
+        <td><div class="diff-bar"><div style="width:30%;background:var(--helen);height:100%"></div><div style="width:70%;background:var(--isabella);height:100%"></div></div></td>
+      </tr>
+      <tr>
+        <td class="metric-name">Total corrections made</td>
+        <td class="r val-helen winner">751</td>
+        <td class="r val-isabella">622</td>
+        <td><div class="diff-bar"><div style="width:55%;background:var(--helen);height:100%"></div><div style="width:45%;background:var(--isabella);height:100%"></div></div></td>
+      </tr>
+      <tr>
+        <td class="metric-name">Labels added (missed by annotator)</td>
+        <td class="r val-helen winner">591</td>
+        <td class="r val-isabella">442</td>
+        <td><div class="diff-bar"><div style="width:57%;background:var(--helen);height:100%"></div><div style="width:43%;background:var(--isabella);height:100%"></div></div></td>
+      </tr>
+      <tr>
+        <td class="metric-name">Labels removed (extra by annotator)</td>
+        <td class="r val-helen">160</td>
+        <td class="r val-isabella winner">180</td>
+        <td><div class="diff-bar"><div style="width:47%;background:var(--helen);height:100%"></div><div style="width:53%;background:var(--isabella);height:100%"></div></div></td>
+      </tr>
+      <tr>
+        <td class="metric-name">Period active</td>
+        <td class="r" style="font-size:11px;color:var(--ink3)">Mar 20 – Apr 21</td>
+        <td class="r" style="font-size:11px;color:var(--ink3)">Mar 2 – Apr 14</td>
+        <td style="font-size:10px;color:var(--ink4)">no overlap in Apr 15+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Sessions by day — Helen vs Isabella</div>
+      <div class="card-sub">Stacked images reviewed per session</div>
+      <div class="cw"><canvas id="compareChart"></canvas></div>
+      <div class="leg">
+        <span><span class="ld" style="background:var(--helen)"></span>Helen</span>
+        <span><span class="ld" style="background:var(--isabella)"></span>Isabella</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top added labels — comparison</div>
+      <div class="card-sub">Which attributes each reviewer adds most — shows different calibration areas</div>
+      <div id="compare-added" style="margin-bottom:10px"></div>
+      <div class="card-title" style="margin-top:10px">Top removed labels — comparison</div>
+      <div id="compare-removed"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ HELEN ══ -->
+<div id="helen" class="section">
+  <div class="kpi-row">
+    <div class="kc" style="border-top:3px solid var(--helen)">
+      <div class="kl">Images reviewed</div>
+      <div class="kv" style="color:var(--helen)">997</div>
+      <div class="ks">73% of all reviews</div>
+    </div>
+    <div class="kc">
+      <div class="kl">Acceptance rate</div>
+      <div class="kv">48%</div>
+      <div class="ks">542 accepted without changes</div>
+    </div>
+    <div class="kc">
+      <div class="kl">Corrections / image</div>
+      <div class="kv">0.66</div>
+      <div class="ks">751 total corrections</div>
+    </div>
+    <div class="kc">
+      <div class="kl">Labels added</div>
+      <div class="kv" style="color:var(--red)">591</div>
+      <div class="ks">79% of her corrections</div>
+    </div>
+    <div class="kc">
+      <div class="kl">Labels removed</div>
+      <div class="kv" style="color:var(--amber)">160</div>
+      <div class="ks">21% of her corrections</div>
+    </div>
+  </div>
+  <div class="insight"><b>Helen's pattern:</b> Concentrated in two large April sessions (Apr 15: 301 imgs, Apr 17: 553 imgs). Her top added attribute is <code>bad_picture-bad_angle</code> (108×) and her top removed is <code>bad_picture-wrong_parcel</code> (58×) — suggesting she corrects bad-picture label confusion heavily. No label confusion recorded = she changes one label at a time.</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Daily sessions</div>
+      <div class="card-sub">Images reviewed per session</div>
+      <div class="cw"><canvas id="helenDayChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Coverage by annotator</div>
+      <div class="card-sub">Images reviewed per person — sorted by volume</div>
+      <div id="helen-ann-bars"></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Top labels added by Helen</div>
+      <div class="card-sub">Attributes Helen adds most often to annotator output</div>
+      <div id="helen-added"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top labels removed by Helen</div>
+      <div class="card-sub">Attributes Helen removes most often from annotator output</div>
+      <div id="helen-removed"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-title">Reviewed images — annotator × day</div>
+    <div class="card-sub">Rows = annotators · Columns = session dates · Cell = images reviewed that day</div>
+    <div style="overflow-x:auto"><table class="mx-tbl" id="helen-ann-day-tbl" style="margin-top:4px"></table></div>
+  </div>
+</div>
+
+<!-- ══ ISABELLA ══ -->
+<div id="isabella" class="section">
+  <div class="kpi-row">
+    <div class="kc" style="border-top:3px solid var(--isabella)">
+      <div class="kl">Images reviewed</div>
+      <div class="kv" style="color:var(--isabella)">402</div>
+      <div class="ks">27% of all reviews</div>
+    </div>
+    <div class="kc">
+      <div class="kl">Acceptance rate</div>
+      <div class="kv" style="color:var(--red)">26%</div>
+      <div class="ks">104 accepted without changes</div>
+    </div>
+    <div class="kc">
+      <div class="kl">Corrections / image</div>
+      <div class="kv" style="color:var(--amber)">1.53</div>
+      <div class="ks">622 total corrections</div>
+    </div>
+    <div class="kc">
+      <div class="kl">Labels added</div>
+      <div class="kv" style="color:var(--red)">442</div>
+      <div class="ks">71% of her corrections</div>
+    </div>
+    <div class="kc">
+      <div class="kl">Labels removed</div>
+      <div class="kv" style="color:var(--amber)">180</div>
+      <div class="ks">29% of her corrections</div>
+    </div>
+  </div>
+  <div class="insight"><b>Isabella's pattern:</b> Active throughout March (20 sessions, steady pace ~15–44/day). Much stricter than Helen — only 26% acceptance. She adds <code>lot_type-not_residential</code> (34×) and <code>lawn-leaves_extreme</code> (31×) most often, and removes structural extremes (<code>wall-paint_rust_extreme</code>, <code>window-plywood</code>) — the opposite direction from Helen on bad-picture labels.</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Daily sessions</div>
+      <div class="card-sub">Images reviewed per session</div>
+      <div class="cw"><canvas id="isabellaChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Coverage by annotator</div>
+      <div class="card-sub">Images reviewed per person — sorted by volume</div>
+      <div id="isabella-ann-bars"></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Top labels added by Isabella</div>
+      <div class="card-sub">Attributes Isabella adds most often to annotator output</div>
+      <div id="isabella-added"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top labels removed by Isabella</div>
+      <div class="card-sub">Attributes Isabella removes most often from annotator output</div>
+      <div id="isabella-removed"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="card-title">Reviewed images — annotator × day</div>
+    <div class="card-sub">Rows = annotators · Columns = session dates · Cell = images reviewed that day</div>
+    <div style="overflow-x:auto"><table class="mx-tbl" id="isabella-ann-day-tbl" style="margin-top:4px"></table></div>
+  </div>
+</div>
+
+
+
+<!-- ══ MATRIX ══ -->
+<div id="matrix" class="section">
+
+  <div class="mx-filter">
+    <span class="mx-filter-label">Reviewer:</span>
+    <button class="mx-rev-btn active" id="mxr-helen"    onclick="mxSetRev('helen',this)">Helen</button>
+    <button class="mx-rev-btn"        id="mxr-isabella" onclick="mxSetRev('isabella',this)">Isabella</button>
+    <div class="mx-sep"></div>
+    <span class="mx-filter-label">Period:</span>
+    <button class="mx-period-btn active" onclick="mxSetPeriod('all',this)">All time</button>
+    <button class="mx-period-btn"        onclick="mxSetPeriod('week',this)">Last week</button>
+    <button class="mx-period-btn"        onclick="mxSetPeriod('apr',this)">April</button>
+    <button class="mx-period-btn"        onclick="mxSetPeriod('mar',this)">March</button>
+  </div>
+
+  <!-- TABLE 1: annotators × days -->
+  <div class="mx-title">Table 1 — Reviewed images · annotator × day</div>
+  <div class="mx-sub">Rows = annotators · Columns = session dates · Cell = images reviewed</div>
+  <div class="mx-wrap"><table class="mx-tbl" id="mx-imgs-tbl"></table></div>
+
+  <!-- TABLE 2: annotators × attributes -->
+  <div class="mx-title">Table 2 — Labels changed by reviewer · annotator × attribute</div>
+  <div class="mx-sub">Rows = annotators · Columns = top attributes changed (added + removed) · Cell = total count</div>
+  <div class="mx-wrap"><table class="mx-tbl" id="mx-all-tbl"></table></div>
+
+  <div class="mx-title" style="margin-top:20px">Table 3 — Labels <span style="color:var(--green)">added</span> by reviewer · annotator × attribute</div>
+  <div class="mx-sub">Rows = annotators · Columns = top attributes added by reviewer · Cell = count · <span style="color:var(--green)">green scale</span></div>
+  <div class="mx-wrap"><table class="mx-tbl" id="mx-attrs-tbl"></table></div>
+
+  <div class="mx-title" style="margin-top:20px">Table 4 — Labels <span style="color:var(--red)">removed</span> by reviewer · annotator × attribute</div>
+  <div class="mx-sub">Rows = annotators · Columns = top attributes removed by reviewer · Cell = count · <span style="color:var(--red)">red scale</span></div>
+  <div class="mx-wrap"><table class="mx-tbl" id="mx-removed-tbl"></table></div>
+
+</div>
+
+</div><!-- page -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const H = {
+  by_day:{"2026-03-20":{"reviewed":7,"added":6,"removed":1},"2026-03-23":{"reviewed":11,"added":13,"removed":0},"2026-03-24":{"reviewed":11,"added":27,"removed":1},"2026-03-25":{"reviewed":2,"added":1,"removed":0},"2026-03-26":{"reviewed":14,"added":21,"removed":0},"2026-04-15":{"reviewed":301,"added":176,"removed":34},"2026-04-16":{"reviewed":46,"added":25,"removed":11},"2026-04-17":{"reviewed":553,"added":299,"removed":103},"2026-04-20":{"reviewed":32,"added":13,"removed":7},"2026-04-21":{"reviewed":20,"added":10,"removed":3}},
+  by_ann:{"emmanuel":{r:131,c:72},"obed":{r:88,c:78},"ruthd":{r:74,c:43},"godwina":{r:70,c:59},"preciousa":{r:64,c:32},"samuell":{r:63,c:33},"irisa":{r:62,c:53},"maxwellt":{r:61,c:62},"samuelo":{r:59,c:30},"jezemiah":{r:59,c:46},"Irenen":{r:59,c:30},"theo":{r:56,c:51},"leonardm":{r:55,c:80},"phyllisk":{r:55,c:31},"jeremiah":{r:42,c:51}},
+  top_added:[{a:"bad_picture-bad_angle",n:108},{a:"bad_picture-wrong_parcel",n:53},{a:"lawn-dead_patch_extreme",n:47},{a:"lawn-grass_height",n:40},{a:"lawn-debris_extreme",n:31},{a:"lawn-overgrown_weeds_extreme",n:29},{a:"lot_type-not_residential",n:24},{a:"fence-overgrown_extreme",n:21}],
+  top_removed:[{a:"bad_picture-wrong_parcel",n:58},{a:"bad_picture-bad_angle",n:38},{a:"bad_picture-blocked",n:35},{a:"lawn-dead_patch_extreme",n:7},{a:"lot_type-vacant",n:4},{a:"driveway-overgrown_extreme",n:4}],
+};
+const I = {
+  by_day:{"2026-03-11":{"reviewed":35},"2026-03-12":{"reviewed":4},"2026-03-13":{"reviewed":13},"2026-03-16":{"reviewed":14},"2026-03-17":{"reviewed":32},"2026-03-18":{"reviewed":12},"2026-03-19":{"reviewed":41},"2026-03-20":{"reviewed":23},"2026-03-23":{"reviewed":11},"2026-03-24":{"reviewed":22},"2026-03-25":{"reviewed":44},"2026-03-26":{"reviewed":23},"2026-03-27":{"reviewed":20},"2026-03-30":{"reviewed":14},"2026-04-01":{"reviewed":22},"2026-04-08":{"reviewed":17},"2026-04-09":{"reviewed":14},"2026-04-10":{"reviewed":10},"2026-04-13":{"reviewed":6}},
+  by_ann:{"phyllisk":{r:48,c:51},"ruthd":{r:44,c:74},"godwina":{r:40,c:57},"samuelo":{r:35,c:54},"leonardm":{r:34,c:36},"theo":{r:28,c:46},"maxwellt":{r:27,c:42},"obed":{r:26,c:45},"samuell":{r:25,c:55},"irisa":{r:24,c:33},"emmanuel":{r:23,c:34},"Irenen":{r:17,c:21},"jezemiah":{r:15,c:35},"preciousa":{r:12,c:19},"jeremiah":{r:5,c:20}},
+  top_added:[{a:"lot_type-not_residential",n:34},{a:"lawn-leaves_extreme",n:31},{a:"lawn-debris_extreme",n:23},{a:"lot_type-abandoned",n:22},{a:"fascia-structural_extreme",n:20},{a:"fascia-paint_extreme",n:19},{a:"bad_picture-bad_angle",n:15},{a:"lawn-dead_patch_extreme",n:13}],
+  top_removed:[{a:"wall-paint_rust_extreme",n:16},{a:"foundation-paint_rust_extreme",n:15},{a:"window-plywood",n:13},{a:"porch-paint_rust_extreme",n:11},{a:"door-plywood",n:11},{a:"door-paint_rust_extreme",n:9},{a:"stairs-paint_rust_extreme",n:8},{a:"window-paint_rust_extreme",n:8}],
+};
+
+/* ── TAB SWITCH ── */
+function sw(id, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn && btn.classList) btn.classList.add('active');
+  else document.querySelectorAll('.tn')[['compare','helen','isabella','matrix'].indexOf(id)].classList.add('active');
+  // mxRender called from block2 sw override below
+}
+
+/* ── BAR HELPERS ── */
+function hbars(id, items, maxV, col, wCls){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.innerHTML = items.map(([n,v])=>`
+    <div class="hb">
+      <div class="hn ${wCls}" title="${n}">${n}</div>
+      <div class="ho"><div class="hi" style="width:${Math.round(v/maxV*100)}%;background:${col}"></div></div>
+      <div class="hv" style="color:${col}">${v}</div>
+    </div>`).join('');
+}
+
+/* ── COMPARE CHART ── */
+const allDays = [...new Set([...Object.keys(H.by_day),...Object.keys(I.by_day)])].sort();
+new Chart(document.getElementById('compareChart'),{
+  type:'bar',
+  data:{
+    labels: allDays.map(d=>d.slice(5)),
+    datasets:[
+      {label:'Helen',    data:allDays.map(d=>H.by_day[d]?.reviewed||0), backgroundColor:'#3266ad', stack:'s', borderRadius:2},
+      {label:'Isabella', data:allDays.map(d=>I.by_day[d]?.reviewed||0), backgroundColor:'#1D9E75', stack:'s', borderRadius:2},
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index'}},
+    scales:{x:{stacked:true,ticks:{autoSkip:true,maxRotation:45,font:{size:9}}},y:{stacked:true,ticks:{font:{size:10}}}}}
+});
+
+/* ── COMPARE ADDED/REMOVED ── */
+const allAdded = {};
+H.top_added.forEach(x=>allAdded[x.a]=(allAdded[x.a]||{h:0,i:0,a:x.a}));
+I.top_added.forEach(x=>allAdded[x.a]=(allAdded[x.a]||{h:0,i:0,a:x.a}));
+H.top_added.forEach(x=>{if(allAdded[x.a]) allAdded[x.a].h=x.n});
+I.top_added.forEach(x=>{if(allAdded[x.a]) allAdded[x.a].i=x.n});
+const addedList = Object.values(allAdded).sort((a,b)=>(b.h+b.i)-(a.h+a.i)).slice(0,8);
+const maxA = Math.max(...addedList.map(x=>Math.max(x.h,x.i)));
+document.getElementById('compare-added').innerHTML = addedList.map(x=>`
+  <div class="hb" style="margin-bottom:4px">
+    <div class="hn hn-w" title="${x.a}">${x.a}</div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+      <div style="height:9px;background:#eee;border-radius:2px;overflow:hidden"><div style="width:${Math.round(x.h/maxA*100)}%;height:100%;background:#3266ad;border-radius:2px"></div></div>
+      <div style="height:9px;background:#eee;border-radius:2px;overflow:hidden"><div style="width:${Math.round(x.i/maxA*100)}%;height:100%;background:#1D9E75;border-radius:2px"></div></div>
+    </div>
+    <div style="font-size:10px;min-width:48px;text-align:right;color:var(--ink3)">${x.h}·${x.i}</div>
+  </div>`).join('');
+
+const allRemoved = {};
+H.top_removed.forEach(x=>allRemoved[x.a]=(allRemoved[x.a]||{h:0,i:0,a:x.a}));
+I.top_removed.forEach(x=>allRemoved[x.a]=(allRemoved[x.a]||{h:0,i:0,a:x.a}));
+H.top_removed.forEach(x=>{if(allRemoved[x.a]) allRemoved[x.a].h=x.n});
+I.top_removed.forEach(x=>{if(allRemoved[x.a]) allRemoved[x.a].i=x.n});
+const removedList = Object.values(allRemoved).sort((a,b)=>(b.h+b.i)-(a.h+a.i)).slice(0,8);
+const maxR = Math.max(...removedList.map(x=>Math.max(x.h,x.i)));
+document.getElementById('compare-removed').innerHTML = removedList.map(x=>`
+  <div class="hb" style="margin-bottom:4px">
+    <div class="hn hn-w" title="${x.a}">${x.a}</div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+      <div style="height:9px;background:#eee;border-radius:2px;overflow:hidden"><div style="width:${Math.round(x.h/maxR*100)}%;height:100%;background:#3266ad;border-radius:2px"></div></div>
+      <div style="height:9px;background:#eee;border-radius:2px;overflow:hidden"><div style="width:${Math.round(x.i/maxR*100)}%;height:100%;background:#1D9E75;border-radius:2px"></div></div>
+    </div>
+    <div style="font-size:10px;min-width:48px;text-align:right;color:var(--ink3)">${x.h}·${x.i}</div>
+  </div>`).join('');
+
+/* ── HELEN TAB ── */
+const hDays = Object.keys(H.by_day).filter(d=>H.by_day[d].reviewed>0);
+new Chart(document.getElementById('helenDayChart'),{
+  type:'bar',
+  data:{labels:hDays.map(d=>d.slice(5)),datasets:[{data:hDays.map(d=>H.by_day[d].reviewed),backgroundColor:'#3266ad',borderRadius:3}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>i.parsed.y+' images'}}},
+    scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:9}}},y:{ticks:{font:{size:10}}}}}
+});
+const hAnnItems = Object.entries(H.by_ann).map(([n,v])=>[n,v.r]).slice(0,12);
+hbars('helen-ann-bars', hAnnItems, Math.max(...hAnnItems.map(x=>x[1])), '#3266ad', 'hn-ann');
+hbars('helen-added',   H.top_added.map(x=>[x.a,x.n]),   H.top_added[0].n,   '#c0392b', 'hn-w');
+hbars('helen-removed', H.top_removed.map(x=>[x.a,x.n]), H.top_removed[0].n, '#b45309', 'hn-w');
+
+/* ── ISABELLA TAB ── */
+const iDays = Object.keys(I.by_day).filter(d=>I.by_day[d].reviewed>0);
+new Chart(document.getElementById('isabellaChart'),{
+  type:'bar',
+  data:{labels:iDays.map(d=>d.slice(5)),datasets:[{data:iDays.map(d=>I.by_day[d].reviewed),backgroundColor:'#1D9E75',borderRadius:3}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>i.parsed.y+' images'}}},
+    scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:9}}},y:{ticks:{font:{size:10}}}}}
+});
+const iAnnItems = Object.entries(I.by_ann).map(([n,v])=>[n,v.r]).slice(0,12);
+hbars('isabella-ann-bars', iAnnItems, Math.max(...iAnnItems.map(x=>x[1])), '#1D9E75', 'hn-ann');
+hbars('isabella-added',   I.top_added.map(x=>[x.a,x.n]),   I.top_added[0].n,   '#c0392b', 'hn-w');
+hbars('isabella-removed', I.top_removed.map(x=>[x.a,x.n]), I.top_removed[0].n, '#b45309', 'hn-w');
+</script>
+
+
+
+<script>
+// ── MATRIX DATA ──────────────────────────────────────────────
+const MX = {"helen":{"2026-04-10":{"maxwellt":{"n":3,"added":{"window-paint_rust_extreme":1,"window-plywood":1},"removed":{"door-plywood":1}},"samuelo":{"n":8,"added":{"soffit-structural_extreme":2,"wall-paint_rust_extreme":1,"fascia-paint_extreme":1,"lot_type-abandoned":1,"awning-paint_rust_extreme":1,"lawn-grass_height":1,"porch-debris_extreme":1,"retainingwall-mold_extreme":1}},"leonardm":{"n":3,"added":{"lot_type-not_residential":1,"roof-structural_extreme":1,"sidewalk-debris_extreme":1},"removed":{"stairs-paint_rust_extreme":1}},"emmanuel":{"n":4,"added":{"wall-paint_rust_extreme":1,"fascia-paint_extreme":1,"wall-structural_extreme":1,"lawn-overgrown_weeds_extreme":1,"roof-debris_extreme":1,"lot_type-abandoned":1,"fascia-structural_extreme":1,"lawn-debris_extreme":1}},"ruthd":{"n":5,"added":{"railing-paint_rust_extreme":1,"lawn-dead_patch_extreme":1,"driveway-overgrown_extreme":1,"door-paint_rust_extreme":1}},"phyllisk":{"n":10,"added":{"lawn-debris_extreme":3,"sidewalk-overgrown_extreme":2,"wall-paint_rust_extreme":2,"porch-paint_rust_extreme":1,"window-plywood":1,"driveway-cracked_extreme":1,"awning-structural_extreme":1,"foundation-paint_rust_extreme":1,"lawn-overgrown_weeds_extreme":1,"door-paint_rust_extreme":1,"lot_type-not_residential":1,"fascia-paint_extreme":1,"sidewalk-leaves_extreme":1}},"theo":{"n":2,"added":{"bad_picture-bad_angle":1,"stairs-paint_rust_extreme":1,"sidewalk-overgrown_extreme":1,"fence-overgrown_extreme":1,"lawn-litter_extreme":1}},"obed":{"n":1,"added":{"lot_type-abandoned":1}},"godwina":{"n":2,"added":{"bad_picture-bad_angle":1}},"irisa":{"n":2,"added":{"lot_type-not_residential":1}},"jezemiah":{"n":3,"added":{"foundation-paint_rust_extreme":2,"window-missing":1,"porch-debris_extreme":1,"lot_type-abandoned":1,"lawn-grass_height":1,"bad_picture-bad_angle":1,"wall-paint_rust_extreme":1,"lot_type-not_residential":1,"soffit-structural_extreme":1}},"jeremiah":{"n":2,"added":{"porch-paint_rust_extreme":1,"window-paint_rust_extreme":1,"column-paint_rust_extreme":1,"railing-paint_rust_extreme":1,"lawn-grass_height":1}}},"2026-04-15":{"emmanuel":{"n":3,"added":{"lawn-dead_patch_extreme":1}},"godwina":{"n":32,"added":{"bad_picture-bad_angle":7,"fence-paint_rust_extreme":6,"fence-overgrown_extreme":5,"lot_type-vacant":1,"lawn-dead_patch_extreme":1,"lawn-debris_extreme":1,"lawn-overgrown_weeds_extreme":1},"removed":{"bad_picture-bad_angle":7,"bad_picture-wrong_parcel":5,"bad_picture-blocked":3,"lawn-grass_height":1}},"irisa":{"n":40,"added":{"lawn-grass_height":7,"lawn-dead_patch_extreme":5,"bad_picture-bad_angle":5,"sidewalk-overgrown_extreme":3,"lawn-branches_extreme":2,"bad_picture-wrong_parcel":1,"fence-overgrown_extreme":1,"lawn-litter_extreme":1,"lawn-debris_extreme":1,"stairs-paint_rust_extreme":1,"awning-paint_rust_extreme":1,"railing-paint_rust_extreme":1,"sidewalk-cracked_extreme":1}},"jeremiah":{"n":16,"added":{"lawn-dead_patch_extreme":4,"bad_picture-bad_angle":4,"bad_picture-wrong_parcel":1,"lawn-overgrown_weeds_extreme":1,"lawn-grass_height":1,"lawn-branches_extreme":1,"lawn-debris_extreme":1,"driveway-debris_extreme":1,"lot_type-construction":1,"mailbox-numbers":1,"driveway-cracked_extreme":1},"removed":{"bad_picture-wrong_parcel":1}},"jezemiah":{"n":15,"added":{"bad_picture-bad_angle":1,"fence-overgrown_extreme":1,"lawn-leaves_extreme":1,"sidewalk-cracked_extreme":1,"roof-leaves_extreme":1,"driveway-debris_extreme":1},"removed":{"lawn-grass_height":1,"lawn-dead_patch_extreme":1}},"leonardm":{"n":11,"added":{"lawn-dead_patch_extreme":4,"lawn-grass_height":2,"lawn-debris_extreme":2,"bad_picture-bad_angle":2,"lawn-vehicle":2,"lawn-overgrown_weeds_extreme":1,"lot_type-multifamily":1,"lawn-branches_extreme":1,"porch-debris_extreme":1},"removed":{"bad_picture-blocked":1}}},"2026-04-16":{"leonardm":{"n":4,"added":{"bad_picture-blocked":1,"sidewalk-leaves_extreme":1,"lawn-leaves_extreme":1,"lawn-dead_patch_extreme":1},"removed":{"bad_picture-bad_angle":1}},"maxwellt":{"n":13,"added":{"lawn-dead_patch_extreme":3,"bad_picture-bad_angle":2,"driveway-debris_extreme":1,"roof-leaves_extreme":1}},"obed":{"n":13,"added":{"bad_picture-bad_angle":3,"lot_type-vacant":2,"lawn-grass_height":2,"driveway-cracked_extreme":1,"fence-structural_extreme":1,"sidewalk-debris_extreme":1,"lawn-litter_extreme":1},"removed":{"bad_picture-blocked":1,"mailbox-numbers":1}},"preciousa":{"n":41,"added":{"bad_picture-bad_angle":8,"lawn-dead_patch_extreme":2,"driveway-debris_extreme":2,"bad_picture-blocked":2,"lawn-grass_height":1,"lawn-overgrown_weeds_extreme":1,"porch-debris_extreme":1,"roof-debris_extreme":1,"sidewalk-debris_extreme":1,"lawn-debris_extreme":1,"bad_picture-wrong_parcel":1,"lot_type-not_residential":1,"fence-paint_rust_extreme":1,"fence-overgrown_extreme":1,"driveway-leaves_extreme":1},"removed":{"bad_picture-wrong_parcel":2}},"theo":{"n":9,"added":{"bad_picture-bad_angle":2,"lawn-vehicle":1,"wall-paint_rust_extreme":1,"foundation-paint_rust_extreme":1,"sidewalk-overgrown_extreme":1,"lot_type-not_residential":1,"fence-overgrown_extreme":1,"lawn-debris_extreme":1},"removed":{"bad_picture-blocked":1,"lot_type-vacant":1,"lawn-dead_patch_extreme":1}},"samuell":{"n":24,"added":{"lawn-dead_patch_extreme":4,"bad_picture-bad_angle":2,"fascia-paint_extreme":1,"driveway-leaves_extreme":1,"sidewalk-overgrown_extreme":1,"wall-paint_rust_extreme":1,"lawn-grass_height":1,"retainingwall-overgrown_extreme":1,"foundation-paint_rust_extreme":1,"fence-paint_rust_extreme":1,"lawn-debris_extreme":1,"lawn-overgrown_weeds_extreme":1,"driveway-overgrown_extreme":1,"porch-debris_extreme":1},"removed":{"bad_picture-bad_angle":1}},"emmanuel":{"n":37,"added":{"lawn-leaves_extreme":5,"lawn-debris_extreme":5,"stairs-paint_rust_extreme":3,"wall-paint_rust_extreme":2,"lawn-grass_height":2,"fence-overgrown_extreme":1,"bad_picture-bad_angle":1,"lawn-branches_extreme":1,"stairs-overgrown_extreme":1,"window-missing":1,"driveway-overgrown_extreme":1,"lawn-overgrown_weeds_extreme":1,"awning-paint_rust_extreme":1,"sidewalk-cracked_extreme":1,"lot_type-multifamily":1}},"jeremiah":{"n":1,"added":{"bad_picture-bad_angle":1}},"godwina":{"n":1,"added":{"lawn-dead_patch_extreme":1,"lawn-litter_extreme":1}},"phyllisk":{"n":23,"added":{"bad_picture-bad_angle":6,"lawn-grass_height":2,"lawn-dead_patch_extreme":1,"sidewalk-debris_extreme":1},"removed":{"bad_picture-wrong_parcel":1}},"ruthd":{"n":36,"added":{"lawn-debris_extreme":4,"lawn-overgrown_weeds_extreme":2,"lawn-dead_patch_extreme":2,"lawn-branches_extreme":1,"lawn-leaves_extreme":1,"sidewalk-cracked_extreme":1,"lawn-litter_extreme":1,"fence-paint_rust_extreme":1,"bad_picture-bad_angle":1,"sidewalk-debris_extreme":1}},"samuelo":{"n":21,"added":{"lawn-grass_height":5,"lawn-dead_patch_extreme":3,"lawn-debris_extreme":3,"lot_type-construction":1,"lawn-overgrown_weeds_extreme":1,"foundation-structural_extreme":1,"driveway-overgrown_extreme":1,"lot_type-not_residential":1,"fascia-paint_extreme":1,"fence-overgrown_extreme":1,"lawn-branches_extreme":1},"removed":{"bad_picture-blocked":1,"bad_picture-wrong_parcel":1}},"Irenen":{"n":34,"added":{"fence-overgrown_extreme":5,"sidewalk-leaves_extreme":4,"lawn-overgrown_weeds_extreme":3,"lawn-leaves_extreme":2,"driveway-debris_extreme":2,"lot_type-not_residential":2,"driveway-cracked_extreme":1,"sidewalk-overgrown_extreme":1,"lawn-debris_extreme":1},"removed":{"bad_picture-bad_angle":2}}},"2026-04-17":{"emmanuel":{"n":50,"added":{"lawn-vehicle":5,"bad_picture-bad_angle":4,"lawn-dead_patch_extreme":2,"lawn-overgrown_weeds_extreme":1,"driveway-cracked_extreme":1,"window-plywood":1,"bad_picture-blocked":1,"mailbox-numbers":1},"removed":{"bad_picture-blocked":3,"bad_picture-wrong_parcel":2,"bad_picture-bad_angle":2}},"obed":{"n":49,"added":{"lawn-leaves_extreme":6,"lawn-grass_height":5,"driveway-leaves_extreme":2,"lawn-debris_extreme":2,"lot_type-not_residential":2,"fence-paint_rust_extreme":2,"bad_picture-wrong_parcel":2,"bad_picture-bad_angle":1,"sidewalk-leaves_extreme":1,"awning-paint_rust_extreme":1,"wall-structural_extreme":1,"lawn-litter_extreme":1,"driveway-overgrown_extreme":1,"fence-overgrown_extreme":1,"lot_type-multifamily":1},"removed":{"driveway-cracked_extreme":2,"bad_picture-blocked":1,"bad_picture-wrong_parcel":1}},"godwina":{"n":36,"added":{"bad_picture-bad_angle":5,"bad_picture-wrong_parcel":4,"lawn-grass_height":2,"fence-overgrown_extreme":1,"roof-mold_extreme":1},"removed":{"bad_picture-blocked":7}},"Irenen":{"n":31,"added":{"bad_picture-bad_angle":5,"lawn-dead_patch_extreme":1,"lawn-overgrown_weeds_extreme":1,"lot_type-construction":1,"lot_type-not_residential":1,"wall-structural_extreme":1},"removed":{"bad_picture-blocked":3}},"irisa":{"n":36,"added":{"lawn-dead_patch_extreme":10,"lawn-grass_height":7,"stairs-paint_rust_extreme":2,"sidewalk-overgrown_extreme":2,"driveway-overgrown_extreme":2,"porch-debris_extreme":2,"lawn-litter_extreme":2,"lawn-vehicle":2,"fascia-paint_extreme":2,"wall-structural_extreme":1,"mailbox-numbers":1,"window-paint_rust_extreme":1,"foundation-paint_rust_extreme":1,"lawn-branches_extreme":1,"lawn-debris_extreme":1},"removed":{"bad_picture-bad_angle":1,"bad_picture-blocked":1,"lawn-overgrown_weeds_extreme":1}},"jeremiah":{"n":40,"added":{"lawn-grass_height":5,"lawn-overgrown_weeds_extreme":4,"bad_picture-bad_angle":3,"lawn-branches_extreme":3,"lawn-litter_extreme":3,"driveway-overgrown_extreme":3,"driveway-cracked_extreme":3,"lot_type-multifamily":3,"lot_type-not_residential":3,"lawn-leaves_extreme":2,"fence-paint_rust_extreme":2,"lawn-dead_patch_extreme":2,"sidewalk-overgrown_extreme":2,"lawn-debris_extreme":2,"lot_type-vacant":2},"removed":{"bad_picture-blocked":4,"bad_picture-bad_angle":3,"bad_picture-wrong_parcel":1,"lot_type-vacant":1}},"jezemiah":{"n":43,"added":{"driveway-cracked_extreme":3,"lot_type-not_residential":3,"lawn-debris_extreme":2,"lawn-overgrown_weeds_extreme":2,"driveway-litter_extreme":2,"fence-overgrown_extreme":2,"bad_picture-wrong_parcel":2,"bad_picture-bad_angle":1,"foundation-paint_rust_extreme":1,"roof-leaves_extreme":1,"lawn-dead_patch_extreme":1,"sidewalk-overgrown_extreme":1,"sidewalk-cracked_extreme":1,"lot_type-vacant":1,"stairs-paint_rust_extreme":1},"removed":{"driveway-overgrown_extreme":1,"lawn-grass_height":1,"lawn-dead_patch_extreme":1,"lot_type-vacant":1}},"leonardm":{"n":45,"added":{"bad_picture-bad_angle":27,"lawn-leaves_extreme":3,"lawn-grass_height":3,"lot_type-vacant":2,"lawn-dead_patch_extreme":2,"lawn-debris_extreme":2,"lot_type-not_residential":1,"lot_type-multifamily":1},"removed":{"bad_picture-wrong_parcel":26,"bad_picture-blocked":1}},"maxwellt":{"n":49,"added":{"bad_picture-wrong_parcel":32,"lot_type-not_residential":2,"lot_type-multifamily":1,"bad_picture-bad_angle":1,"lot_type-construction":1},"removed":{"bad_picture-bad_angle":18,"lot_type-vacant":1}},"phyllisk":{"n":30,"added":{"lawn-dead_patch_extreme":3,"sidewalk-debris_extreme":1,"lawn-debris_extreme":1,"lawn-branches_extreme":1,"lot_type-vacant":1,"bad_picture-wrong_parcel":1},"removed":{"bad_picture-bad_angle":1,"lawn-overgrown_weeds_extreme":1,"bad_picture-blocked":1}},"preciousa":{"n":42,"added":{"lawn-grass_height":7,"lawn-debris_extreme":4,"driveway-overgrown_extreme":3,"sidewalk-overgrown_extreme":2,"bad_picture-bad_angle":2,"lawn-dead_patch_extreme":2,"stairs-overgrown_extreme":1,"fence-overgrown_extreme":1,"driveway-debris_extreme":1,"driveway-cracked_extreme":1,"sidewalk-cracked_extreme":1,"lot_type-vacant":1,"lawn-vehicle":1,"column-paint_rust_extreme":1,"lawn-overgrown_weeds_extreme":1},"removed":{"bad_picture-blocked":1}},"ruthd":{"n":32,"added":{"lawn-leaves_extreme":2,"lawn-dead_patch_extreme":2,"driveway-cracked_extreme":2,"bad_picture-bad_angle":1,"lawn-vehicle":1,"driveway-debris_extreme":1,"driveway-leaves_extreme":1,"lawn-overgrown_weeds_extreme":1},"removed":{"driveway-overgrown_extreme":3,"lawn-dead_patch_extreme":3,"bad_picture-wrong_parcel":1,"fascia-paint_extreme":1}},"samuell":{"n":25,"added":{"bad_picture-wrong_parcel":6,"lawn-grass_height":2,"lawn-overgrown_weeds_extreme":1,"fence-paint_rust_extreme":1,"driveway-cracked_extreme":1,"bad_picture-bad_angle":1,"lawn-dead_patch_extreme":1},"removed":{"bad_picture-blocked":2,"bad_picture-bad_angle":1}}},"2026-04-20":{"theo":{"n":53,"added":{"lawn-overgrown_weeds_extreme":6,"lawn-dead_patch_extreme":5,"sidewalk-overgrown_extreme":3,"foundation-paint_rust_extreme":2,"bad_picture-wrong_parcel":2,"lawn-debris_extreme":2,"lot_type-not_residential":2,"bad_picture-bad_angle":2,"window-paint_rust_extreme":1,"lawn-grass_height":1,"sidewalk-cracked_extreme":1,"porch-debris_extreme":1,"lawn-vehicle":1,"driveway-debris_extreme":1,"driveway-overgrown_extreme":1},"removed":{"bad_picture-wrong_parcel":2,"lot_type-not_residential":2,"bad_picture-blocked":1}},"jeremiah":{"n":1,"added":{"wall-paint_rust_extreme":1,"lawn-overgrown_weeds_extreme":1,"lawn-grass_height":1},"removed":{"lawn-dead_patch_extreme":1}},"obed":{"n":33,"added":{"bad_picture-bad_angle":14,"driveway-overgrown_extreme":2,"lot_type-construction":2,"driveway-cracked_extreme":1,"lawn-overgrown_weeds_extreme":1,"driveway-debris_extreme":1,"sidewalk-litter_extreme":1,"porch-debris_extreme":1,"lot_type-multifamily":1,"fence-overgrown_extreme":1},"removed":{"bad_picture-wrong_parcel":10}},"samuell":{"n":26,"added":{"lawn-dead_patch_extreme":4,"lawn-vehicle":3,"lawn-debris_extreme":2,"lawn-overgrown_weeds_extreme":1,"bad_picture-blocked":1,"bad_picture-bad_angle":1},"removed":{"bad_picture-blocked":1}},"samuelo":{"n":37,"added":{"lawn-dead_patch_extreme":3,"lawn-overgrown_weeds_extreme":2,"wall-paint_rust_extreme":1,"porch-debris_extreme":1,"lot_type-construction":1,"bad_picture-wrong_parcel":1,"lawn-branches_extreme":1}}},"2026-04-21":{"emmanuel":{"n":31,"added":{"bad_picture-bad_angle":5,"bad_picture-wrong_parcel":2,"lawn-dead_patch_extreme":1,"lawn-grass_height":1,"lawn-overgrown_weeds_extreme":1},"removed":{"bad_picture-wrong_parcel":5,"bad_picture-blocked":1}},"ruthd":{"n":1,"added":{"bad_picture-bad_angle":1,"bad_picture-wrong_parcel":1},"removed":{"wall-overgrown_extreme":1}}},"2026-04-22":{"irisa":{"n":1,"added":{"lot_type-not_residential":1}},"emmanuel":{"n":20,"added":{"bad_picture-bad_angle":6,"lawn-dead_patch_extreme":1,"lot_type-not_residential":1,"fence-overgrown_extreme":1,"lawn-leaves_extreme":1},"removed":{"bad_picture-bad_angle":1,"bad_picture-blocked":1}}}},"isabella":{"2026-04-10":{"ruthd":{"n":2,"added":{"driveway-overgrown_extreme":1},"removed":{"wall-paint_rust_extreme":1,"window-plywood":1}},"godwina":{"n":4,"added":{"lot_type-not_residential":2,"lawn-overgrown_weeds_extreme":1,"lawn-dead_patch_extreme":1},"removed":{"lawn-grass_height":1,"foundation-paint_rust_extreme":1}},"maxwellt":{"n":3,"added":{"fascia-structural_extreme":1,"bad_picture-bad_angle":1,"lawn-vehicle":1,"lawn-leaves_extreme":1,"lawn-debris_extreme":1,"lawn-grass_height":1},"removed":{"window-missing":1}},"Irenen":{"n":4,"added":{"bad_picture-bad_angle":1,"window-plywood":1},"removed":{"lawn-grass_height":1,"foundation-paint_rust_extreme":1,"window-paint_rust_extreme":1}},"emmanuel":{"n":1,"added":{"driveway-cracked_extreme":1,"roof-structural_extreme":1}},"obed":{"n":1},"theo":{"n":1,"removed":{"stairs-paint_rust_extreme":1}},"samuell":{"n":2,"added":{"bad_picture-bad_angle":1,"lawn-leaves_extreme":1,"fence-structural_extreme":1,"window-missing":1,"roof-debris_extreme":1},"removed":{"roof-mold_extreme":1,"wall-structural_extreme":1,"retainingwall-structural_extreme":1,"retainingwall-mold_extreme":1,"window-broken":1}},"phyllisk":{"n":1},"samuelo":{"n":1,"added":{"roof-structural_extreme":1,"window-broken":1,"soffit-structural_extreme":1},"removed":{"wall-structural_extreme":1}},"irisa":{"n":1,"added":{"lawn-debris_extreme":1,"column-paint_rust_extreme":1,"stairs-overgrown_extreme":1}}},"2026-04-13":{"Irenen":{"n":2,"added":{"fascia-structural_extreme":1}},"godwina":{"n":6,"added":{"driveway-overgrown_extreme":2,"lot_type-not_residential":2,"sidewalk-leaves_extreme":1,"lawn-debris_extreme":1,"fascia-structural_extreme":1,"soffit-structural_extreme":1},"removed":{"foundation-paint_rust_extreme":1,"door-paint_rust_extreme":1,"door-plywood":1,"porch-paint_rust_extreme":1}},"ruthd":{"n":1,"removed":{"soffit-paint_rust_extreme":1}},"samuell":{"n":4,"added":{"fence-paint_rust_extreme":2,"sidewalk-overgrown_extreme":1},"removed":{"foundation-paint_rust_extreme":1}},"maxwellt":{"n":1,"added":{"bad_picture-bad_angle":1,"lot_type-vacant":1},"removed":{"lot_type-not_residential":1,"window-plywood":1}},"samuelo":{"n":1,"added":{"sidewalk-overgrown_extreme":1,"fascia-paint_extreme":1}},"phyllisk":{"n":2,"added":{"lawn-grass_height":1}},"jezemiah":{"n":2,"added":{"fascia-structural_extreme":1,"lot_type-not_residential":1,"roof-structural_extreme":1,"wall-paint_rust_extreme":1,"driveway-cracked_extreme":1}},"emmanuel":{"n":1},"theo":{"n":2,"added":{"foundation-paint_rust_extreme":1,"door-paint_rust_extreme":1},"removed":{"lawn-dead_patch_extreme":1}}},"2026-04-15":{"samuelo":{"n":3,"added":{"lawn-branches_extreme":1,"railing-paint_rust_extreme":1},"removed":{"bad_picture-bad_angle":1}},"phyllisk":{"n":5,"added":{"porch-screen_extreme":1,"porch-debris_extreme":1,"fascia-paint_extreme":1,"lawn-debris_extreme":1},"removed":{"window-missing":1}},"theo":{"n":5,"added":{"fascia-paint_extreme":1,"lawn-leaves_extreme":1,"lot_type-multifamily":1,"bad_picture-bad_angle":1,"roof-tarp":1,"bad_picture-wrong_parcel":1,"sidewalk-overgrown_extreme":1}},"obed":{"n":4,"added":{"porch-debris_extreme":1},"removed":{"foundation-paint_rust_extreme":1,"wall-paint_rust_extreme":1,"mailbox-numbers":1}},"irisa":{"n":3,"added":{"lot_type-not_residential":1}},"maxwellt":{"n":1},"jezemiah":{"n":2,"added":{"stairs-paint_rust_extreme":1,"porch-paint_rust_extreme":1,"soffit-structural_extreme":1,"railing-paint_rust_extreme":1,"soffit-paint_rust_extreme":1,"column-paint_rust_extreme":1}},"samuell":{"n":4,"added":{"fascia-structural_extreme":1,"wall-paint_rust_extreme":1,"driveway-cracked_extreme":1,"driveway-debris_extreme":1},"removed":{"lawn-debris_extreme":1}},"emmanuel":{"n":7,"added":{"fascia-structural_extreme":1,"stairs-paint_rust_extreme":1,"fascia-paint_extreme":1,"sidewalk-overgrown_extreme":1,"roof-debris_extreme":1,"fence-structural_extreme":1,"bad_picture-bad_angle":1,"roof-structural_extreme":1,"window-plywood":1,"lawn-debris_extreme":1},"removed":{"vent-paint_rust_extreme":1,"porch-paint_rust_extreme":1,"mailbox-numbers":1,"lawn-overgrown_weeds_extreme":1,"door-plywood":1}},"leonardm":{"n":3,"removed":{"wall-paint_rust_extreme":1,"stairs-paint_rust_extreme":1}},"godwina":{"n":4,"added":{"driveway-overgrown_extreme":1,"window-paint_rust_extreme":1,"lot_type-not_residential":1},"removed":{"vent-paint_rust_extreme":1,"foundation-paint_rust_extreme":1}},"jeremiah":{"n":1,"added":{"bad_picture-bad_angle":1,"sidewalk-overgrown_extreme":1},"removed":{"wall-paint_rust_extreme":1}}},"2026-04-16":{"maxwellt":{"n":9,"added":{"fascia-structural_extreme":3,"lawn-leaves_extreme":1,"window-paint_rust_extreme":1,"window-plywood":1,"soffit-structural_extreme":1,"driveway-overgrown_extreme":1,"fence-overgrown_extreme":1},"removed":{"window-missing":1,"door-plywood":1,"wall-paint_rust_extreme":1,"roof-mold_extreme":1,"wall-structural_extreme":1,"driveway-cracked_extreme":1,"foundation-paint_rust_extreme":1,"column-paint_rust_extreme":1}},"samuelo":{"n":15,"added":{"bad_picture-cloudy":2,"wall-paint_rust_extreme":2,"fascia-structural_extreme":2,"lot_type-abandoned":2,"awning-paint_rust_extreme":2,"railing-paint_rust_extreme":2,"fascia-paint_extreme":1,"roof-debris_extreme":1,"lawn-grass_height":1,"driveway-litter_extreme":1,"porch-debris_extreme":1,"sidewalk-debris_extreme":1,"soffit-structural_extreme":1,"retainingwall-mold_extreme":1,"door-plywood":1},"removed":{"lot_type-multifamily":1}},"leonardm":{"n":12,"added":{"wall-paint_rust_extreme":2,"fascia-structural_extreme":2,"lot_type-not_residential":2,"lawn-debris_extreme":1,"roof-structural_extreme":1,"soffit-structural_extreme":1,"wall-structural_extreme":1,"porch-debris_extreme":1,"awning-paint_rust_extreme":1},"removed":{"mailbox-numbers":1}},"ruthd":{"n":14,"added":{"lawn-leaves_extreme":3,"fascia-structural_extreme":2,"fascia-paint_extreme":1,"railing-paint_rust_extreme":1,"sidewalk-leaves_extreme":1,"driveway-overgrown_extreme":1,"door-plywood":1,"column-paint_rust_extreme":1,"lawn-overgrown_weeds_extreme":1,"retainingwall-overgrown_extreme":1,"lawn-dead_patch_extreme":1},"removed":{"porch-paint_rust_extreme":3,"window-paint_rust_extreme":2,"foundation-paint_rust_extreme":2,"sidewalk-overgrown_extreme":1,"stairs-paint_rust_extreme":1,"fascia-paint_extreme":1,"lot_type-abandoned":1,"retainingwall-structural_extreme":1,"vent-paint_rust_extreme":1}},"phyllisk":{"n":18,"added":{"lawn-debris_extreme":2,"sidewalk-overgrown_extreme":2,"fascia-paint_extreme":2,"stairs-paint_rust_extreme":2,"window-plywood":1,"driveway-cracked_extreme":1,"soffit-paint_rust_extreme":1,"vent-paint_rust_extreme":1,"awning-structural_extreme":1,"lot_type-not_residential":1,"wall-paint_rust_extreme":1,"sidewalk-leaves_extreme":1,"lawn-overgrown_weeds_extreme":1,"door-missing":1,"wall-structural_extreme":1}},"obed":{"n":7,"added":{"lawn-leaves_extreme":2,"lot_type-abandoned":1,"awning-paint_rust_extreme":1,"roof-leaves_extreme":1,"lawn-debris_extreme":1,"roof-mold_extreme":1,"garage-paint_rust_extreme":1},"removed":{"roof-structural_extreme":3,"wall-paint_rust_extreme":2,"wall-overgrown_extreme":1,"roof-mold_extreme":1,"roof-leaves_extreme":1}},"irisa":{"n":5,"added":{"lot_type-not_residential":2,"fascia-paint_extreme":1,"window-paint_rust_extreme":1,"column-paint_rust_extreme":1,"wall-overgrown_extreme":1,"awning-paint_rust_extreme":1,"lawn-dead_patch_extreme":1},"removed":{"wall-paint_rust_extreme":1,"retainingwall-mold_extreme":1,"stairs-paint_rust_extreme":1}},"jezemiah":{"n":5,"added":{"porch-debris_extreme":2,"foundation-paint_rust_extreme":2,"window-missing":1,"lot_type-abandoned":1,"lawn-grass_height":1,"railing-paint_rust_extreme":1,"sidewalk-leaves_extreme":1,"roof-leaves_extreme":1,"lawn-leaves_extreme":1},"removed":{"fascia-paint_extreme":1}},"theo":{"n":6,"added":{"sidewalk-overgrown_extreme":4,"fence-overgrown_extreme":1,"driveway-overgrown_extreme":1,"lawn-overgrown_weeds_extreme":1,"column-paint_rust_extreme":1,"lawn-debris_extreme":1,"window-missing":1,"porch-debris_extreme":1,"lawn-grass_height":1},"removed":{"lawn-litter_extreme":1,"window-broken":1,"soffit-structural_extreme":1}},"jeremiah":{"n":4,"added":{"lot_type-abandoned":4,"railing-paint_rust_extreme":2,"lawn-leaves_extreme":2,"sidewalk-leaves_extreme":1,"window-paint_rust_extreme":1,"column-paint_rust_extreme":1,"window-plywood":1,"porch-paint_rust_extreme":1,"lawn-dead_patch_extreme":1,"roof-leaves_extreme":1,"driveway-leaves_extreme":1,"lawn-litter_extreme":1}},"godwina":{"n":5,"added":{"lot_type-not_residential":3,"sidewalk-debris_extreme":1,"driveway-debris_extreme":1,"window-paint_rust_extreme":1,"sidewalk-cracked_extreme":1},"removed":{"window-paint_rust_extreme":1}},"preciousa":{"n":4,"added":{"fascia-paint_extreme":1,"porch-debris_extreme":1,"window-paint_rust_extreme":1,"lot_type-abandoned":1},"removed":{"porch-paint_rust_extreme":2,"foundation-paint_rust_extreme":1,"stairs-paint_rust_extreme":1}},"samuell":{"n":4,"added":{"bad_picture-bad_angle":1,"window-broken":1,"fascia-structural_extreme":1,"driveway-debris_extreme":1},"removed":{"wall-paint_rust_extreme":2,"railing-paint_rust_extreme":1,"stairs-paint_rust_extreme":1,"foundation-paint_rust_extreme":1,"roof-mold_extreme":1,"window-plywood":1,"fascia-paint_extreme":1,"door-paint_rust_extreme":1}},"emmanuel":{"n":5,"added":{"wall-paint_rust_extreme":1,"fascia-paint_extreme":1,"lawn-overgrown_weeds_extreme":1,"lot_type-abandoned":1,"roof-mold_extreme":1,"fascia-structural_extreme":1,"lawn-debris_extreme":1,"sidewalk-cracked_extreme":1},"removed":{"lot_type-not_residential":1,"window-plywood":1}}},"2026-04-20":{"phyllisk":{"n":3,"added":{"lot_type-not_residential":2,"foundation-paint_rust_extreme":1,"lawn-debris_extreme":1,"lawn-overgrown_weeds_extreme":1,"door-paint_rust_extreme":1,"driveway-leaves_extreme":1,"lawn-branches_extreme":1},"removed":{"lawn-debris_extreme":1}},"preciousa":{"n":3,"added":{"lawn-leaves_extreme":2,"fascia-paint_extreme":1,"window-plywood":1,"fence-paint_rust_extreme":1}},"samuelo":{"n":9,"added":{"stairs-paint_rust_extreme":2,"lot_type-abandoned":1,"lawn-branches_extreme":1,"stairs-structural_extreme":1,"lawn-overgrown_weeds_extreme":1,"wall-paint_rust_extreme":1,"porch-overgrown_extreme":1,"bad_picture-bad_angle":1,"lot_type-not_residential":1,"lawn-leaves_extreme":1},"removed":{"door-plywood":1,"window-plywood":1,"driveway-leaves_extreme":1}},"emmanuel":{"n":5,"added":{"lot_type-not_residential":1,"fence-paint_rust_extreme":1,"lot_type-abandoned":1,"stairs-paint_rust_extreme":1}},"maxwellt":{"n":5,"added":{"sidewalk-overgrown_extreme":1,"lawn-overgrown_weeds_extreme":1,"roof-overgrown_extreme":1,"sidewalk-leaves_extreme":1,"fascia-paint_extreme":1,"lawn-leaves_extreme":1},"removed":{"lawn-branches_extreme":1,"roof-tarp":1}},"obed":{"n":3,"added":{"railing-paint_rust_extreme":1,"lawn-litter_extreme":1,"column-paint_rust_extreme":1,"sidewalk-leaves_extreme":1,"lawn-vehicle":1},"removed":{"porch-paint_rust_extreme":2,"foundation-paint_rust_extreme":1,"wall-structural_extreme":1}},"ruthd":{"n":8,"added":{"lawn-leaves_extreme":4,"roof-debris_extreme":1,"lawn-debris_extreme":1,"shutter-structural_extreme":1,"lawn-dead_patch_extreme":1,"driveway-leaves_extreme":1,"wall-paint_rust_extreme":1},"removed":{"window-plywood":1,"roof-leaves_extreme":1}},"jezemiah":{"n":2,"added":{"mailbox-numbers":1,"lawn-leaves_extreme":1},"removed":{"window-plywood":1}},"godwina":{"n":4,"added":{"lot_type-not_residential":1,"stairs-paint_rust_extreme":1},"removed":{"porch-paint_rust_extreme":1}},"Irenen":{"n":1,"added":{"bad_picture-bad_angle":1}},"theo":{"n":2,"added":{"lawn-vehicle":1,"fascia-paint_extreme":1,"lawn-dead_patch_extreme":1}},"leonardm":{"n":2,"added":{"bad_picture-bad_angle":1},"removed":{"window-plywood":1}},"irisa":{"n":1,"added":{"door-plywood":1},"removed":{"door-paint_rust_extreme":1}}},"2026-04-21":{"jezemiah":{"n":3,"added":{"fascia-paint_extreme":1,"sidewalk-debris_extreme":1},"removed":{"driveway-debris_extreme":1,"roof-tarp":1}},"irisa":{"n":4,"added":{"lot_type-not_residential":2,"driveway-cracked_extreme":1,"door-plywood":1,"window-broken":1,"sidewalk-cracked_extreme":1,"foundation-paint_rust_extreme":1,"door-paint_rust_extreme":1,"lot_type-abandoned":1}},"ruthd":{"n":8,"added":{"fascia-structural_extreme":1,"lawn-debris_extreme":1,"driveway-cracked_extreme":1,"lawn-dead_patch_extreme":1},"removed":{"porch-paint_rust_extreme":1,"lot_type-abandoned":1,"wall-paint_rust_extreme":1,"door-paint_rust_extreme":1,"window-paint_rust_extreme":1,"roof-mold_extreme":1,"retainingwall-overgrown_extreme":1}},"maxwellt":{"n":5,"added":{"soffit-paint_rust_extreme":1,"lawn-debris_extreme":1,"soffit-structural_extreme":1}},"preciousa":{"n":2,"added":{"lawn-overgrown_weeds_extreme":1,"lawn-leaves_extreme":1,"lawn-branches_extreme":1}},"godwina":{"n":4,"added":{"stairs-paint_rust_extreme":1,"lot_type-not_residential":1,"bad_picture-bad_angle":1},"removed":{"door-paint_rust_extreme":2,"wall-paint_rust_extreme":1,"door-plywood":1}},"samuell":{"n":1,"added":{"lawn-debris_extreme":1}},"obed":{"n":3,"added":{"porch-debris_extreme":1,"lot_type-abandoned":1},"removed":{"wall-paint_rust_extreme":1,"window-paint_rust_extreme":1,"roof-tarp":1,"door-paint_rust_extreme":1}},"emmanuel":{"n":4,"added":{"lawn-debris_extreme":1,"sidewalk-debris_extreme":1,"window-plywood":1}},"phyllisk":{"n":2,"removed":{"lawn-dead_patch_extreme":1}},"leonardm":{"n":2,"added":{"driveway-leaves_extreme":1},"removed":{"wall-paint_rust_extreme":1,"driveway-cracked_extreme":1}},"Irenen":{"n":3,"added":{"driveway-overgrown_extreme":1,"lawn-dead_patch_extreme":1},"removed":{"door-plywood":1}},"theo":{"n":3,"added":{"lot_type-not_residential":1,"awning-paint_rust_extreme":1}},"samuelo":{"n":3,"added":{"awning-paint_rust_extreme":1}}},"2026-04-22":{"leonardm":{"n":15,"added":{"wall-structural_extreme":1,"sidewalk-debris_extreme":1,"stairs-leaves_extreme":1,"lot_type-abandoned":1,"lawn-overgrown_weeds_extreme":1,"soffit-structural_extreme":1,"bad_picture-bad_angle":1,"driveway-leaves_extreme":1},"removed":{"lot_type-abandoned":2,"foundation-paint_rust_extreme":1,"driveway-cracked_extreme":1,"window-plywood":1,"chimney-paint_extreme":1,"door-plywood":1}},"phyllisk":{"n":16,"added":{"lawn-leaves_extreme":1,"lawn-debris_extreme":1,"bad_picture-bad_angle":1,"sidewalk-overgrown_extreme":1,"wall-paint_rust_extreme":1},"removed":{"window-plywood":2,"roof-leaves_extreme":1,"driveway-debris_extreme":1,"lot_type-not_residential":1,"foundation-paint_rust_extreme":1,"mailbox-numbers":1}},"obed":{"n":8,"added":{"lawn-leaves_extreme":2,"fascia-paint_extreme":1,"soffit-structural_extreme":1,"lot_type-abandoned":1,"door-plywood":1,"sidewalk-leaves_extreme":1,"lawn-branches_extreme":1},"removed":{"wall-paint_rust_extreme":1,"driveway-overgrown_extreme":1}},"godwina":{"n":13,"added":{"lot_type-not_residential":5,"lawn-dead_patch_extreme":1,"fascia-paint_extreme":1,"soffit-structural_extreme":1,"stairs-paint_rust_extreme":1,"lawn-overgrown_weeds_extreme":1},"removed":{"lot_type-abandoned":3,"foundation-paint_rust_extreme":1,"lawn-grass_height":1,"window-paint_rust_extreme":1}},"theo":{"n":9,"added":{"sidewalk-leaves_extreme":1,"driveway-overgrown_extreme":1,"fascia-paint_extreme":1,"fence-overgrown_extreme":1,"fascia-structural_extreme":1,"bad_picture-bad_angle":1,"bad_picture-wrong_parcel":1},"removed":{"wall-structural_extreme":2,"driveway-leaves_extreme":1,"lot_type-multifamily":1,"fence-structural_extreme":1,"lawn-debris_extreme":1,"lot_type-not_residential":1,"window-plywood":1}},"ruthd":{"n":10,"added":{"lot_type-abandoned":3,"lawn-dead_patch_extreme":2,"window-plywood":1,"garage-structural_extreme":1,"lawn-debris_extreme":1,"door-plywood":1,"lawn-leaves_extreme":1,"lot_type-multifamily":1},"removed":{"door-paint_rust_extreme":2,"chimney-paint_extreme":1,"mailbox-numbers":1,"wall-paint_rust_extreme":1}},"irisa":{"n":10,"added":{"lot_type-abandoned":1,"door-plywood":1,"lawn-overgrown_weeds_extreme":1,"fascia-paint_extreme":1,"lot_type-not_residential":1},"removed":{"stairs-paint_rust_extreme":2}},"jezemiah":{"n":3,"added":{"mailbox-numbers":1,"door-plywood":1,"lot_type-not_residential":1},"removed":{"roof-tarp":1,"lawn-debris_extreme":1,"door-plywood":1,"window-paint_rust_extreme":1}},"samuell":{"n":10,"added":{"lawn-leaves_extreme":3,"lawn-debris_extreme":2,"driveway-debris_extreme":1,"fascia-structural_extreme":1,"window-plywood":1,"lot_type-not_residential":1,"lot_type-abandoned":1,"driveway-leaves_extreme":1,"lawn-litter_extreme":1,"stairs-leaves_extreme":1,"sidewalk-leaves_extreme":1,"door-plywood":1,"soffit-structural_extreme":1},"removed":{"roof-mold_extreme":1,"chimney-paint_extreme":1,"window-plywood":1,"vent-paint_rust_extreme":1,"roof-structural_extreme":1,"door-plywood":1}},"maxwellt":{"n":3,"added":{"lawn-debris_extreme":1},"removed":{"window-plywood":1}},"Irenen":{"n":8,"added":{"lawn-leaves_extreme":1,"stairs-paint_rust_extreme":1,"soffit-structural_extreme":1,"awning-paint_rust_extreme":1,"window-plywood":1,"lot_type-abandoned":1,"door-plywood":1},"removed":{"door-plywood":2,"roof-structural_extreme":1,"roof-mold_extreme":1}},"samuelo":{"n":5,"added":{"driveway-debris_extreme":1,"lawn-dead_patch_extreme":1,"sidewalk-debris_extreme":1,"lot_type-not_residential":1,"lawn-vehicle":1,"fence-overgrown_extreme":1,"lawn-debris_extreme":1}},"preciousa":{"n":3,"added":{"lawn-dead_patch_extreme":1,"roof-debris_extreme":1,"window-plywood":1}},"jeremiah":{"n":1,"added":{"lawn-vehicle":1,"stairs-paint_rust_extreme":1}}}}};
+
+let mxRev = 'helen', mxPeriod = 'all';
+
+const MX_PERIODS = {
+  all:  d => true,
+  week: d => d >= '2026-04-16',
+  apr:  d => d.startsWith('2026-04'),
+  mar:  d => d.startsWith('2026-03'),
+};
+
+function mxSetRev(rv, btn) {
+  mxRev = rv;
+  document.querySelectorAll('.mx-rev-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  mxRender();
+}
+
+function mxSetPeriod(p, btn) {
+  mxPeriod = p;
+  document.querySelectorAll('.mx-period-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  mxRender();
+}
+
+function mxCell(val, max, col) {
+  if(!val) return `<span style="color:var(--ink4)">—</span>`;
+  // parse hex color to rgba so we can control bg opacity independently of text
+  const r = parseInt(col.slice(1,3),16), g = parseInt(col.slice(3,5),16), b = parseInt(col.slice(5,7),16);
+  const alpha = 0.12 + (val/max)*0.72;
+  const textCol = val/max > 0.55 ? '#fff' : '#1a1a1a';
+  return `<span class="mx-cell" style="background:rgba(${r},${g},${b},${alpha.toFixed(2)});color:${textCol};font-size:11px;font-weight:500">${val}</span>`;
+}
+
+function mxRender() {
+  const filt = MX_PERIODS[mxPeriod];
+  const days = Object.keys(MX[mxRev]).filter(filt).sort();
+  const col  = mxRev==='helen' ? '#3266ad' : '#1D9E75';
+
+  if(!days.length) {
+    document.getElementById('mx-imgs-tbl').innerHTML = '<tr><td colspan="99" style="padding:20px;color:var(--ink4);text-align:center">No data for selected period</td></tr>';
+    document.getElementById('mx-all-tbl').innerHTML = '';
+    document.getElementById('mx-attrs-tbl').innerHTML = '';
+    document.getElementById('mx-removed-tbl').innerHTML = '';
+    return;
+  }
+
+  // ── collect all annotators ──
+  const annSet = new Set();
+  days.forEach(d => Object.keys(MX[mxRev][d]).filter(a=>a!=='unknown').forEach(a=>annSet.add(a)));
+  const anns = [...annSet].sort();
+
+  // ── TABLE 1: imgs ──
+  // cell value = n (images reviewed)
+  const imgVals = {};
+  const rowTotals = {}, colTotals = {};
+  let grandTotal = 0;
+  anns.forEach(a => { imgVals[a]={}; rowTotals[a]=0; });
+  days.forEach(d => { colTotals[d]=0; });
+
+  anns.forEach(a => {
+    days.forEach(d => {
+      const v = MX[mxRev][d]?.[a]?.n || 0;
+      imgVals[a][d] = v;
+      rowTotals[a] = (rowTotals[a]||0)+v;
+      colTotals[d] = (colTotals[d]||0)+v;
+      grandTotal += v;
+    });
+  });
+  const maxImg = Math.max(...Object.values(imgVals).flatMap(r=>Object.values(r)),1);
+
+  let t1 = `<thead><tr>
+    <th class="ann-col">Annotator</th>
+    ${days.map(d=>`<th>${d.slice(5)}</th>`).join('')}
+    <th class="total-col">Total</th>
+  </tr></thead><tbody>`;
+
+  anns.forEach(a => {
+    t1 += `<tr><td class="ann-name">${a}</td>`;
+    days.forEach(d => { t1 += `<td>${mxCell(imgVals[a][d], maxImg, col)}</td>`; });
+    t1 += `<td class="total-col" style="color:${col}">${rowTotals[a]||'—'}</td></tr>`;
+  });
+
+  // totals row
+  t1 += `<tr><td class="ann-name">Total</td>`;
+  days.forEach(d => { t1 += `<td style="font-size:11px;color:var(--ink3)">${colTotals[d]||'—'}</td>`; });
+  t1 += `<td class="total-col" style="color:${col}">${grandTotal}</td></tr>`;
+  t1 += '</tbody>';
+  document.getElementById('mx-imgs-tbl').innerHTML = t1;
+
+  // ── TABLES 2, 3 & 4: combined / added / removed ──
+  function buildAttrMatrix(field, tableId, cellColor) {
+    const attrAnn = {};
+    days.forEach(d => {
+      Object.entries(MX[mxRev][d]||{}).forEach(([ann, v]) => {
+        if(ann==='unknown') return;
+        // field = 'added' | 'removed' | 'both'
+        const sources = field === 'both' ? ['added','removed'] : [field];
+        sources.forEach(src => {
+          Object.entries(v[src]||{}).forEach(([attr, n]) => {
+            if(!attrAnn[attr]) attrAnn[attr]={};
+            attrAnn[attr][ann] = (attrAnn[attr][ann]||0)+n;
+          });
+        });
+      });
+    });
+
+    const attrTotals = Object.fromEntries(
+      Object.entries(attrAnn).map(([a,v])=>[a, Object.values(v).reduce((s,x)=>s+x,0)])
+    );
+    const topAttrs = Object.keys(attrTotals).sort((a,b)=>attrTotals[b]-attrTotals[a]).slice(0,20);
+    const maxAttr  = Math.max(...Object.values(attrTotals), 1);
+
+    if(!topAttrs.length) {
+      document.getElementById(tableId).innerHTML =
+        '<tr><td colspan="99" style="padding:14px;color:var(--ink4);text-align:center">No data for selected period</td></tr>';
+      return;
+    }
+
+    const thStyle = `writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;height:110px;padding:4px 6px;font-size:10px;font-weight:500;letter-spacing:.04em;text-align:left`;
+    let t = `<thead><tr>
+      <th class="ann-col">Annotator</th>
+      ${topAttrs.map(a=>`<th title="${a}" style="${thStyle}">${a.replace(/_extreme$/,' ⚡').replace(/_/g,' ')}</th>`).join('')}
+      <th class="total-col">Total</th>
+    </tr></thead><tbody>`;
+
+    anns.forEach(ann => {
+      const rowTotal = topAttrs.reduce((s,attr)=>s+(attrAnn[attr]?.[ann]||0), 0);
+      t += `<tr><td class="ann-name">${ann}</td>`;
+      topAttrs.forEach(attr => {
+        const v = attrAnn[attr]?.[ann]||0;
+        t += `<td>${mxCell(v, maxAttr, cellColor)}</td>`;
+      });
+      t += `<td class="total-col" style="color:${cellColor}">${rowTotal||'—'}</td></tr>`;
+    });
+
+    t += `<tr><td class="ann-name">Total</td>`;
+    topAttrs.forEach(attr => {
+      t += `<td style="font-size:11px;color:var(--ink3)">${attrTotals[attr]||'—'}</td>`;
+    });
+    const grand = Object.values(attrTotals).reduce((s,v)=>s+v, 0);
+    t += `<td class="total-col" style="color:${cellColor}">${grand}</td></tr>`;
+    t += '</tbody>';
+    document.getElementById(tableId).innerHTML = t;
+  }
+
+  buildAttrMatrix('both',    'mx-all-tbl',     '#3266ad');  // blue for combined
+  buildAttrMatrix('added',   'mx-attrs-tbl',   '#1D9E75');  // green for added
+  buildAttrMatrix('removed', 'mx-removed-tbl', '#c0392b');  // red for removed
+}
+
+/* ── ANNOTATOR × DAY MATRIX (Helen & Isabella tabs) ── */
+function buildAnnDayMatrix(rev, tableId, col) {
+  const revData = MX[rev];
+  if(!revData) return;
+  const days = Object.keys(revData).sort();
+  const annSet = new Set();
+  days.forEach(d => Object.keys(revData[d]).filter(a=>a!=='unknown').forEach(a=>annSet.add(a)));
+  const anns = [...annSet].sort();
+
+  const vals = {}, rowTotals = {}, colTotals = {};
+  anns.forEach(a => { vals[a] = {}; rowTotals[a] = 0; });
+  days.forEach(d => { colTotals[d] = 0; });
+  anns.forEach(a => {
+    days.forEach(d => {
+      const v = revData[d]?.[a]?.n || 0;
+      vals[a][d] = v;
+      rowTotals[a] += v;
+      colTotals[d] += v;
+    });
+  });
+  const maxV = Math.max(...anns.flatMap(a => days.map(d => vals[a][d])), 1);
+  const r = parseInt(col.slice(1,3),16), g = parseInt(col.slice(3,5),16), b = parseInt(col.slice(5,7),16);
+
+  function cell(v) {
+    if(!v) return `<span style="color:var(--ink4)">—</span>`;
+    const alpha = 0.12 + (v/maxV)*0.72;
+    const tc = v/maxV > 0.55 ? '#fff' : '#1a1a1a';
+    return `<span style="display:inline-block;min-width:28px;padding:2px 5px;border-radius:3px;font-weight:500;font-size:11px;background:rgba(${r},${g},${b},${alpha.toFixed(2)});color:${tc}">${v}</span>`;
+  }
+
+  const thS = 'padding:5px 8px;font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);text-align:center;border-bottom:1.5px solid var(--ink)';
+  let t = `<thead><tr>
+    <th style="${thS};text-align:left;position:sticky;left:0;background:var(--white);border-right:1px solid var(--border)">Annotator</th>
+    ${days.map(d=>`<th style="${thS}">${d.slice(5)}</th>`).join('')}
+    <th style="${thS};border-left:1.5px solid var(--border);color:${col}">Total</th>
+  </tr></thead><tbody>`;
+
+  anns.forEach(a => {
+    t += `<tr><td style="padding:4px 8px;font-size:11px;font-weight:500;border-bottom:1px solid var(--border);position:sticky;left:0;background:var(--white);border-right:1px solid var(--border)">${a}</td>`;
+    days.forEach(d => { t += `<td style="padding:4px 8px;border-bottom:1px solid var(--border);text-align:center">${cell(vals[a][d])}</td>`; });
+    t += `<td style="padding:4px 8px;border-bottom:1px solid var(--border);border-left:1.5px solid var(--border);text-align:center;font-weight:600;color:${col}">${rowTotals[a]||'—'}</td></tr>`;
+  });
+
+  t += `<tr><td style="padding:4px 8px;font-size:11px;font-weight:600;border-top:1.5px solid var(--ink);position:sticky;left:0;background:var(--white);border-right:1px solid var(--border)">Total</td>`;
+  days.forEach(d => { t += `<td style="padding:4px 8px;border-top:1.5px solid var(--ink);text-align:center;font-size:11px;color:var(--ink3)">${colTotals[d]||'—'}</td>`; });
+  const grand = anns.reduce((s,a)=>s+rowTotals[a], 0);
+  t += `<td style="padding:4px 8px;border-top:1.5px solid var(--ink);border-left:1.5px solid var(--border);text-align:center;font-weight:600;color:${col}">${grand}</td></tr>`;
+  t += '</tbody>';
+  document.getElementById(tableId).innerHTML = t;
+}
+
+buildAnnDayMatrix('helen',    'helen-ann-day-tbl',    '#3266ad');
+buildAnnDayMatrix('isabella', 'isabella-ann-day-tbl', '#1D9E75');
+
+// Override sw to call mxRender when matrix tab is selected
+(function(){
+  const _sw = sw;
+  window.sw = function(id, btn){
+    _sw(id, btn);
+    if(id === 'matrix') mxRender();
+  };
+})();
+</script>
+
+</body>
+</html>
+
+
