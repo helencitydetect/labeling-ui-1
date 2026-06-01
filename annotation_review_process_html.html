@@ -1,0 +1,209 @@
+
+<style>
+  :root { --step-gap: 28px; }
+  .page { padding: 24px 0; font-size: 14px; }
+  .page-title { font-size: 18px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 4px; }
+  .page-sub { font-size: 13px; color: var(--color-text-secondary); margin: 0 0 28px; }
+
+  .timeline { position: relative; padding-left: 40px; }
+  .timeline::before { content:''; position:absolute; left:15px; top:0; bottom:0; width:1.5px; background: var(--color-border-secondary); }
+
+  .step { position: relative; margin-bottom: var(--step-gap); }
+  .step-dot { position:absolute; left:-32px; top:12px; width:14px; height:14px; border-radius:50%; border:2px solid var(--color-border-secondary); background:var(--color-background-primary); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:500; color:var(--color-text-secondary); }
+  .step-dot.active { border-color: #1D9E75; background:#E1F5EE; color:#0F6E56; }
+  .step-dot.green { border-color: #639922; background:#EAF3DE; color:#3B6D11; }
+
+  .step-card { background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; }
+  .step-card.teal  { border-left: 3px solid #1D9E75; }
+  .step-card.green { border-left: 3px solid #639922; }
+
+  .step-label { font-size: 11px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--color-text-tertiary); margin: 0 0 4px; }
+  .step-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 10px; }
+  .step-body { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+
+  .pill-row { display:flex; flex-wrap:wrap; gap:6px; margin-top: 10px; }
+  .pill { font-size:11px; padding: 3px 10px; border-radius: 99px; font-weight:500; }
+  .pill.teal  { background:#E1F5EE; color:#0F6E56; }
+  .pill.amber { background:#FAEEDA; color:#854F0B; }
+  .pill.gray  { background:var(--color-background-secondary); color:var(--color-text-secondary); border:0.5px solid var(--color-border-tertiary); }
+
+  .rule-box { background:var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; margin-top: 10px; font-size: 13px; color: var(--color-text-secondary); }
+  .rule-row { display:flex; gap:8px; align-items:flex-start; margin-bottom:5px; }
+  .rule-row:last-child { margin-bottom:0; }
+  .rule-num { width:18px; height:18px; border-radius:50%; background:var(--color-background-primary); border:0.5px solid var(--color-border-secondary); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:500; color:var(--color-text-secondary); flex-shrink:0; margin-top:1px; }
+
+  .table-wrap { margin-top:12px; overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th { font-weight:500; font-size:11px; color:var(--color-text-secondary); text-align:left; padding:6px 10px; border-bottom:0.5px solid var(--color-border-secondary); }
+  td { padding:6px 10px; border-bottom:0.5px solid var(--color-border-tertiary); color:var(--color-text-primary); vertical-align:top; }
+  tr:last-child td { border-bottom:none; }
+  .pri { font-weight:500; }
+  .dot-red    { display:inline-block; width:8px; height:8px; border-radius:50%; background:#E24B4A; margin-right:5px; }
+  .dot-orange { display:inline-block; width:8px; height:8px; border-radius:50%; background:#EF9F27; margin-right:5px; }
+  .dot-green  { display:inline-block; width:8px; height:8px; border-radius:50%; background:#639922; margin-right:5px; }
+
+  .doc-link { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:500; color:#0F6E56; background:#E1F5EE; border-radius:99px; padding:3px 10px; text-decoration:none; }
+  .doc-link:hover { background:#9FE1CB; }
+  .doc-link i { font-size:13px; }
+
+  .email-block { background:var(--color-background-secondary); border:0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding:12px 14px; font-size:12px; font-family:var(--font-mono); color:var(--color-text-secondary); line-height:1.7; margin-top:10px; white-space:pre-wrap; }
+  .em-key { color:var(--color-text-primary); font-weight:500; font-family:var(--font-sans); font-size:12px; }
+  .em-placeholder { color: #BA7517; font-style:italic; }
+
+  .divider { height:0.5px; background:var(--color-border-tertiary); margin: 6px 0 18px; }
+</style>
+
+<div class="page">
+  <h2 class="sr-only">Annotation Review Process — Weekly SOP and Friday Email Template</h2>
+  <p class="page-title">Annotation Review Process</p>
+  <p class="page-sub">Weekly SOP · Wednesday – Friday</p>
+
+  <div class="timeline">
+
+    <!-- Step 1 -->
+    <div class="step">
+      <div class="step-dot active">1</div>
+      <div class="step-card teal">
+        <p class="step-label">Preparation</p>
+        <p class="step-title">Prioritize annotators</p>
+        <div class="step-body">Open <strong>Annotator Review and Error Log → Sheet: Annotators' priority</strong>. Sort to determine the review queue:</div>
+        <div style="margin-top:8px;">
+          <a class="doc-link" href="https://docs.google.com/spreadsheets/d/1eOCVi89SPHhd_k3oxvfLREp8ngVTemKrum0KS7xKS28/edit?usp=sharing" target="_blank">
+            <i class="ti ti-table" aria-hidden="true"></i> Annotators' priority
+          </a>
+        </div>
+        <div class="rule-box">
+          <div class="rule-row"><div class="rule-num">1</div><span><strong>Fewest reviews</strong> + earliest last review date → highest priority</span></div>
+          <div class="rule-row"><div class="rule-num">2</div><span>Equal review count → <strong>earliest last review date</strong> wins</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step">
+      <div class="step-dot active">2</div>
+      <div class="step-card teal">
+        <p class="step-label">Setup</p>
+        <p class="step-title">Configure Admin Review</p>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Setting</th><th>Value</th></tr>
+            <tr><td>Mode</td><td><span class="pill teal">Admin Review</span></td></tr>
+            <tr><td>Date range</td><td>Current week (Mon – Fri)</td></tr>
+            <tr><td>Annotator</td><td>Per priority from Annotators' priority sheet</td></tr>
+            <tr><td>Attribute</td><td>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span>Review_priority_scores_v2 · Sheet: Short list</span>
+                <a class="doc-link" href="https://docs.google.com/spreadsheets/d/1vGVMQah1RKczvEFIvyRaxYYuH56UAcZY/edit?gid=953474179#gid=953474179" target="_blank">
+                  <i class="ti ti-table" aria-hidden="true"></i> Short list
+                </a>
+              </div>
+            </td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step">
+      <div class="step-dot active">3</div>
+      <div class="step-card teal">
+        <p class="step-label">Review</p>
+        <p class="step-title">Conduct the review</p>
+        <div class="step-body">Review annotations for the selected annotator + attribute.</div>
+        <div class="pill-row">
+          <span class="pill gray">Log remarks → Annotator Review and Error Log</span>
+          <span class="pill amber">Critical issues → Feedback mode (direct to annotator)</span>
+        </div>
+        <div style="margin-top:10px;">
+          <a class="doc-link" href="https://docs.google.com/spreadsheets/d/1eOCVi89SPHhd_k3oxvfLREp8ngVTemKrum0KS7xKS28/edit?gid=0#gid=0" target="_blank">
+            <i class="ti ti-table" aria-hidden="true"></i> FAQ sheet
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step">
+      <div class="step-dot active">4</div>
+      <div class="step-card teal">
+        <p class="step-label">Recording</p>
+        <p class="step-title">Update Annotator's report info</p>
+        <div class="step-body">Open <strong>Annotator Review and Error Log → List: Annotator's report info</strong>:</div>
+        <div style="margin-top:8px;">
+          <a class="doc-link" href="https://docs.google.com/spreadsheets/d/1eOCVi89SPHhd_k3oxvfLREp8ngVTemKrum0KS7xKS28/edit?gid=1252404761#gid=1252404761" target="_blank">
+            <i class="ti ti-table" aria-hidden="true"></i> Annotator's report info
+          </a>
+        </div>
+        <div class="rule-box">
+          <div class="rule-row"><div class="rule-num">✓</div><span>Enter annotator name</span></div>
+          <div class="rule-row"><div class="rule-num">✓</div><span>Enter review date</span></div>
+          <div class="rule-row"><div class="rule-num">✓</div><span>Feeds summary table automatically · use list for Friday email</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step" style="margin-bottom:0;">
+      <div class="step-dot green">5</div>
+      <div class="step-card green">
+        <p class="step-label">Friday · EOD</p>
+        <p class="step-title">Send weekly report</p>
+        <div class="step-body">Compile and send the summary email to the team lead.</div>
+        <div class="pill-row">
+          <span class="pill teal">Copy annotator list from Annotator's report info</span>
+          <span class="pill teal">Generate group report link</span>
+          <span class="pill teal">Compile remarks from Annotator Review and Error Log</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider" style="margin-top:28px;"></div>
+
+  <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 10px;">Priority logic</p>
+  <div class="table-wrap" style="margin-bottom:28px;">
+    <table>
+      <tr><th>Condition</th><th>Priority</th></tr>
+      <tr><td>Fewest reviews + earliest last review date</td><td class="pri"><span class="dot-red"></span>Highest</td></tr>
+      <tr><td>Fewest reviews + recent last review date</td><td class="pri"><span class="dot-orange"></span>Medium</td></tr>
+      <tr><td>Equal review count + earliest last review date</td><td class="pri"><span class="dot-orange"></span>High</td></tr>
+      <tr><td>Equal review count + recent last review date</td><td class="pri"><span class="dot-green"></span>Lower</td></tr>
+    </table>
+  </div>
+
+  <div class="divider"></div>
+
+  <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 4px;">Friday email template</p>
+  <p style="font-size:12px;color:var(--color-text-tertiary);margin:0 0 10px;">Copy annotator list from Annotator's report info → paste into body</p>
+  <div class="email-block"><span class="em-key">Subject:</span> Annotation Review Report — Week of <span class="em-placeholder">[DATE RANGE]</span>
+
+<span class="em-key">Hi <span class="em-placeholder">[Name]</span>!</span>
+
+I hope everything is going well.
+Please find below the information for the week of <span class="em-placeholder">[Mon DATE – Fri DATE]</span>.
+
+<span class="em-key">Annotators reviewed this week:</span>
+<span class="em-placeholder">[annotator1@email.com]
+[annotator2@email.com]
+[annotator3@email.com]</span>
+
+Recommended date range: <span class="em-placeholder">[Mon DATE – Fri DATE]</span>
+Report link: <span class="em-placeholder">[INSERT LINK]</span>
+
+As always, primary feedback has been sent directly to annotators via Feedback mode.
+
+<span class="em-key">⚠ Individual notes</span> <span class="em-placeholder">(if applicable)</span>
+<span class="em-placeholder">[annotator@email.com]</span> — EMR <span class="em-placeholder">[X]</span>%.
+Requires: <span class="em-placeholder">[retraining / basic guide review / etc.]</span>
+
+<span class="em-key">General notes</span>
+▸ <span class="em-placeholder">[Recurring error or labeling rule — clear and concise]</span>
+▸ <span class="em-placeholder">[Note 2]</span>
+▸ <span class="em-placeholder">[Note 3]</span>
+
+Best regards,
+<span class="em-placeholder">[Your Name]</span></div>
+
+</div>
