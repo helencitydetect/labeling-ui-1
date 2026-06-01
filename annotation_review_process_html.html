@@ -37,16 +37,10 @@
   th { font-weight:500; font-size:11px; color:var(--color-text-secondary); text-align:left; padding:6px 10px; border-bottom:0.5px solid var(--color-border-secondary); }
   td { padding:6px 10px; border-bottom:0.5px solid var(--color-border-tertiary); color:var(--color-text-primary); vertical-align:top; }
   tr:last-child td { border-bottom:none; }
-  .pri { font-weight:500; }
-  .dot-red    { display:inline-block; width:8px; height:8px; border-radius:50%; background:#E24B4A; margin-right:5px; }
-  .dot-orange { display:inline-block; width:8px; height:8px; border-radius:50%; background:#EF9F27; margin-right:5px; }
-  .dot-green  { display:inline-block; width:8px; height:8px; border-radius:50%; background:#639922; margin-right:5px; }
 
   .doc-link { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:500; color:#0F6E56; background:#E1F5EE; border-radius:99px; padding:3px 10px; text-decoration:none; }
   .doc-link:hover { background:#9FE1CB; }
   .doc-link i { font-size:13px; }
-
-  .divider { height:0.5px; background:var(--color-border-tertiary); margin: 6px 0 18px; }
 </style>
 
 <div class="page">
@@ -150,18 +144,4 @@
     </div>
 
   </div>
-
-  <div class="divider" style="margin-top:28px;"></div>
-
-  <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 10px;">Priority logic</p>
-  <div class="table-wrap">
-    <table>
-      <tr><th>Condition</th><th>Priority</th></tr>
-      <tr><td>Fewest reviews + earliest last review date</td><td class="pri"><span class="dot-red"></span>Highest</td></tr>
-      <tr><td>Fewest reviews + recent last review date</td><td class="pri"><span class="dot-orange"></span>Medium</td></tr>
-      <tr><td>Equal review count + earliest last review date</td><td class="pri"><span class="dot-orange"></span>High</td></tr>
-      <tr><td>Equal review count + recent last review date</td><td class="pri"><span class="dot-green"></span>Lower</td></tr>
-    </table>
-  </div>
-
 </div>
