@@ -22,8 +22,9 @@
   .step-body { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
 
   .pill-row { display:flex; flex-wrap:wrap; gap:6px; margin-top: 10px; }
-  .pill { font-size:11px; padding: 3px 10px; border-radius: 99px; font-weight:500; }
+  .pill { font-size:11px; padding: 3px 10px; border-radius: 99px; font-weight:500; text-decoration:none; }
   .pill.teal  { background:#E1F5EE; color:#0F6E56; }
+  .pill.teal:hover { background:#9FE1CB; }
   .pill.amber { background:#FAEEDA; color:#854F0B; }
   .pill.gray  { background:var(--color-background-secondary); color:var(--color-text-secondary); border:0.5px solid var(--color-border-tertiary); }
 
@@ -40,10 +41,9 @@
 
   .doc-link { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:500; color:#0F6E56; background:#E1F5EE; border-radius:99px; padding:3px 10px; text-decoration:none; }
   .doc-link:hover { background:#9FE1CB; }
-  .doc-link i { font-size:13px; }
-
   .doc-link.blue { color:#185FA5; background:#E6F1FB; }
   .doc-link.blue:hover { background:#B5D4F4; }
+  .doc-link i { font-size:13px; }
 </style>
 
 <div class="page">
@@ -143,9 +143,13 @@
         <p class="step-title">Send weekly report</p>
         <div class="step-body">Compile and send the summary email to the team lead.</div>
         <div class="pill-row">
-          <span class="pill teal">Copy annotator list from Annotator's report info</span>
-          <span class="pill teal">Generate group report link</span>
-          <span class="pill teal">Compile remarks from Annotator Review and Error Log</span>
+          <a class="pill teal" href="https://docs.google.com/spreadsheets/d/1eOCVi89SPHhd_k3oxvfLREp8ngVTemKrum0KS7xKS28/edit?gid=1252404761#gid=1252404761" target="_blank">
+            Copy annotator list from Annotator's report info
+          </a>
+          <span class="pill gray">Generate group report link</span>
+          <a class="pill teal" href="https://docs.google.com/spreadsheets/d/1eOCVi89SPHhd_k3oxvfLREp8ngVTemKrum0KS7xKS28/edit?gid=0#gid=0" target="_blank">
+            Compile remarks from Annotator Review and Error Log
+          </a>
         </div>
       </div>
     </div>
