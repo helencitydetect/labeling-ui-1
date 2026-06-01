@@ -41,6 +41,9 @@
   .doc-link { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:500; color:#0F6E56; background:#E1F5EE; border-radius:99px; padding:3px 10px; text-decoration:none; }
   .doc-link:hover { background:#9FE1CB; }
   .doc-link i { font-size:13px; }
+
+  .doc-link.blue { color:#185FA5; background:#E6F1FB; }
+  .doc-link.blue:hover { background:#B5D4F4; }
 </style>
 
 <div class="page">
@@ -76,7 +79,11 @@
         <div class="table-wrap">
           <table>
             <tr><th>Setting</th><th>Value</th></tr>
-            <tr><td>Mode</td><td><span class="pill teal">Admin Review</span></td></tr>
+            <tr><td>Mode</td><td>
+              <a class="doc-link blue" href="https://label.citydetect.com/admin/review" target="_blank">
+                <i class="ti ti-external-link" aria-hidden="true"></i> Admin Review
+              </a>
+            </td></tr>
             <tr><td>Date range</td><td>Current week (Mon – Fri)</td></tr>
             <tr><td>Annotator</td><td>Per priority from Annotators' priority sheet</td></tr>
             <tr><td>Attribute</td><td>
