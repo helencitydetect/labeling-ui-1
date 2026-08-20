@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI + Human Property Validation System</title>
+<style>
+  :root {
+    --bg: #0f1117; --panel: #171a23; --panel2: #1e222d; --border: #2b3040;
+    --text: #e8eaf0; --text2: #a6adc0; --text3: #6b7280; --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.45; }
+  header { padding:26px 20px 16px; text-align:center; }
+  header h1 { font-size:clamp(15px,2.4vw,22px); letter-spacing:.02em; margin:0; font-weight:800; }
+  main { padding:10px 20px 50px; overflow-x:auto; }
+  .section-label { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); font-weight:700; margin:26px 4px 10px; }
+  .scroll-hint { font-size:11px; color:var(--text3); margin:0 4px 8px; }
+  .grid-row { display:flex; align-items:flex-start; gap:0; padding-bottom:8px; }
+  .card-wrap { display:flex; align-items:flex-start; flex-shrink:0; }
+  .card { width:290px; flex-shrink:0; border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); background:var(--panel); display:flex; flex-direction:column; }
+  .card-head { background:var(--c); padding:10px 12px; display:flex; align-items:flex-start; gap:8px; }
+  .num { font-size:10.5px; font-weight:800; color:#fff; background:rgba(255,255,255,.22); border-radius:5px; padding:1px 6px; flex-shrink:0; }
+  .head-titles { flex:1; min-width:0; }
+  .head-title { font-size:12.5px; font-weight:700; color:#fff; line-height:1.25; }
+  .head-sub { font-size:10.5px; color:rgba(255,255,255,.85); margin-top:2px; }
+  .badges { display:flex; flex-direction:column; gap:2px; flex-shrink:0; }
+  .chip { display:inline-flex; align-items:center; justify-content:center; font-size:8.5px; font-weight:800; color:#fff; background:var(--ac); border-radius:4px; width:16px; height:14px; }
+  .card-body { padding:10px 12px 12px; font-size:11.5px; color:var(--text2); flex:1; }
+  .flow { display:flex; flex-direction:column; }
+  .flow-arrow { text-align:center; color:var(--text3); font-size:12px; line-height:1; margin:3px 0; }
+  .flow-step {
+    background:var(--panel2); border:1px solid var(--border); border-radius:7px;
+    padding:6px 9px; font-size:11.5px; color:var(--text); margin-bottom:2px;
+  }
+  .flow-decision {
+    background:var(--panel2); border:1px dashed #4b5266; border-radius:7px;
+    padding:6px 9px; font-size:11.5px; color:var(--text); font-weight:600;
+  }
+  .flow-note { font-size:10.5px; color:var(--text3); font-style:italic; padding:3px 1px; }
+  .branch { margin:3px 0 3px 8px; padding-left:10px; border-left:2px solid var(--bc); }
+  .branch.yes { --bc:#22c55e; }
+  .branch.no { --bc:#ef4444; }
+  .branch-arrow { font-size:10.5px; font-weight:800; letter-spacing:.02em; margin-bottom:3px; }
+  .branch.yes .branch-arrow { color:#4ade80; }
+  .branch.no .branch-arrow { color:#f87171; }
+  .flow-rules { display:flex; flex-direction:column; gap:4px; background:var(--panel2); border:1px solid var(--border); border-radius:7px; padding:7px 9px; margin-bottom:2px; }
+  .rule-row { display:flex; align-items:center; gap:6px; font-size:10.8px; }
+  .rule-row.fallback { opacity:.8; font-style:italic; }
+  .rule-cond { color:var(--text2); flex:1; }
+  .rule-arrow { color:var(--text3); }
+  .rule-outcome { font-weight:700; color:var(--c); }
+  .flow-metrics { display:flex; flex-direction:column; gap:5px; background:var(--panel2); border:1px solid var(--border); border-radius:7px; padding:7px 9px; }
+  .metric-row { font-size:10.8px; color:var(--text2); }
+  .mv-after { font-weight:700; color:var(--c); }
+  .bullets { margin:0; padding-left:15px; list-style:disc; }
+  .bullets > li { margin-bottom:5px; }
+  ul.sub { margin:4px 0 0; padding-left:14px; list-style:circle; }
+  ul.sub li { margin-bottom:3px; }
+  .b-note { font-style:italic; color:var(--text3); list-style:none; margin-left:-15px; }
+  .det-label { font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text3); font-weight:700; margin:10px 0 4px; }
+  .empty { color:var(--text3); font-size:11px; }
+  .h-arrow { align-self:center; color:var(--text3); font-size:16px; padding:0 6px; flex-shrink:0; }
+  .v-arrow { text-align:center; color:var(--text3); font-size:20px; margin:10px 0; }
+  .legend { margin-top:34px; padding-top:18px; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; gap:12px 20px; }
+  .legend-title { width:100%; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); font-weight:700; margin-bottom:2px; }
+  .legend-item { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text2); }
+  .dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .goal-box { display:inline-flex; flex-direction:column; gap:4px; background:#3b1a78; border-radius:12px; padding:14px 18px; margin-top:16px; }
+  .goal-box h3 { margin:0 0 4px; font-size:13px; color:#fff; }
+  .goal-box ul { margin:0; padding-left:16px; font-size:11.5px; color:#e4d9ff; }
+  footer { text-align:center; color:var(--text3); font-size:12px; padding:20px 20px 40px; }
+</style>
+</head>
+<body>
+<header><h1>AI + HUMAN PROPERTY VALIDATION SYSTEM — END-TO-END WORKFLOW</h1></header>
+<main>
+  <div class="section-label">1 · Image &amp; attribute pipeline</div>
+  <div class="scroll-hint">Scroll horizontally to see all blocks →</div>
+  <div class="grid-row"><div class="card-wrap">
+  <div class="card" style="--c:#64748b">
+    <div class="card-head">
+      <span class="num">0</span>
+      <div class="head-titles">
+        <div class="head-title">Pre-capture requirements</div>
+        <div class="head-sub">Filter out bad images before they are ever saved</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">Check light level / time of day before capture</div><div class="flow-arrow">↓</div><div class="flow-decision">Light sufficient?</div><div class="branch yes"><div class="branch-arrow">↓ YES</div><div class="flow-step">Capture image → Block 1</div></div><div class="branch no"><div class="branch-arrow">↓ NO</div><div class="flow-step">Camera off, no capture</div></div><div class="flow-arrow">↓</div><div class="flow-note">Goal: filter out dark/night frames at capture, not after.</div></div><div class="det-label">Reference details</div><ul class="bullets"><li class="b-note"><u>Open items</u></li><ul class="sub"><li>Fixed daylight window (season-adjusted)</li><li>Light-sensor threshold, not just clock time</li><li>Skip on heavy rain / fog</li><li>GPS lock before capture</li><li>Min. resolution / focus check</li></ul></ul></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#64748b">
+    <div class="card-head">
+      <span class="num">1</span>
+      <div class="head-titles">
+        <div class="head-title">Image intake</div>
+        <div class="head-sub">New image received + metadata</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">New image received into the pipeline</div><div class="flow-arrow">↓</div><div class="flow-step">Extract metadata: Parcel ID, address, date/time, source, GPS…</div><div class="flow-arrow">↓</div><div class="flow-step">Store raw image + metadata</div></div></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#2563eb">
+    <div class="card-head">
+      <span class="num">2</span>
+      <div class="head-titles">
+        <div class="head-title">Image quality gate</div>
+        <div class="head-sub">First AI check — is the image usable?</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#4f46e5">AI</span><span class="chip" style="--ac:#f59e0b">H</span><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">First check: cloudy, blocked</div><div class="flow-arrow">↓</div><div class="flow-decision">Cloudy or blocked?</div><div class="branch yes"><div class="branch-arrow">↓ YES</div><div class="flow-step">Sample ~10% → further check (block 6)</div><div class="flow-arrow">↓</div><div class="flow-step">Remaining ~90% → route to verification mode</div><div class="flow-arrow">↓</div><div class="flow-step">Expert annotator resolves or marks not usable</div></div><div class="branch no"><div class="branch-arrow">↓ NO</div><div class="flow-step">Continue to second check (this block)</div></div><div class="flow-arrow">↓</div><div class="flow-step">Second check: bad angle, wrong parcel</div><div class="flow-arrow">↓</div><div class="flow-decision">Bad angle or wrong parcel?</div><div class="branch yes"><div class="branch-arrow">↓ YES</div><div class="flow-step">Sample ~10% → further check (block 6)</div><div class="flow-arrow">↓</div><div class="flow-step">Remaining ~90% → route to verification mode</div><div class="flow-arrow">↓</div><div class="flow-step">Expert annotator resolves or marks not usable</div></div><div class="branch no"><div class="branch-arrow">↓ NO</div><div class="flow-step">Continue → AI attribute detection (block 3)</div></div></div></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#7c3aed">
+    <div class="card-head">
+      <span class="num">3</span>
+      <div class="head-titles">
+        <div class="head-title">AI attribute detection</div>
+        <div class="head-sub">Context-aware detection of all applicable issues</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#4f46e5">AI</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">Detect attributes based on property-type context</div><div class="flow-arrow">↓</div><div class="flow-step">Output per attribute: prediction, confidence, (bbox), version/timestamp</div></div><div class="det-label">Reference details</div><ul class="bullets"><li class="b-note"><u>Examples of attributes</u></li><ul class="sub"><li>Overgrown lawn</li><li>High grass</li><li>Dead patch</li><li>Litter / trash</li><li>Debris</li><li>Leaves</li><li>Vehicle on lawn</li><li>Broken / boarded / missing window</li><li>Broken / boarded / missing door</li><li>Structural issues</li><li>Fencing issues</li><li>Graffiti</li><li>Standing water</li><li>Damaged roof</li><li>Exterior damage</li><li>... and more</li></ul></ul></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#16a34a">
+    <div class="card-head">
+      <span class="num">4</span>
+      <div class="head-titles">
+        <div class="head-title">Property / lot classification</div>
+        <div class="head-sub">Derived from detected attributes, via rules</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#4f46e5">AI</span><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">Input: attributes detected in block 3</div><div class="flow-arrow">↓</div><div class="flow-rules"><div class="rule-row"><span class="rule-cond">Door plywood + Window plywood</span><span class="rule-arrow">→</span><span class="rule-outcome">Abandoned</span></div><div class="rule-row"><span class="rule-cond">Door plywood (alone)</span><span class="rule-arrow">→</span><span class="rule-outcome">Abandoned</span></div><div class="rule-row"><span class="rule-cond">Door plywood + Window plywood + Debris</span><span class="rule-arrow">→</span><span class="rule-outcome">Abandoned</span></div><div class="rule-row"><span class="rule-cond">Overgrown lawn (only, nothing else)</span><span class="rule-arrow">→</span><span class="rule-outcome">Vacant</span></div><div class="rule-row fallback"><span class="rule-cond">Otherwise</span><span class="rule-arrow">→</span><span class="rule-outcome">Classify via AI: residential / not residential / multi-family / construction</span></div></div></div><div class="det-label">Reference details</div><ul class="bullets"><li class="b-note"><u>Possible classes</u></li><ul class="sub"><li>Residential</li><li>Not residential</li><li>Multi-family</li><li>Construction</li><li>Abandoned</li><li>Vacant</li></ul><ul class="sub"><li>Output: property type assigned, with a confidence score.</li><li>Rules can be extended over time from real statistical relationships in the data.</li></ul></ul></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#ea580c">
+    <div class="card-head">
+      <span class="num">5</span>
+      <div class="head-titles">
+        <div class="head-title">Confidence-based routing</div>
+        <div class="head-sub">How sure is AI about the attributes it detected in block 3? Routes based on that.</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#f59e0b">H</span><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">Take AI&#x27;s confidence score for each attribute detected in block 3, and an overall score for the image</div><div class="flow-arrow">↓</div><div class="flow-decision">Is that confidence (per attribute / overall) high?</div><div class="branch yes"><div class="branch-arrow">↓ YES</div><div class="flow-step">Sample ~10% → further annotator verification (stage 6)</div><div class="flow-arrow">↓</div><div class="flow-step">Remaining ~90% → sent directly to the client application</div></div><div class="branch no"><div class="branch-arrow">↓ NO</div><div class="flow-step">Route to detailed verification</div><div class="flow-arrow">↓</div><div class="flow-step">Expert / additional / multiple annotators if needed</div></div></div></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#0d9488">
+    <div class="card-head">
+      <span class="num">6</span>
+      <div class="head-titles">
+        <div class="head-title">Skill-based annotator routing</div>
+        <div class="head-sub">Send each case to the annotator best suited for it</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">Maintain per-attribute annotator skill profile</div><div class="flow-arrow">↓</div><div class="flow-step">Match: AI-detected attributes + confidence + skill profile + workload → best annotator</div></div><div class="det-label">Reference details</div><ul class="bullets"><li class="b-note"><u>Annotator skill profile (example)</u></li><ul class="sub"><li>Annotator A — lawn 94%, dead patch 92%, abandoned 79%, bad picture 85%</li><li>Annotator B — lawn 82%, dead patch 76%, abandoned 96%, bad picture 94%</li><li>Annotator C — lawn 89%, dead patch 95%, abandoned 86%, bad picture 81%</li></ul></ul></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#0d9488">
+    <div class="card-head">
+      <span class="num">7</span>
+      <div class="head-titles">
+        <div class="head-title">Human annotation</div>
+        <div class="head-sub">The annotator performs the initial annotation</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#f59e0b">H</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">Selected annotator performs the normal annotation of the image</div><div class="flow-arrow">↓</div><div class="flow-note">AI predictions are not fully exposed at this point, to avoid biasing the annotator&#x27;s judgment.</div></div></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#db2777">
+    <div class="card-head">
+      <span class="num">8</span>
+      <div class="head-titles">
+        <div class="head-title">AI vs human disagreement</div>
+        <div class="head-sub">Second pass by AI — did the annotator miss something?</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#4f46e5">AI</span><span class="chip" style="--ac:#f59e0b">H</span><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">Compare AI results vs human results</div><div class="flow-arrow">↓</div><div class="flow-decision">Did AI find something the annotator missed?</div><div class="branch yes"><div class="branch-arrow">↓ YES</div><div class="flow-step">Show a targeted popup for that one attribute</div><div class="flow-arrow">↓</div><div class="flow-step">Popup: “Dead patch detected — present?” YES / NO</div><div class="flow-arrow">↓</div><div class="flow-step">Annotator must confirm before continuing</div></div><div class="branch no"><div class="branch-arrow">↓ NO</div><div class="flow-step">Continue</div></div></div></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#ca8a04">
+    <div class="card-head">
+      <span class="num">9</span>
+      <div class="head-titles">
+        <div class="head-title">Contextual validation engine</div>
+        <div class="head-sub">Rule-based checks between related attributes</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#f59e0b">H</span><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">Check relationships between attributes (rule-based)</div><div class="flow-arrow">↓</div><div class="flow-decision">Example: Vehicle on lawn = YES &amp; Dead patch = NO — inconsistent?</div><div class="branch yes"><div class="branch-arrow">↓ YES</div><div class="flow-step">Confirm whether Dead patch is present</div></div><div class="branch no"><div class="branch-arrow">↓ NO</div><div class="flow-step">Continue</div></div><div class="flow-arrow">↓</div><div class="flow-note">Similar: Abandoned → re-check windows/doors/debris. Construction → re-evaluate normal attributes.</div></div></div>
+  </div>
+</div></div>
+  <div class="v-arrow">↓</div>
+  <div class="section-label">2 · State, scheduling &amp; external data</div>
+  <div class="grid-row"><div class="card-wrap">
+  <div class="card" style="--c:#7c3aed">
+    <div class="card-head">
+      <span class="num">10</span>
+      <div class="head-titles">
+        <div class="head-title">Final confidence / consensus</div>
+        <div class="head-sub">How much confirmation does this case need?</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#f59e0b">H</span><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-decision">Is this a critical / persistent state? (e.g. abandoned, vacant)</div><div class="branch yes"><div class="branch-arrow">↓ YES</div><div class="flow-step">Send to multiple annotators (e.g. 2–3)</div><div class="flow-arrow">↓</div><div class="flow-step">Calculate consensus — e.g. 2 of 3 agree, ≥70% agreement on key attributes</div><div class="flow-arrow">↓</div><div class="flow-step">Final consensus reached, with confidence score</div></div><div class="branch no"><div class="branch-arrow">↓ NO</div><div class="flow-step">Single annotator confirmation is sufficient</div></div></div></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#2563eb">
+    <div class="card-head">
+      <span class="num">11</span>
+      <div class="head-titles">
+        <div class="head-title">Parcel state update</div>
+        <div class="head-sub">Create / update the long-term parcel record</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">Create / update parcel state: ID, address, current state, confidence, confirmed by, review dates</div><div class="flow-arrow">↓</div><div class="flow-step">Store attribute summary</div></div><div class="det-label">Reference details</div><ul class="bullets"><li class="b-note"><u>Parcel state record (example)</u></li><ul class="sub"><li>Parcel ID: 123456</li><li>Current state: ABANDONED</li><li>State confidence: 97%</li><li>Confirmed by: AI + 2/3 humans</li><li>Next review: Sep 24, 2024</li><li>Status: persistent · review every 4 weeks</li></ul></ul></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#16a34a">
+    <div class="card-head">
+      <span class="num">12</span>
+      <div class="head-titles">
+        <div class="head-title">Dynamic reinspection schedule</div>
+        <div class="head-sub">Confirmed persistent lots don&#x27;t need full re-annotation every time</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#4f46e5">AI</span><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-decision">Is the parcel in a persistent state? (abandoned / vacant / tarp / roof structural / construction / other)</div><div class="branch yes"><div class="branch-arrow">↓ YES</div><div class="flow-step">Apply adaptive review frequency: 2–4 weeks → 4 weeks → 6 weeks → 8 weeks</div><div class="flow-arrow">↓</div><div class="flow-step">Between reviews: keep collecting images, run AI change detection</div><div class="flow-arrow">↓</div><div class="flow-step">No full human annotation unless triggered</div></div><div class="branch no"><div class="branch-arrow">↓ NO</div><div class="flow-step">Normal flow — review every new image</div></div></div></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#2563eb">
+    <div class="card-head">
+      <span class="num">13</span>
+      <div class="head-titles">
+        <div class="head-title">Change detection engine</div>
+        <div class="head-sub">Trigger an earlier review when something meaningful changes</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#4f46e5">AI</span><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">New image arrives for a parcel in persistent state</div><div class="flow-arrow">↓</div><div class="flow-step">Run change detection: visual difference, new objects, condition change</div><div class="flow-arrow">↓</div><div class="flow-decision">Significant change detected?</div><div class="branch yes"><div class="branch-arrow">↓ YES</div><div class="flow-step">Trigger early review — return to full workflow (from stage 2)</div></div><div class="branch no"><div class="branch-arrow">↓ NO</div><div class="flow-step">Stay on the dynamic reinspection schedule (stage 12)</div></div></div></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#ea580c">
+    <div class="card-head">
+      <span class="num">14</span>
+      <div class="head-titles">
+        <div class="head-title">External city data integration</div>
+        <div class="head-sub">City systems as an additional source of truth</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#10b981">V</span><span class="chip" style="--ac:#0ea5e9">C</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">City systems provide parcel type, permits, violations, status, tax data</div><div class="flow-arrow">↓</div><div class="flow-step">Integrate city data with AI + human parcel state</div><div class="flow-arrow">↓</div><div class="flow-decision">Did city data change, or did AI detect a change?</div><div class="branch yes"><div class="branch-arrow">↓ YES</div><div class="flow-step">Return parcel to full human verification</div></div><div class="branch no"><div class="branch-arrow">↓ NO</div><div class="flow-step">Keep reduced review frequency (every 3–6 months)</div></div></div></div>
+  </div>
+</div></div>
+  <div class="v-arrow">↓</div>
+  <div class="section-label">3 · Shared infrastructure, feedback &amp; outcome</div>
+  <div class="grid-row"><div class="card-wrap">
+  <div class="card" style="--c:#7c3aed">
+    <div class="card-head">
+      <span class="num">15</span>
+      <div class="head-titles">
+        <div class="head-title">Feedback &amp; continuous improvement loop</div>
+        <div class="head-sub">Everything learned feeds back into the system</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#4f46e5">AI</span><span class="chip" style="--ac:#f59e0b">H</span><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-step">Collect feedback: disagreements, corrections, false positives/negatives</div><div class="flow-arrow">↓</div><div class="flow-step">Retrain models, improve rules/routing</div><div class="flow-arrow">↓</div><div class="flow-step">Update annotator skill profiles</div><div class="flow-arrow">↓</div><div class="flow-note">Result: better quality, recall, cost, scalability.</div></div></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#0d9488">
+    <div class="card-head">
+      
+      <div class="head-titles">
+        <div class="head-title">Estimated impact</div>
+        <div class="head-sub">One measured input (blocked/bad-angle marking) + modeled ranges for the rest</div>
+      </div>
+      
+    </div>
+    <div class="card-body"><div class="flow"><div class="flow-note">Per 1,000 images/day unless noted. The 90/10 splits at blocks 2 &amp; 5 are from this design. Per-action durations and AI-confidence shares are assumptions — shown as optimistic vs. conservative ranges — except the blocked/bad-angle row, which uses the actual figures given (3,000 images/day, 5–6s each, 3 annotators).</div><div class="flow-metrics"><div class="metric-row"><b>Blocked / bad-angle marking — team time / month</b>: ~92–110 h (real: 3,000/day × 5–6s × 3 annotators) → <span class="mv-after">~9–11 h (only ~10% still escalated to a human)</span> — ≈ 90% less — this task moves almost entirely from human to AI (blocks 0 + 2)</div><div class="metric-row"><b>Same, per annotator / month</b>: ~31–37 h → <span class="mv-after">~3–4 h</span> — ≈ 4 fewer working days / month per annotator on this one task alone</div><div class="metric-row"><b>Annotator time, 1,000 images/day — optimistic</b>: ~11.1 h (~1.6 annotators) → <span class="mv-after">~1.3 h (~0.2 annotators)</span> — ≈ 85–90%; assumes 90% AI confidence, 40s/annotation (per block 2/5 splits)</div><div class="metric-row"><b>Annotator time, 1,000 images/day — conservative</b>: ~16.7 h (~2.4 annotators) → <span class="mv-after">~6.7 h (~1 annotator)</span> — ≈ 55–65%; assumes only 60% AI confidence, 60s/annotation</div><div class="metric-row"><b>Manual reviews per persistent lot / year</b>: ~52 (weekly) → <span class="mv-after">~13–17 conservative · 6–13 optimistic</span> — ≈ 70–80% fewer reviews for abandoned / vacant lots</div><div class="metric-row"><b>AI second-pass check overhead (block 8)</b>: — → <span class="mv-after">+5–10% time on flagged images only</span> — Small added cost, recovers missed attributes</div></div></div><div class="det-label">Reference details</div><ul class="bullets"><ul class="sub"><li>The blocked/bad-angle row is the only one built from figures you gave directly — everything else is modeled and shown as a range.</li><li>Optimistic vs. conservative differ only in two assumptions: AI confidence share (90% vs 60%) and seconds per full annotation (40s vs 60s).</li><li>The real-world number likely starts closer to conservative and moves toward optimistic as confidence thresholds get tuned on production data.</li><li>Replace remaining assumptions once frequency data / a time-motion pilot is available.</li></ul></ul></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#64748b">
+    <div class="card-head">
+      
+      <div class="head-titles">
+        <div class="head-title">Central data layer</div>
+        <div class="head-sub">All information is stored here</div>
+      </div>
+      <span class="badges"><span class="chip" style="--ac:#10b981">V</span></span>
+    </div>
+    <div class="card-body"><div class="det-label">Reference details</div><ul class="bullets"><ul class="sub"><li>Raw images storage</li><li>AI predictions database</li><li>Annotations database</li><li>Parcel state database</li><li>Rules &amp; validation engine</li><li>Annotator performance DB</li><li>City data database</li></ul></ul></div>
+  </div>
+</div><div class="h-arrow">→</div><div class="card-wrap">
+  <div class="card" style="--c:#7c3aed">
+    <div class="card-head">
+      
+      <div class="head-titles">
+        <div class="head-title">Goal</div>
+        <div class="head-sub">What the system optimizes for</div>
+      </div>
+      
+    </div>
+    <div class="card-body"><div class="det-label">Reference details</div><ul class="bullets"><ul class="sub"><li>High quality</li><li>Lower cost</li><li>Higher recall</li><li>Scalable</li><li>Sustainable</li></ul></ul></div>
+  </div>
+</div></div>
+
+  <div class="goal-box">
+    <h3>Goal</h3>
+    <ul><li>High quality</li><li>Lower cost</li><li>Higher recall</li><li>Scalable</li><li>Sustainable</li></ul>
+  </div>
+
+  <div class="legend">
+    <div class="legend-title">Who performs it</div>
+    <div class="legend-item"><span class="chip" style="--ac:#4f46e5">AI</span>AI model</div><div class="legend-item"><span class="chip" style="--ac:#f59e0b">H</span>Human responsibility</div><div class="legend-item"><span class="chip" style="--ac:#10b981">V</span>Validation system</div><div class="legend-item"><span class="chip" style="--ac:#0ea5e9">C</span>External city data</div>
+  </div>
+  <div class="legend">
+    <div class="legend-title">Legend — functional area</div>
+    <div class="legend-item"><span class="dot" style="background:#64748b"></span>Intake &amp; shared data</div><div class="legend-item"><span class="dot" style="background:#2563eb"></span>Image quality / parcel state</div><div class="legend-item"><span class="dot" style="background:#16a34a"></span>Classification &amp; scheduling</div><div class="legend-item"><span class="dot" style="background:#7c3aed"></span>AI detection, consensus &amp; feedback</div><div class="legend-item"><span class="dot" style="background:#ea580c"></span>Confidence &amp; city data</div><div class="legend-item"><span class="dot" style="background:#0d9488"></span>Annotator routing &amp; annotation</div><div class="legend-item"><span class="dot" style="background:#db2777"></span>AI ↔ human disagreement</div><div class="legend-item"><span class="dot" style="background:#ca8a04"></span>Contextual validation</div>
+  </div>
+</main>
+<footer><a href="workflow_gridmap_ru.html" style="color:var(--text2)">Switch to Russian version</a></footer>
+</body>
+</html>
